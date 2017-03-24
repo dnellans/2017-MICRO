@@ -1,0 +1,81 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is the template for submission to HPCA 2016
+% The cls file is a modified from  'sig-alternate.cls'
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{sig-alternate} 
+\usepackage{mathptmx} % This is Times font
+
+\newcommand{\ignore}[1]{}
+\usepackage{fancyhdr}
+\usepackage[normalem]{ulem}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+\setlength{\emergencystretch}{10pt}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{breakurl}
+\usepackage{tabularx}
+\usepackage[nocompress]{cite}
+\usepackage{subfig}
+\usepackage{hyphenat}
+\usepackage{xcolor}
+\usepackage{dcolumn}
+\newcolumntype{d}{D{.}{.}{2.1}}
+\usepackage{flushend}
+\usepackage{pifont}
+\newcommand*\mycirc[1]{{\large \ding{\numexpr201+#1\relax}}}
+
+% required to break long URLS sanely
+\PassOptionsToPackage{hyphens}{url} \usepackage{hyperref}
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks% save the current one 
+\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j% 
+\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t% 
+\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D% 
+\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N% 
+\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X% 
+\do\Y\do\Z\do\*\do\-\do\~\do\'\do\"\do\-}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\rebuttal}[1]{\textcolor{red}{#1}}
+\newcommand{\hpca}[1]{\textcolor{red}{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\fancypagestyle{firstpage}{
+  \fancyhf{}
+\setlength{\headheight}{10pt}
+\renewcommand{\headrulewidth}{0pt}
+  \pagenumbering{arabic}
+  \fancyfoot[FL]{\textbf{ 978-1-4673-9211-2/16/\$31.00
+  \textcopyright2016 IEEE}}
+}
+\renewcommand\footnotemark{}
+
+\title{\vspace{-0.2in}Selective GPU Caches to\\Eliminate CPU--GPU HW Cache Coherence\vspace{-0.2in}}
+\author{Neha Agarwal$^{\dagger}$, 
+David Nellans$^{\ddagger}$,
+Eiman Ebrahimi$^{\ddagger}$,
+Thomas F. Wenisch$^{\dagger}$,\\
+John Danskin$^{\ddagger}$,
+Stephen W. Keckler$^{\ddagger}$\\\\
+$^{\ddagger}$ NVIDIA and $^{\dagger}$University of Michigan \\
+\{dnellans,eebrahimi,jdanskin,skeckler\}@nvidia.com, \{nehaag,twenisch\}@umich.edu
+}
+
+\begin{document}
+\thanks{The research was supported in part by the United States Department of Energy. The views and conclusions contained in this document are those of the authors and 
+should not be interpreted as representing the official policies, either expressed or implied, of the U.S. Government.}
+\maketitle
+\thispagestyle{firstpage}
+\pagestyle{plain}
+\input{00-abstract.tex}
+\input{01-introduction.tex}
+\input{02-background.tex}
+\input{03-proposal.tex}
+\input{04-implementation.tex}
+\input{05-results.tex}
+\input{05-discussion.tex}
+\input{06-conclusions.tex}
+\bibliographystyle{IEEEtranS}
+\bibliography{main}
+\end{document}
