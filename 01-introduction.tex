@@ -1,109 +1,142 @@
 \section{Introduction}
 \label{introduction}
 
-Technology trends indicate an increasing number of systems designed with CPUs, 
-accelerators, and GPUs coupled via high-speed 
-links. Such systems are likely to introduce unified shared
-CPU-GPU memory with shared page tables. In fact, some systems already
-feature such implementations~\cite{AMDKaveri}.
-Introducing globally visible shared memory
-improves programmer productivity by eliminating explicit copies and memory 
-management overheads. Whereas this abstraction can be supported using
-software-only page-level protection mechanisms~\cite{UVM, HSA}, hardware cache coherence 
-can improve performance by allowing concurrent, fine-grained access to memory
-by both CPU and GPU.  If the CPU and GPU have separate physical
-memories, page migration may also be used to optimize page placement for
-latency or bandwidth by using both near and far 
-memory~\cite{Dashti2013,Agarwal2015b,Meswani2015,Chou2015}.
+
+General story about increasing the performance by putting multiple GPUs working 
+together (TMG). No code re-writing, no re-compilation, what can we expect if we 
+just allow the runtime to distribute CTAs across multiple GPUs?
+With CUDA providing UVAS and UMA, and NVLink supporting atomic , GPU-NUMA system 
+is born: there is ~10x difference between local and remote BW (local mem 
+BW=1TB/s and NVLink BW is 128GB/s) which limits the scalability and stands as a 
+bottleneck. It is not about latency, it is about BW. (maybe some nvlink latency 
+vs bw graph here?). The question is what can we do from the micro-arch side to 
+improve this?
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\columnwidth]{figures/fig1.jpg}
-\caption{Evolution of GPUs to switch connected multi-GPU.}
+\caption{Evolution of GPUs to switch connected multi-socket GPU.}
 
 \label{fig:motivation}
 \end{figure}
 
-Some CPU--GPU systems will be tightly integrated into a system on chip (SoC) making on-chip 
-hardware coherence a natural fit, possibly even by sharing a portion of the on-chip 
-cache hierarchy~\cite{HSA,AMDAPU,Hechtman2014}.  However, the largest GPU 
-implementations consume nearly 8B transistors and have their own 
-specialized memory systems~\cite{NVIDIA8BILLION}.  
-Power and thermal constraints preclude single-die integration of such designs. 
-Thus, many CPU--GPU systems are likely to have 
-discrete CPUs and GPUs connected via dedicated off-chip interconnects like 
-NVLINK (NVIDIA), CAPI (IBM), HT (AMD), and QPI (INTEL) or implemented as 
-multi-chip modules~\cite{NVLINK,CAPI,AMDHT,INTELQPI,Chen92}. The availability of these
-high speed off-chip interconnects has led both academic groups and vendors like NVIDIA
-to investigate how future GPUs may integrate into existing OS-controlled 
-unified shared memory regimes used by CPUs~\cite{Pichai2014,power2014,Agarwal2015,Agarwal2015b}.
-
-Current CPUs have up to 18 cores per socket~\cite{INTELXEONE5V3} but GPUs are 
-expected to have hundreds of streaming multiprocessors (SMs) each with its own cache(s) within 
-the next few years. Hence, extending traditional hardware cache-coherency into a multi-chip 
-CPU--GPU memory system requires coherence messages to be exchanged not just within the GPU but
-over the CPU--GPU interconnect. Keeping these hundreds of caches coherent with a traditional HW
-coherence protocol, as shown in
-Figure~\ref{fig:motivation}, potentially requires large state and interconnect 
-bandwidth~\cite{Kelm2010,johnson2011}. 
-Some recent proposals call for heterogeneous race-free (HRF) GPU programming models, which
-allow relaxed or scoped memory consistency to reduce the frequency or hide the
-latency of enforcing coherence~\cite{Hechtman2014}. 
-Others argue that scopes substantially increase programmer burden, and instead propose
-a data-race-free programming model with coherence based on reader-initiated invalidation~\cite{Sinclair2015}.
-However, irrespective of 
-memory ordering requirements, such approaches either require software to initiate flushes
-at synchronization points or system-wide hardware cache coherence mechanisms.
-We show
-that Selective Caching can achieve performance rivaling
-more complex CPU-GPU cache coherence protocols.
-Techniques like region coherence~\cite{Power2013} 
-seek to scale coherence protocols for heterogeneous systems, but require
-pervasive changes throughout the CPU and GPU memory systems. Such approaches
-also incur highly coordinated design and verification effort by both CPU and GPU
-vendors~\cite{Hong2012} that is challenging when multiple vendors wish to integrate
-existing CPU and GPU designs in a timely manner.
-
-In the past, NVIDIA has investigated extending hardware cache-coherence 
-mechanisms to multi-chip CPU--GPU memory systems. Due to the significant challenges
-associated with building such systems, in this work, we architect a GPU \textit{selective caching} 
-mechanism. This mechanism provides the conceptual simplicity of CPU--GPU hardware cache coherence and
-maintains a high level of GPU performance, but does not actually implement
-hardware cache coherence within the GPU, or between the CPU and GPU. In our proposed 
-selective caching GPU, the GPU does not cache data that resides in CPU physical 
-memory, nor does it cache data that resides in the GPU memory that is 
-actively in-use by the CPU on-chip caches. This approach is orthogonal to the memory
-consistency model and leverages the latency-tolerant nature of GPU architectures combined with upcoming low-latency and 
-high-bandwidth interconnects to enable the benefits of shared memory.  To evaluate the performance
-of such a GPU, we measure ourselves against a theoretical hardware
-cache-coherent CPU--GPU system that, 
-while high performance, is impractical to implement.
-
 In this work, we make the following contributions:
 
 \begin{enumerate}
-% \vspace{-.05in}
 \item
-We propose GPU selective caching, which enables a CPU--GPU system that provides a 
-unified shared memory without requiring hardware cache-coherence protocols within the GPU
-or between CPU and GPU caches.
-% \vspace{-.05in}
+Dynamic NVLink balancing: in cases where only one direction is saturated and the other is not, we can switch individual links providing more BW where it is needed. This approach alone is giving X% over the baseline TMG and we are within Y% of 2x NVLink BW.
+
 \item
-We identify that much of the improvement from GPU caches is due to coalescing 
-memory accesses that are spatially contiguous.  Leveraging
-aggressive request coalescing, GPUs can achieve much of the performance benefit
-of caching, without caches.
-% \vspace{-.05in}
+Remote caching: instead of caching only local accesses with the mem-side L2, we start adding gpu-side Remote Cache (RC). We show the cost of invalidating RC, the performance of tiny RC (128KB), half-L2 RC (2MB), full RC (4MB), and full RC that caches both remote and local accesses. 
+
 \item
-We propose a small on-die CPU cache to handle uncached GPU requests
-that are issued at sub-cache line granularity. This cache helps both 
-shield the CPU memory system from the bandwidth hungry GPU and supports
-improved CPU--GPU interconnect efficiency by implementing variable-sized transfer granularity.
-% \vspace{-.05in}
+Dynamic cache partitioning: given that different benchmarks prefer different cache configurations, we evaluate dynamic way-partitioning of gpu-side L2 caches. Depending on local and remote BW saturations, we adjust the number of ways reserved for caching local and remote data. Alone, this mechanism improves the performance by X% and we are within Y% of 1x gpu-side RC + 1x mem-side L2. Combined with dynamic NVLink balancing, we improve the performance by Z% over the baseline TMG and we are within ZZ% of 2x NVlink + 1x gpu-side + 1x mem-side L2. Finally, this increases the scalability compared to a single-GPU system by YY%.
+
 \item
-We demonstrate that a large fraction of GPU-accessed data is read-only. Allowing 
-the GPU to cache this data and relying on page protection mechanisms rather than hardware 
-coherence to ensure correctness closes the performance gap between a selective
-caching and hardware cache-coherent GPU for many applications.
-% \vspace{-.05in}
+Other stuff
+
+\vspace{12in}
+Introduction is done by the end of page 2.
+
+
+
+% Technology trends indicate an increasing number of systems designed with CPUs, 
+% accelerators, and GPUs coupled via high-speed 
+% links. Such systems are likely to introduce unified shared
+% CPU-GPU memory with shared page tables. In fact, some systems already
+% feature such implementations~\cite{AMDKaveri}.
+% Introducing globally visible shared memory
+% improves programmer productivity by eliminating explicit copies and memory 
+% management overheads. Whereas this abstraction can be supported using
+% software-only page-level protection mechanisms~\cite{UVM, HSA}, hardware cache coherence 
+% can improve performance by allowing concurrent, fine-grained access to memory
+% by both CPU and GPU.  If the CPU and GPU have separate physical
+% memories, page migration may also be used to optimize page placement for
+% latency or bandwidth by using both near and far 
+% memory~\cite{Dashti2013,Agarwal2015b,Meswani2015,Chou2015}.
+% 
+% 
+% 
+% Some CPU--GPU systems will be tightly integrated into a system on chip (SoC) making on-chip 
+% hardware coherence a natural fit, possibly even by sharing a portion of the on-chip 
+% cache hierarchy~\cite{HSA,AMDAPU,Hechtman2014}.  However, the largest GPU 
+% implementations consume nearly 8B transistors and have their own 
+% specialized memory systems~\cite{NVIDIA8BILLION}.  
+% Power and thermal constraints preclude single-die integration of such designs. 
+% Thus, many CPU--GPU systems are likely to have 
+% discrete CPUs and GPUs connected via dedicated off-chip interconnects like 
+% NVLINK (NVIDIA), CAPI (IBM), HT (AMD), and QPI (INTEL) or implemented as 
+% multi-chip modules~\cite{NVLINK,CAPI,AMDHT,INTELQPI,Chen92}. The availability of these
+% high speed off-chip interconnects has led both academic groups and vendors like NVIDIA
+% to investigate how future GPUs may integrate into existing OS-controlled 
+% unified shared memory regimes used by CPUs~\cite{Pichai2014,power2014,Agarwal2015,Agarwal2015b}.
+% 
+% Current CPUs have up to 18 cores per socket~\cite{INTELXEONE5V3} but GPUs are 
+% expected to have hundreds of streaming multiprocessors (SMs) each with its own cache(s) within 
+% the next few years. Hence, extending traditional hardware cache-coherency into a multi-chip 
+% CPU--GPU memory system requires coherence messages to be exchanged not just within the GPU but
+% over the CPU--GPU interconnect. Keeping these hundreds of caches coherent with a traditional HW
+% coherence protocol, as shown in
+% Figure~\ref{fig:motivation}, potentially requires large state and interconnect 
+% bandwidth~\cite{Kelm2010,johnson2011}. 
+% Some recent proposals call for heterogeneous race-free (HRF) GPU programming models, which
+% allow relaxed or scoped memory consistency to reduce the frequency or hide the
+% latency of enforcing coherence~\cite{Hechtman2014}. 
+% Others argue that scopes substantially increase programmer burden, and instead propose
+% a data-race-free programming model with coherence based on reader-initiated invalidation~\cite{Sinclair2015}.
+% However, irrespective of 
+% memory ordering requirements, such approaches either require software to initiate flushes
+% at synchronization points or system-wide hardware cache coherence mechanisms.
+% We show
+% that Selective Caching can achieve performance rivaling
+% more complex CPU-GPU cache coherence protocols.
+% Techniques like region coherence~\cite{Power2013} 
+% seek to scale coherence protocols for heterogeneous systems, but require
+% pervasive changes throughout the CPU and GPU memory systems. Such approaches
+% also incur highly coordinated design and verification effort by both CPU and GPU
+% vendors~\cite{Hong2012} that is challenging when multiple vendors wish to integrate
+% existing CPU and GPU designs in a timely manner.
+% 
+% In the past, NVIDIA has investigated extending hardware cache-coherence 
+% mechanisms to multi-chip CPU--GPU memory systems. Due to the significant challenges
+% associated with building such systems, in this work, we architect a GPU \textit{selective caching} 
+% mechanism. This mechanism provides the conceptual simplicity of CPU--GPU hardware cache coherence and
+% maintains a high level of GPU performance, but does not actually implement
+% hardware cache coherence within the GPU, or between the CPU and GPU. In our proposed 
+% selective caching GPU, the GPU does not cache data that resides in CPU physical 
+% memory, nor does it cache data that resides in the GPU memory that is 
+% actively in-use by the CPU on-chip caches. This approach is orthogonal to the memory
+% consistency model and leverages the latency-tolerant nature of GPU architectures combined with upcoming low-latency and 
+% high-bandwidth interconnects to enable the benefits of shared memory.  To evaluate the performance
+% of such a GPU, we measure ourselves against a theoretical hardware
+% cache-coherent CPU--GPU system that, 
+% while high performance, is impractical to implement.
+% 
+% In this work, we make the following contributions:
+% 
+% \begin{enumerate}
+% % \vspace{-.05in}
+% \item
+% We propose GPU selective caching, which enables a CPU--GPU system that provides a 
+% unified shared memory without requiring hardware cache-coherence protocols within the GPU
+% or between CPU and GPU caches.
+% % \vspace{-.05in}
+% \item
+% We identify that much of the improvement from GPU caches is due to coalescing 
+% memory accesses that are spatially contiguous.  Leveraging
+% aggressive request coalescing, GPUs can achieve much of the performance benefit
+% of caching, without caches.
+% % \vspace{-.05in}
+% \item
+% We propose a small on-die CPU cache to handle uncached GPU requests
+% that are issued at sub-cache line granularity. This cache helps both 
+% shield the CPU memory system from the bandwidth hungry GPU and supports
+% improved CPU--GPU interconnect efficiency by implementing variable-sized transfer granularity.
+% % \vspace{-.05in}
+% \item
+% We demonstrate that a large fraction of GPU-accessed data is read-only. Allowing 
+% the GPU to cache this data and relying on page protection mechanisms rather than hardware 
+% coherence to ensure correctness closes the performance gap between a selective
+% caching and hardware cache-coherent GPU for many applications.
+% % \vspace{-.05in}
 \end{enumerate}
