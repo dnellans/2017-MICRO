@@ -1,21 +1,24 @@
 \begin{abstract}
-Cache coherence is ubiquitous in shared memory multi\hyp{}processors because it 
-provides a simple, high performance memory abstraction to programmers. 
-Recent work suggests extending hardware cache coherence between CPUs and GPUs
-to help support programming models with tightly coordinated sharing between CPU
-and GPU threads.  However, implementing hardware cache coherence
-is particularly challenging in systems with discrete CPUs and GPUs that may not be
-produced by a single vendor. Instead, we propose,
-\emph{selective caching}, wherein we disallow GPU caching of any memory that would 
-require coherence updates to propagate between the CPU and GPU, thereby 
-decoupling the GPU from vendor-specific CPU coherence protocols. We propose 
-several architectural improvements to offset the performance penalty of 
-selective caching: aggressive request coalescing, CPU-side coherent 
-caching for GPU-uncacheable requests, and a CPU--GPU interconnect optimization to support variable-size transfers. 
-Moreover, current GPU workloads access many read-only memory pages; we exploit 
-this property to allow promiscuous GPU caching of these pages, relying on 
-page-level protection, rather than hardware cache coherence, to ensure correctness.   
-These optimizations bring a selective caching GPU implementation to within 93\%
-of a hardware cache-coherent implementation without the need to integrate CPUs and 
-GPUs under a single hardware coherence protocol.
+GPUs achieve high throughput by employing many small cores and leveraging strong 
+data parallelism exposed through the programming model. GPUs use round robin 
+thread block scheduling and fine grained memory interleaving to reduce the 
+overhead of resource management in both hardware and software. However, these 
+simple distributed policies place a burden on GPU hardware to provide high 
+bandwidth on chip memory systems attached by large global crossbars.  With the 
+slowing of Moore's law, for GPUs to continue scaling performance (which largely 
+depends GPU core count) they are likely embrace multi-socket designs where 
+transistors are readily available. However when moving to multi-socket designs, 
+maintaining the illusion of system symmetry becomes increasingly difficult.  In 
+this work we investigate a future multi-socket GPU design that is subject to 
+non-uniform memory access properties. To achieve good performance, we show that 
+significant changes are needed to current GPU cache and interconnect designs.  
+Rather than employing uniform global policies, we propose allowing individual 
+GPU sockets to dynamically optimize their local HW policies to take advantage of 
+application phase effects which can exacerbate or minimize observed NUMA 
+effects.  By leveraging dynamic interconnect rebalancing, asymmetry aware GPUs 
+(AA-GPUs) achieve XXX\% the performance of doubling the inter-GPU interconnect 
+bandwidth.  By dynamically reallocating cache capacity between local and remote 
+portions of memory, AA-GPUs improve performance by XXX\% over existing GPU cache 
+policies.  Employed together an asymmetry aware GPU able to outperform a 
+symmetric GPU designs by XXX\% in a 4-socket NUMA context.
 \end{abstract}

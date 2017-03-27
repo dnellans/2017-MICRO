@@ -1,17 +1,9 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This is the template for submission to HPCA 2016
-% The cls file is a modified from  'sig-alternate.cls'
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \documentclass{sig-alternate} 
 \usepackage{mathptmx} % This is Times font
-
 \newcommand{\ignore}[1]{}
 \usepackage{fancyhdr}
 \usepackage[normalem]{ulem}
 \usepackage[hyphens]{url}
-\usepackage[draft]{hyperref}
-%\usepackage[options]{nohyperref}
 \setlength{\emergencystretch}{10pt}
 \usepackage{graphicx}
 \usepackage{multirow}
@@ -24,10 +16,11 @@
 \usepackage{xcolor}
 \usepackage{dcolumn}
 \newcolumntype{d}{D{.}{.}{2.1}}
-%\usepackage{flushend}
 \usepackage{pifont}
+\usepackage{flushend}
 \newcommand*\mycirc[1]{{\large \ding{\numexpr201+#1\relax}}}
-
+% Always include hyperref last
+\usepackage[bookmarks=true,breaklinks=true,letterpaper=true,colorlinks,linkcolor=black,citecolor=blue,urlcolor=black]{hyperref}
 % required to break long URLS sanely
 \PassOptionsToPackage{hyphens}{url} \usepackage{hyperref}
 \expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks% save the current one 
@@ -38,35 +31,38 @@
 \do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X% 
 \do\Y\do\Z\do\*\do\-\do\~\do\'\do\"\do\-}%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\rebuttal}[1]{\textcolor{red}{#1}}
-\newcommand{\hpca}[1]{\textcolor{red}{#1}}
+% Ensure letter paper
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\pagenumbering{arabic}
+
+%%%%%%%%%%%---SETME-----%%%%%%%%%%%%%
+\newcommand{\microsubmissionnumber}{XXX}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \fancypagestyle{firstpage}{
   \fancyhf{}
-\setlength{\headheight}{10pt}
-\renewcommand{\headrulewidth}{0pt}
-  \pagenumbering{arabic}
-  \fancyfoot[FL]{\textbf{ 978-1-4673-9211-2/16/\$31.00
-  \textcopyright2016 IEEE}}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyhead[C]{\vspace{15pt}\normalsize{MICRO 2017 Submission
+      \textbf{\#\microsubmissionnumber} -- Confidential Draft -- Do NOT Distribute!!}} 
+  \fancyfoot[C]{\thepage}
 }
-\renewcommand\footnotemark{}
 
-\title{\vspace{-0.2in}Selective GPU Caches to\\Eliminate CPU--GPU HW Cache Coherence\vspace{-0.2in}}
-\author{Neha Agarwal$^{\dagger}$, 
-David Nellans$^{\ddagger}$,
-Eiman Ebrahimi$^{\ddagger}$,
-Thomas F. Wenisch$^{\dagger}$,\\
-John Danskin$^{\ddagger}$,
-Stephen W. Keckler$^{\ddagger}$\\\\
-$^{\ddagger}$ NVIDIA and $^{\dagger}$University of Michigan \\
-\{dnellans,eebrahimi,jdanskin,skeckler\}@nvidia.com, \{nehaag,twenisch\}@umich.edu
+\title{Asymmetry Aware Multi-GPU Systems}
+\author{
+% Neha Agarwal$^{\dagger}$, 
+% David Nellans$^{\ddagger}$,
+% Eiman Ebrahimi$^{\ddagger}$,
+% Thomas F. Wenisch$^{\dagger}$,\\
+% John Danskin$^{\ddagger}$,
+% Stephen W. Keckler$^{\ddagger}$\\\\
+% $^{\ddagger}$ NVIDIA and $^{\dagger}$University of Michigan \\
+% \{dnellans,eebrahimi,jdanskin,skeckler\}@nvidia.com, \{nehaag,twenisch\}@umich.edu
 }
 
 \begin{document}
-\thanks{This research was supported in part by the United States Department of Energy. The views and conclusions contained in this document are those of the authors and 
-should not be interpreted as representing the official policies, either expressed or implied, of the U.S. Government.}
+% \thanks{This research was supported in part by the United States Department of Energy. The views and conclusions contained in this document are those of the authors and 
+% should not be interpreted as representing the official policies, either expressed or implied, of the U.S. Government.}
 \maketitle
 \thispagestyle{firstpage}
 \pagestyle{plain}
