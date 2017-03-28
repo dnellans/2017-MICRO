@@ -1,24 +1,73 @@
 \section{Asymmetry Aware GPUs}
 
-Start with meat of the proposals that we're going to talk about two big things, nvlink and then caching
-But first we'll talk about our modeling methodology
+As shown in Section~\ref{background}, creating larger multi-socket GPUs that 
+perform well is not trivial despite the improvements that technologies like 
+NVLink~\cite{NVLINK} and Unified Virtual Addressing~\cite{UVM} can provide. 
+While the most basic multi-socket GPU implementation may extend current GPU 
+thread block scheduling and memory management techniques across sockets, this 
+results in sub-optimal performance.  As shown in Figure~\ref{fig:motivation2}, 
+even applying NUMA optimization techniques in the multi-socket GPU runtime such 
+as first touch page placement and Block CTA partitioning leaves significant 
+performance on the table compared to an idealize fully symmetric multi-socket 
+GPU.
+
+To improve the performance of our baseline multi-socket GPU implementation we 
+propose two classes of improvements that leverage application phasing to reduced 
+the observed penalty of asymmetry in such NUMA systems.  First, in 
+Section~\ref{interconnect} we examine the ability of a switch connected GPU to 
+dynamically change its interconnect signaling from a balanced up and down 
+stream bandwidth design, to allowing flexible re-partitioning of these channels.  
+When bi-directional bandwidth is observed to be under-utilized, the direction 
+which has excess capacity can be re-assigned to support the oversubscribed 
+channels. This allows any individual GPU to improve its bandwidth utilization at 
+times when it finds itself most bandwidth constrained.
+
+Second, because we observe that inter-GPU bandwidth has a strong correlation to 
+overall multi-socket GPU performance we investigate the performance impact of 
+enabling multi-socket GPU cache coherence in Section~\ref{caching}.  We propose 
+extending the software based L1 coherence into the L2 caches of multi-socket 
+GPUs.  By extending this coherence, the L2 caches of each GPU socket move from 
+being memory-side, where coherence is not needed, to GPU-side, where coherence 
+guarantees are required in the same manner as current GPU L1 caches.  We 
+evaluate the effect of this coherence overhead on multi-socket GPUs and show 
+that because of the GPU's weak coherence guarantees multi-socket coherence on 
+GPUs should scale significantly better than traditional CPU coherence protocols.
+
+Finally, we show that after extending coherence into the GPU L2 caches, the 
+appropriate allocation of cache capacity between local memory bandwidth and 
+remote memory bandwidth can not be decided at design time.  Due to the same 
+application phasing that enabled dynamic interconnect rebalancing, we observe 
+that individual GPU sockets should be free to balance their cache capacity 
+between local and remote accesses to optimize performance.  When remote 
+interconnect bandwidth is saturated, a GPU will skew its cache capacity towards 
+the remote accesses,  however if that bandwidth is not saturated then optimizing 
+cache hit rates to eliminate the largest number of memory requests is 
+desirable. Before diving into detailed proposals and results for each of these 
+optimizations we first describe our simulations methodology.
 
 
 \subsection{Methodology}
 \label{methodology}
+ To evaluate the performance of multi-socket GPUs we use a proprietary, 
+cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
+applications. For our baseline, we model a single GPU that approximates the 
+latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the Streaming 
+Multiprocessors (SM) is 
+modeled as an in-order processor with multiple levels of cache hierarchy 
+containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
+GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU 
+system contains four of these GPUs interconnected through a full bandwidth GPU 
+switch as shown on Figure~\ref{}. Table~\ref{tab:setup} stands as an overview of 
+the simulation parameters.
 
-%Put all our methodology here and update the table for our simulation infra
-
-To evaluate the performance of multi-socket GPUs we use a proprietary, 
-cycle-level, trace-driven simulator for GPU systems running CUDA applications. 
-For our baseline, we model a single GPU according to the latest NVIDIA's Pascal 
-GPU~\cite{inside-pascal}. Each of the Streaming Multiprocessors is modeled as an 
-in-order processor with multiple levels of cache hierarchy containing private, 
-per-SM, L1 caches and multi-banked, shared, L2 cache. Each GPU is backed by its 
-local high bandwidth DRAM memory. Our multi-socket GPU system contains four of 
-these GPUs interconnected through a full bandwidth GPU switch as shown on 
-Figure~\ref{}. Table~\ref{tab:setup} stands as an overview of the simulation 
-parameters.
+We study our proposal using XXX benchmarks taken from a broad range of 
+production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
+applications from Lonestar~\cite{lonestar}, compute applications from 
+Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
+This set of workloads covers a wide spectrum of GPU applications used in machine 
+learning, fluid dynamic, image manipulation, graph traversal, scientific 
+computing, etc. We run our simulations until the completion of the entire 
+applications or the number of kernels shown on Table~\ref{tab:numctas}.
 
 \begin{table}[tp]
 \begin{small}
@@ -37,29 +86,22 @@ Max number of Warps & 64 per SM \\
 \midrule
 Warp Scheduler & Greedy then Round Robin \\
 \midrule
-L1 Cache & Private, 128 KB per SM, 128B lines, 4 ways, \\ & GPU-side SW-based coherency \\
+L1 Cache & Private, 128 KB per SM, 128B lines, 4 ways, \\ & GPU-side SW-based 
+coherency \\
 \midrule
-L2 Cache & Shared, 4MB per 64 SM, 128B lines, 16 ways, \\ & Memory-side non-coherent\\
+L2 Cache & Shared, 4MB per 64 SM, 128B lines, 16 ways, \\ & Memory-side 
+non-coherent\\
 \midrule
-Inter-GPU Interconnect & 128GB/s per socket, 8 lanes 8B wide each per \\ & direction, 128-cycle latency \\
+Inter-GPU Interconnect & 128GB/s per socket, 8 lanes 8B wide each per \\ & 
+direction, 128-cycle latency \\
 \midrule
 DRAM Bandwidth & 768GB/s per GPU socket\\
 \midrule
 DRAM Latency & 100ns \\
 \toprule
 \end{tabular}
-\caption{Simulation parameters for evaluation of single and multi-socket GPU systems.}
+\caption{Simulation parameters for evaluation of single and multi-socket GPU 
+systems.}
 \label{tab:setup}
 \end{small}
 \end{table}
-
-We study our proposal using NN benchmarks taken from a broad range of production 
-codes based on the HPC CORAL benchmarks~\cite{coral}, graph applications from 
-Lonestar~\cite{lonestar}, compute applications from Rodinia~\cite{Che2009}, in 
-addition to several other in-house CUDA benchmarks. This set of workloads covers 
-a wide spectrum of GPU applications used in machine learning, fluid dynamic, 
-image manipulation, graph traversal, scientific computing, etc. We run our 
-simulations until the completion of the entire applications or the number of 
-kernels shown on Table~\ref{tab:numctas}.
-
-
