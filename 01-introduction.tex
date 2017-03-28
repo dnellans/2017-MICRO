@@ -1,44 +1,139 @@
 \section{Introduction}
 \label{introduction}
-
-
-General story about increasing the performance by putting multiple GPUs working 
-together (TMG). No code re-writing, no re-compilation, what can we expect if we 
-just allow the runtime to distribute CTAs across multiple GPUs?
-With CUDA providing UVAS and UMA, and NVLink supporting atomic , GPU-NUMA system 
-is born: there is ~10x difference between local and remote BW (local mem 
-BW=1TB/s and NVLink BW is 128GB/s) which limits the scalability and stands as a 
-bottleneck. It is not about latency, it is about BW. (maybe some nvlink latency 
-vs bw graph here?). The question is what can we do from the micro-arch side to 
-improve this?
+GPU accelerated computation has transformed high performance computing,
+machine learning, and data analytics installations that were previously
+dominated by CPUs~\cite{pascal,intersect360,cudnn,Lavin15b,SimonyanZ14a}.
+These systems now combine GPUs and CPUs to leverage high throughput data parallel
+computations (GPUs) in combination with the traditional benefits of latency critical
+serial execution (CPUs).  While performance is paramount, GPU computing has been 
+sucessful in these domains because of its strong support for 
+data parallel programming languages~\cite{CUDA7,OPENCL} reduce programmer burden
+when trying to scale their programs across every growing data sets.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.95\columnwidth]{figures/inter_gpu_connections.pdf}
+\includegraphics[width=1.0\columnwidth]{figures/inter_gpu_connections.pdf}
 \caption{Evolution of GPUs to switch connected multi-socket GPU.}
-
-\label{fig:motivation}
+\label{fig:systemdiagram}
+\vspace{-.15in}
 \end{figure}
+
+While GPU programming models support explicit programming of multiple GPUs, the 
+interfaces for this are a departure from the straight forward single GPU 
+programming model, requiring systems like Peer-2-Peer access~\cite{NVIDIAP2P} 
+or a combination of MPI + CUDA~\cite{NVIDIAMPI} to manage multiple GPUs.  These 
+programming extensions enable advanced programmers to leverage more than one 
+GPU for high throughput computation but require re-writing of the GPU 
+application, a major barrior to adoption.  With GPUs nearing the reticle limit 
+for maximal die size and transistor density growth slowing down, programmers 
+looking to scale the performance of their single GPU program are in a precarious 
+position.
+
+Recently, GPUs have started making the transition from using the PCIe peripheral 
+interface
+to having improved interconnections between both the GPUs and 
+CPUs~\cite{dgx,AMDINFINITYFABRIC}
+as shown in Figure~\ref{fig:systemdiagram}.  GPUs now blur the line between 
+being
+a discrete pluggable PCIe peripheral and being an design time component using a 
+high pin-count
+socket interface similar to current CPU interfaces.  This socket interface is required
+not only for power delivery, but because the GPU and CPU interconnects require printed
+circuit board (PCB) level integration to high 10's to 100's of GB/s of interconnect bandwidth.
+This evolution of GPUs from single socket, to high connectivity multi-socket designs
+is a natural progression when trying to improve intra-GPU communication.
+
+Multi-socket GPUs provide a pivot point for GPU vendors.  In one direction, they
+could continue to expose multi-socket GPUs as discrete GPUs and force programmers
+to re-write their applications to try and improve scaling beyond a single socket.
+In the other, they could now choose to expose these multi-socket designs as assymetric
+non-uniform memory access (NUMA) GPUs.  We believe the later solution is more likely
+because it allows significant performance scaling (2-8 GPUs in a single node) beyond
+that which is achievable through the evolution of single GPU transistor growth, all
+while maintaining the programming model GPU developers have standardized upon.
+
+We are not the first group to propose that there may be potential performance
+benifits to aggregating GPUs together, without changing programming 
+interface~\cite{Cabezas2015,lee2013transparent,XXX,XXX}. However, much of this work
+was done in an era where GPUs were limited in the memory they could address
+in the system and high latency PCIe interconnects were the standard interconnect
+technology.  These restrictions cause prior work to primarily solve programming and runtime
+interface issues when trying to aggregate multiple discrete GPUs.  We propose
+that in the era of unified virtual addressing, cache line addressable high bandwidth
+interconnects, and dedicated CPU--GPU socketed PCB designs, multi-socket GPUs
+should be treated as asymmetric NUMA-GPUs and their microarchitectures need to be optimized
+to maximize multi-socket GPU performance.
+
+In this work we examine future an evolutionary multi-socket GPU system and describe the 
+basic modifications needed to allow this multi-socket GPU system to appear to the programmer
+as single large GPU, obeying all of the current GPU programming paradigms. We apply 
+several well known NUMA techniques from the CPU world to this system and show that
+while having a positive effect, simply applying CPU NUMA design principles to GPUs 
+will be insufficient to achieve scalable performance.  Thus we propose that to design
+single program scalable multi-GPU systems GPU architectures themselves must become
+\textit{asymmetry-aware} to handle the NUMA effects that are implicit in a multi-socket
+design.
 
 In this work, we make the following contributions:
 
 \begin{enumerate}
 \item
-Dynamic NVLink balancing: in cases where only one direction is saturated and the other is not, we can switch individual links providing more BW where it is needed. This approach alone is giving X% over the baseline TMG and we are within Y% of 2x NVLink BW.
+We show that despite being highly data parallel, GPU programs have significant
+dynamic phase behavior both between kernels and among CTAs within a single
+kernel that should be microarchitecturally exploited to eliminate observed
+NUMA effects.
 
 \item
-Remote caching: instead of caching only local accesses with the mem-side L2, we start adding gpu-side Remote Cache (RC). We show the cost of invalidating RC, the performance of tiny RC (128KB), half-L2 RC (2MB), full RC (4MB), and full RC that caches both remote and local accesses. 
+We show that traditional 50--50 splits of (up and 
+downstream) GPU--GPU interconnect bandwidth limits multi-GPU scalability.  We propose
+that GPU interconnects need to support dynamic bandwidth balancing that can
+turn around $N$ of $M$ high speed serial links at run time to support asymmetric
+bandwidth requirements.  We demonstrate that our dymamic policy is coarse
+grained enough that the performance improvement is largely insensitive to link turn 
+around and policy sample time.  We show that dynmamic policies must be made on a
+per GPU basis, global observation and management fails to capture assymetry 
+within the system.
 
 \item
-Dynamic cache partitioning: given that different benchmarks prefer different cache configurations, we evaluate dynamic way-partitioning of gpu-side L2 caches. Depending on local and remote BW saturations, we adjust the number of ways reserved for caching local and remote data. Alone, this mechanism improves the performance by X% and we are within Y% of 1x gpu-side RC + 1x mem-side L2. Combined with dynamic NVLink balancing, we improve the performance by Z% over the baseline TMG and we are within ZZ% of 2x NVlink + 1x gpu-side + 1x mem-side L2. Finally, this increases the scalability compared to a single-GPU system by YY%.
+We show that the current GPUs which utilize a SW based coherency among L1's and 
+memory-side L2 caches will not perform well in a multi-socket scenerio.  
+We examine the cost and tradeoffs of extending such a coherency scheme into L2 caches 
+which enables multi-socket GPU cache coherency within a node.  We examine several
+caching policies that balance the effect of caching efficiency with coherence overheads
+and show that without modification, current GPU coherence protocols may perform
+well in properly architected multi-GPU caches.
 
 \item
-Other stuff
+We show that architecting a single static cache architecture for multi-GPUs will
+be sub-optimal for performance. We show that balancing cache capacity between
+local and remote accesses in highly NUMA systems is required both on a per
+workload basis, but also a per socket basic to leverage application phase
+behavior.  By allowing cache capacity to be dynamically optimized to compensate for
+bandwidth saturation, caches can help hide NUMA effects in multi-socket GPUs.
 
-\vspace{12in}
-Introduction is done by the end of page 2.
+% Dynamic cache partitioning: given that different benchmarks prefer different 
+% cache configurations, we evaluate dynamic way-partitioning of gpu-side L2 
+% caches. Depending on local and remote BW saturations, we adjust the number of 
+% ways reserved for caching local and remote data. Alone, this mechanism improves 
+% the performance by X% and we are within Y% of 1x gpu-side RC + 1x mem-side L2. 
+% Combined with dynamic NVLink balancing, we improve the performance by Z% over 
+% the baseline TMG and we are within ZZ% of 2x NVlink + 1x gpu-side + 1x mem-side 
+% L2. Finally, this increases the scalability compared to a single-GPU system by 
+% YY%.
 
 
+
+
+% 
+% General story about increasing the performance by putting multiple GPUs working 
+% together (TMG). No code re-writing, no re-compilation, what can we expect if we 
+% just allow the runtime to distribute CTAs across multiple GPUs?
+% With CUDA providing UVAS and UMA, and NVLink supporting atomic , GPU-NUMA system 
+% is born: there is ~10x difference between local and remote BW (local mem 
+% BW=1TB/s and NVLink BW is 128GB/s) which limits the scalability and stands as a 
+% bottleneck. It is not about latency, it is about BW. (maybe some nvlink latency 
+% vs bw graph here?). The question is what can we do from the micro-arch side to 
+% improve this?
 
 % Technology trends indicate an increasing number of systems designed with CPUs, 
 % accelerators, and GPUs coupled via high-speed 

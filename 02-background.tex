@@ -93,12 +93,12 @@ nvlink bandwidth kills us.  additional explain on the fact that CTA scheduling a
 is impossible so we do some minimal batching but then we lose locality, so we statically
 partition 1/4 each and use first touch
 
-\begin{figure}[tp]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{figures/motivation1.jpg}
-    \caption{Multi-socket GPU performance by applying known CPU NUMA localization techniques for scheduling and memory placement.}
-    \label{fig:motivation}
-\end{figure}
+% \begin{figure}[tp]
+%     \centering
+%     \includegraphics[width=0.9\columnwidth]{figures/motivation1.jpg}
+%     \caption{Multi-socket GPU performance by applying known CPU NUMA localization techniques for scheduling and memory placement.}
+%     \label{fig:motivation}
+% \end{figure}
 
 Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
 For others there is a long ways to go and we're going to try and close that gap now.
