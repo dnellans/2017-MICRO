@@ -40,53 +40,37 @@ Put all our methodology here and update the table for our simulation infra
 % MSHRs to support atomic operations to data homed in either physical memory; we assume
 % the CPU similarly can issue atomic accesses to either memory.
 
-\begin{table}[t]
-\begin{center}
-\begin{tabular}{|l|l|}
-\hline
-Simulator & GPGPU-Sim 3.x\\
-\hline
-GPU Arch & NVIDIA GTX-480 Fermi-like\\
-\hline
-GPU Cores& 15 SMs @ 1.4Ghz\\
-\hline
-L1 Caches & 16kB/SM, 3 cycle latency\\
-\hline
-L1 MSHRs & 64 Entries/L1\\
-\hline
-L2 Caches & 128kB/Channel, 120 cycle lat.\\
-\hline
-L2 MSHRs & 128 Entries/L2 Slice\\
-\hline
-CPU Client Cache & 512KB, 200 cycle latency\\
-\hline
-\hline
-\multicolumn{2}{|c|}{Memory System}\\
-\hline
-GPU GDDR5 & 8-channels, 336GB/sec aggregate\\
-\hline
-CPU DDR4& 4-channels, 80GB/sec aggregate\\
-\hline
-SW Page Faults& 16 concurrent per SM\\
-\hline
-DRAM Timings & \multicolumn{1}{|l|}{RCD=RP=12, RC=40, CL=WR=12}\\
-\hline
-DDR4 Burst Len.& 8\\
-\hline
-\hline
-\multicolumn{2}{|c|}{CPU--GPU Interconnect}\\
-\hline
-Link Latency& 100 GPU core cycles\\
-\hline
-Link Bandwidth& 90 GB/s Full-Duplex\\
-\hline
-Req. Efficiency& 32B=66\%, 64B=80\%, 128B=88\%\\
-\hline
+\begin{table}[h]
+\begin{small}
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value(s)} \\
+\toprule
+Num of GPUs & 4 \\
+\midrule
+Total number of SMs & 64 per GPU \\
+\midrule
+GPU Frequency & 1GHz \\
+\midrule
+Max number of Warps & 64 per SM \\
+\midrule
+Warp Scheduler & Greedy then Round Robin \\
+\midrule
+L1 Cache & Private, 128 KB per SM, 128B lines, 4 ways, \\ & GPU-side SW-based coherency \\
+\midrule
+L2 Cache & Shared, 4MB per 64 SM, 128B lines, 16 ways, \\ & Memory-side non-coherent\\
+\midrule
+Inter-GPU Interconnect & 128GB/s per GPU, 8 lanes 8B wide each per \\ & direction, 128-cycle latency \\
+\midrule
+DRAM Bandwidth & 768GB/s per GPU\\
+\midrule
+DRAM Latency & 100ns \\
+\toprule
 \end{tabular}
-\caption{Parameters for experimental GPGPU based simulation environment.}
-\label{tab:methodology}
-\end{center}
-% \vspace{-.05in}
+\caption{Simulation parameters for evaluation of single and multi-socket GPU systems.}
+\label{tab:setup}
+\end{small}
 \end{table}
 
 To model promiscuous read-only caching, we initially mark all the pages (4kB
