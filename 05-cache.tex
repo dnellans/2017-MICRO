@@ -1,5 +1,5 @@
 \subsection{Asymmetric Cache Management}
-
+\label{caching}
 Remote caching
 Instead of dynamically balancing the NVLink we might start caching remote data by putting some of the hardware budget dedicated to the mem-side L2 on a gpu side for RC. 
 Graph 3: baseline is 1x NVLink with mem-side 4MB L2. Upper bound here is 1x NVLink with mem-side 4MB L2 and gpu-side 4MB RC. And then we compare: 4MB L2 + 128KB RC (tiny RC), 2MB L2 + 2MB RC (half RC), 128KB L2 + 4MB RC (whole RC), 128KB L2 + 4MB RC but RC can cache both local and remote data. We improve the performance on average by XX%. The main takeaway is that different benchmarks prefer different configurations -> motivation for dynamic cache partitioning. 

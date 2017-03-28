@@ -9,9 +9,18 @@ But first we'll talk about our modeling methodology
 
 %Put all our methodology here and update the table for our simulation infra
 
-To evaluate the performance of multi-socket GPUs we use a proprietary, cycle-level, trace-driven simulator for GPU systems running CUDA applications. For our baseline, we model a single GPU according to the latest NVIDIA's Pascal GPU~\cite{inside-pascal}. Each of the Streaming Multiprocessors is modeled as an in-order processor with multiple levels of cache hierarchy containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU system contains four of these GPUs interconnected through a full bandwidth GPU switch as shown on Figure~\ref{}. Table~\ref{tab:setup} stands as an overview of the simulation parameters.
+To evaluate the performance of multi-socket GPUs we use a proprietary, 
+cycle-level, trace-driven simulator for GPU systems running CUDA applications. 
+For our baseline, we model a single GPU according to the latest NVIDIA's Pascal 
+GPU~\cite{inside-pascal}. Each of the Streaming Multiprocessors is modeled as an 
+in-order processor with multiple levels of cache hierarchy containing private, 
+per-SM, L1 caches and multi-banked, shared, L2 cache. Each GPU is backed by its 
+local high bandwidth DRAM memory. Our multi-socket GPU system contains four of 
+these GPUs interconnected through a full bandwidth GPU switch as shown on 
+Figure~\ref{}. Table~\ref{tab:setup} stands as an overview of the simulation 
+parameters.
 
-\begin{table}[h]
+\begin{table}[tp]
 \begin{small}
 \centering
 \begin{tabular}{ll}
@@ -44,6 +53,13 @@ DRAM Latency & 100ns \\
 \end{small}
 \end{table}
 
-We study our proposal using NN benchmarks taken from a broad range of production codes based on the HPC CORAL benchmarks~\cite{coral}, graph applications from Lonestar~\cite{lonestar}, compute applications from Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. This set of workloads covers a wide spectrum of GPU applications used in machine learning, fluid dynamic, image manipulation, graph traversal, scientific computing, etc. We run our simulations until the completion of the entire applications or the number of kernels shown on Table~\ref{tab:numctas}.
+We study our proposal using NN benchmarks taken from a broad range of production 
+codes based on the HPC CORAL benchmarks~\cite{coral}, graph applications from 
+Lonestar~\cite{lonestar}, compute applications from Rodinia~\cite{Che2009}, in 
+addition to several other in-house CUDA benchmarks. This set of workloads covers 
+a wide spectrum of GPU applications used in machine learning, fluid dynamic, 
+image manipulation, graph traversal, scientific computing, etc. We run our 
+simulations until the completion of the entire applications or the number of 
+kernels shown on Table~\ref{tab:numctas}.
 
 

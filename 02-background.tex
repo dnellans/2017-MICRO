@@ -1,4 +1,3 @@
-%newpage here since motivation usualy starts on page3
 \section{Motivation and Background}
 \label{background}
 
@@ -19,6 +18,7 @@ on the architectural tweaks.
 
 Chart supports the fact that we have plenty of CTAs to fill a multi-GPU without a problem
 and that our memory footprints are big enough to not be cache resident in this study.
+
 
 \begin{table}[tp]
 \begin{small}
@@ -74,7 +74,7 @@ Lonestar-SSSP & 102 & 1046.0 & 38.2 \\
 Stream-Triad & 5 & 699051.0 & 3145.7 \\
 \toprule
 \end{tabular}
-\caption{Number of CTAs and total memory footprint when compared to multi-socket GPU with 256 active CTA contexts containing XXX MB of LLC.}
+\caption{Application footprint and average number of CTAs (threadblocks) available during time-weighted execution.}
 \label{tab:numctas}
 \end{small}
 \end{table}
@@ -92,13 +92,6 @@ nvlink bandwidth kills us.  additional explain on the fact that CTA scheduling a
 is impossible so we do some minimal batching but then we lose locality, so we statically
 partition 1/4 each and use first touch
 
-% \begin{figure}[tp]
-%     \centering
-%     \includegraphics[width=0.9\columnwidth]{figures/motivation1.jpg}
-%     \caption{Multi-socket GPU performance by applying known CPU NUMA localization techniques for scheduling and memory placement.}
-%     \label{fig:motivation}
-% \end{figure}
-
 Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
 For others there is a long ways to go and we're going to try and close that gap now.
 
@@ -109,18 +102,6 @@ For others there is a long ways to go and we're going to try and close that gap 
     \label{fig:motivation2}
 \end{figure*}
 
-\section{Related Work}
-
-This is going to come up front in this paper because there is a a bunch and we want to explain how
-why this paper is different.
-
-Multi-GPU work
-Cache partitioning work
-We do not optimize for latency (the highest hit rate) but for bandwidth (the hit rate is not the highest; we can show some graph later to support that the best cache configuration does not provide the highest hit rate)
-Not sure about NVLink/interconnection related work
-Discuss simplex vs duplex interconnects / point-to-point links
-At least mention which interconnects / point to point links can have reversible links vs statically partitioned links (Ethernet, Infiniband, QPI)
-Is there a reference that says that GRS signal links can reverse direction?
 
 
 % Heterogeneous CPU--GPU systems have been widely
