@@ -6,7 +6,7 @@ dominated by CPUs~\cite{pascal,intersect360,cudnn,Lavin15b,SimonyanZ14a}.
 These systems now combine GPUs and CPUs to leverage high throughput data parallel
 computations (GPUs) in combination with the traditional benefits of latency critical
 serial execution (CPUs).  While performance is paramount, GPU computing has been 
-sucessful in these domains because of its strong support for 
+successful in these domains because of its strong support for 
 data parallel programming languages~\cite{CUDA7,OPENCL} reduce programmer burden
 when trying to scale their programs across every growing data sets.
 
@@ -24,7 +24,7 @@ programming model, requiring systems like Peer-2-Peer access~\cite{NVIDIAP2P}
 or a combination of MPI + CUDA~\cite{NVIDIAMPI} to manage multiple GPUs.  These 
 programming extensions enable advanced programmers to leverage more than one 
 GPU for high throughput computation but require re-writing of the GPU 
-application, a major barrior to adoption.  With GPUs nearing the reticle limit 
+application, a major barrier to adoption.  With GPUs nearing the reticle limit 
 for maximal die size and transistor density growth slowing down, programmers 
 looking to scale the performance of their single GPU program are in a precarious 
 position.
@@ -46,14 +46,14 @@ is a natural progression when trying to improve intra-GPU communication.
 Multi-socket GPUs provide a pivot point for GPU vendors.  In one direction, they
 could continue to expose multi-socket GPUs as discrete GPUs and force programmers
 to re-write their applications to try and improve scaling beyond a single socket.
-In the other, they could now choose to expose these multi-socket designs as assymetric
+In the other, they could now choose to expose these multi-socket designs as asymmetric
 non-uniform memory access (NUMA) GPUs.  We believe the later solution is more likely
 because it allows significant performance scaling (2-8 GPUs in a single node) beyond
 that which is achievable through the evolution of single GPU transistor growth, all
 while maintaining the programming model GPU developers have standardized upon.
 
 We are not the first group to propose that there may be potential performance
-benifits to aggregating GPUs together, without changing programming 
+benefits to aggregating GPUs together, without changing programming 
 interface~\cite{Cabezas2015,lee2013transparent,XXX,XXX}. However, much of this work
 was done in an era where GPUs were limited in the memory they could address
 in the system and high latency PCIe interconnects were the standard interconnect
@@ -88,16 +88,16 @@ We show that traditional 50--50 splits of (up and
 downstream) GPU--GPU interconnect bandwidth limits multi-GPU scalability.  We propose
 that GPU interconnects need to support dynamic bandwidth balancing that can
 turn around $N$ of $M$ high speed serial links at run time to support asymmetric
-bandwidth requirements.  We demonstrate that our dymamic policy is coarse
+bandwidth requirements.  We demonstrate that our dynamic policy is coarse
 grained enough that the performance improvement is largely insensitive to link turn 
-around and policy sample time.  We show that dynmamic policies must be made on a
-per GPU basis, global observation and management fails to capture assymetry 
+around and policy sample time.  We show that dynamic policies must be made on a
+per GPU basis, global observation and management fails to capture asymmetry 
 within the system.
 
 \item
 We show that the current GPUs which utilize a SW based coherency among L1's and 
-memory-side L2 caches will not perform well in a multi-socket scenerio.  
-We examine the cost and tradeoffs of extending such a coherency scheme into L2 caches 
+memory-side L2 caches will not perform well in a multi-socket scenario.  
+We examine the cost and trade-offs of extending such a coherency scheme into L2 caches 
 which enables multi-socket GPU cache coherency within a node.  We examine several
 caching policies that balance the effect of caching efficiency with coherence overheads
 and show that without modification, current GPU coherence protocols may perform

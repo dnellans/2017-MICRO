@@ -84,14 +84,84 @@ Stream-Triad & 5 & 699051.0 & 3145.7 \\
 
 \subsection{A Multi-Socket GPU Runtime}
 
-Oreste going to write section here with all the details of what needs to be done
-to make this all work in our basic multi-socket GPU runtime.  Remember we're not
-claiming this as contribution, just background.
+As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
+a framework and a runtime system that transparently decomposes GPU kernels in 
+sub-kernels and executes them on multiple GPUs in parallel. On the Nvidia 
+GPUs, this is doable by intercepting and remapping each single kernel call, 
+GPU memory allocation, GPU memory copy and GPU wide synchronization issued by 
+the CUDA driver. Special care needs to be put (i) to the GPU local memory 
+fences which needs to be promoted to system level and (ii) to the the 
+sub-kernels CTA identifiers which needs to be properly recomputed to 
+reflect those in the original kernel call. 
+ 
+In ~\cite{Cabezas2015} these two problems were solved by introducing custom 
+code annotations and an additional source-to-source compiler which was also 
+responsible for statically assigning data and computation on each GPU. In our 
+work, we follow a very similar strategy but we do not use any additional 
+compiler for two reasons (i) we use a simulated environment in which 
+we can properly modify the architecture to account for required memory fences 
+and sub-kernel to kernel CTA identifiers mapping (ii) we model a system in 
+which all GPU memory allocations are performed on system memory, explicit 
+CUDA memory copies are disabled and we use the recently introduced feature to 
+migrate pages on demand at first touch (FT) using the UVM page faulting 
+mechanism~\cite{P100}. 
 
-Figure in this section explains why we can't just do fine grained memory interleaving.
-nvlink bandwidth kills us.  additional explain on the fact that CTA scheduling at round robin
-is impossible so we do some minimal batching but then we lose locality, so we statically
-partition 1/4 each and use first touch
+With respect to data placement, while on a single GPU interleaving memory at 
+the granularity of single cache line is routinely done to reduce memory 
+camping effects and maximize bandwidth, doing it across multiple GPUs 
+disrupts locality and results in large amount of remote accesses even for 
+regular and dense applications. A middle ground alternative between first 
+touch page allocation and static fine grain cache line interleaving is to 
+perform page granularity interleaving across the various GPU memories.
+
+While on a single GPU, round-robin fine grain assignment of CTAs to the SMs 
+to achieve perfect load balancing is standard, extending this on a Multi-GPU 
+system does not make much sense. For start, the cost of launching a kernel on 
+a single GPU is in the order of 10 micro seconds, so trying to create large 
+amount of sub-kernels of the size of a few CTAs results in huge overheads. 
+For this reason as in~\cite{Cabezas2015}, we decompose a single kernel in N 
+sub-kernels (where N is the total number of GPUs in the system) and we assign 
+to each GPU an equal amount of contiguous CTAs. The danger of this approach 
+is to expose workload unbalance in the CTAs. This can be reduced by selecting 
+the CTAs in each sub-kernel to be non contiguous, for instance sending to 
+each GPU the CTAs which identifiers modulo the GPU identifier are zero or 
+randomly selecting them. However, selecting CTAs in not contiguous fashion
+also disrupts locality present in many dense and regular applications where 
+contiguous CTAs, access contiguous memory.
+
+In general the problems of data placement and task placement (minimizing 
+remote data access and ensuring perfect load balancing) can not be completely 
+decoupled. We found that first touch page placement and contiguous CTA 
+assignment to be the best choice across our benchmark suites, again because it 
+preserves locality when present. We will therefore use this as the baseline 
+architecture for our studies in the rest of this paper.
+
+Figure~\ref{fig:motivation2} quantitatively shows the reason behind our 
+choice. We can clearly see that the speedup with respect to a single GPU 
+(composed of 64 SM and with 768 GB/sec of memory bandwidth) achievable by a 4 
+GPU system connected with NVLink at 128 GB/sec is much higher for the choice 
+``contiguous CTA scheduling + FT page placement''. A more detailed 
+description of the methodology and simulation parameters is in 
+Section~\ref{methodology}. 
+Also in Figure, for each application, we show the maximum  performance 
+achievable by an hypothetically single GPU with 4x number of SMs and 4x 
+memory bandwidth (red mark in Figure~\ref{fig:motivation2}). This mark 
+represents a good approximation of the 
+maximum theoretical performance we could expect for a perfect 4 GPU system. 
+As we can see for some applications (on the right side of the graph) the 4 
+GPU system with ``contiguous CTA scheduling + FT page placement'' already 
+performs as good or better (in situations where larger cache capacity enables 
+super scaling) than an hypothetical 4x larger single GPU. For other 
+applications (on the left side of the graph) the gap between the red mark and 
+what we can achieve with the baseline multi-GPU system is quite large. In the 
+rest of this paper we present techniques aimed to reduce this gap. 
+We want to stress the red mark in Figure~\ref{fig:motivation2} represents an 
+upper bound and that a single GPU with 4x number of SMs and 4x bandwidth of 
+the largest existing GPU is impossible without changing underline silicon 
+technology. 
+
+
+
 
 % \begin{figure}[tp]
 %     \centering
@@ -100,8 +170,8 @@ partition 1/4 each and use first touch
 %     \label{fig:motivation}
 % \end{figure}
 
-Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
-For others there is a long ways to go and we're going to try and close that gap now.
+%Second figure now shows our baseline we're going to compare against - for %some benchmarks we can't expect speedup, its quite good already.
+%For others there is a long ways to go and we're going to try and close that %gap now.
 
 \begin{figure*}[tp]
     \centering
