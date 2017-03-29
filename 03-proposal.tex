@@ -52,13 +52,11 @@ optimizations we first describe our simulations methodology.
 cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
 applications. For our baseline, we model a single GPU that approximates the 
 latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the Streaming 
-Multiprocessors (SM) is 
-modeled as an in-order processor with multiple levels of cache hierarchy 
+Multiprocessors (SM) is modeled as an in-order processor with multiple levels of cache hierarchy 
 containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
 GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU 
 system contains four of these GPUs interconnected through a full bandwidth GPU 
-switch as shown on Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview of 
-the simulation parameters.
+switch as shown on Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview of the simulation parameters.
 
 We study our proposal using XXX benchmarks taken from a broad range of 
 production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
