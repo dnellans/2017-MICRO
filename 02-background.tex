@@ -18,58 +18,58 @@ on the architectural tweaks.
 Chart supports the fact that we have plenty of CTAs to fill a multi-GPU without a problem
 and that our memory footprints are big enough to not be cache resident in this study.
 
-\begin{table}[tp]
+\begin{table}[t]
 \begin{small}
 \centering
 \begin{tabular}{lccc}
  \toprule
  \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
-& & \textbf{Average CTAs} & \textbf{Footprint (MB)} \\
+& & \textbf{Average CTAs} & \textbf{(MB)} \\
  \toprule
-ML-GoogLeNet-cudnn-L2 & 1 & 6272.0 & 1204.7 \\
-ML-AlexNet-cudnn-L2 & 1 & 1250.0 & 832.4 \\
-Optix-Raytracing & 1 & 3072.0 & 86.7 \\
-Bitcoin-Crypto & 1 & 60.0 & 5898.2 \\
-ML-OverFeat-cudann-L3 & 1 & 1800.0 & 387.5 \\
-Encription & 1 & 128.0 & 0.8 \\
-ML-AlexNet-cudnn-L4 & 1 & 1014.0 & 32.4 \\
-ML-AlexNet-ConvNet2 & 1 & 6075.0 & 97.2 \\
-HPC-Namd2.9 & 1 & 3888.0 & 88.3 \\
-HPC-RabbitCT & 1 & 131072.0 & 524.3 \\
-Rodinia-Backprop & 2 & 4096.0 & 160.2 \\
-Rodinia-Euler3D & 346 & 1008.0 & 25.2 \\
-Rodinia-BFS & 24 & 1954.0 & 38.5 \\
-Rodinia-Gaussian & 510 & 2599.1 & 78.0 \\
-Rodinia-Hotspot & 1 & 7396.0 & 63.9 \\
-Rodinia-Kmeans & 3 & 3249.0 & 220.8 \\
-Rodnia-Pathfinder & 20 & 4630.0 & 1570.0 \\
-Rodinia-Srad & 4 & 16384.0 & 98.4 \\
-Lonestar-SP & 11 & 75.0 & 7.6 \\
-HPC-Lulesh & 105 & 12202.1 & 577.6 \\
-Lonestar-MST-graph & 87 & 770.1 & 85.9 \\
-Lonestar-MST-mesh & 71 & 894.6 & 74.8 \\
-HPC-CoMD & 350 & 3588.5 & 318.6 \\
-HPC-CoMD-wa & 350 & 13691.2 & 392.8 \\
-HPC-CoMD-ta & 350 & 5724.0 & 393.9 \\
-HPC-HPGMG-UVM-opt & 359 & 10436.5 & 1975.5 \\
-HPC-HPGMG & 317 & 10506.4 & 1571.5 \\
-HPC-HPGMG-UVM-base & 359 & 10727.8 & 1975.5 \\
-HPC-Lulesh-Unstruct-small & 2000 & 434.9 & 18.7 \\
-HPC-Nekbone-medium & 510 & 3093.4 & 170.0 \\
-Lonestar-SSSP-wln & 1000 & 60.2 & 20.5 \\
-HPC-SNAP & 118 & 200.2 & 744.1 \\
-HPC-Nekbone-large & 300 & 5582.7 & 294.0 \\
-HPC-MiniAMR & 33 & 76033.1 & 2751.7 \\
-HPC-MiniContact-large & 127 & 15423.2 & 257.2 \\
-HPC-MiniContact-small & 500 & 250.4 & 20.8 \\
-HPC-Lulesh-Unstruct-large & 200 & 4939.9 & 208.1 \\
-HPC-AMG & 88 & 241548.9 & 3743.9 \\
-HPC-RSBench & 1 & 7813.0 & 19.1 \\
-HPC-MCB & 1 & 5001.0 & 161.8 \\
-Lonestar-DMR & 3 & 82.1 & 247.9 \\
-Lonestar-SSSP-wlc & 1300 & 163.3 & 21.2 \\
-Lonestar-SSSP & 102 & 1046.0 & 38.2 \\
-Stream-Triad & 5 & 699051.0 & 3145.7 \\
+ML-GoogLeNet-cudnn-L2 & 1 & 6272 & 1205 \\
+ML-AlexNet-cudnn-L2 & 1 & 1250 & 832 \\
+Optix-Raytracing & 1 & 3072 & 87 \\
+Bitcoin-Crypto & 1 & 60 & 5898 \\
+ML-OverFeat-cudann-L3 & 1 & 1800 & 388 \\
+Encription & 1 & 128 & 1 \\
+ML-AlexNet-cudnn-L4 & 1 & 1014 & 32 \\
+ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
+HPC-Namd2.9 & 1 & 3888 & 88 \\
+HPC-RabbitCT & 1 & 131072 & 524 \\
+Rodinia-Backprop & 2 & 4096 & 160 \\
+Rodinia-Euler3D & 346 & 1008 & 25 \\
+Rodinia-BFS & 24 & 1954 & 38 \\
+Rodinia-Gaussian & 510 & 2599 & 78 \\
+Rodinia-Hotspot & 1 & 7396 & 64 \\
+Rodinia-Kmeans & 3 & 3249 & 221 \\
+Rodnia-Pathfinder & 20 & 4630 & 1570 \\
+Rodinia-Srad & 4 & 16384 & 98 \\
+Lonestar-SP & 11 & 75 & 8 \\
+HPC-Lulesh & 105 & 12202 & 578 \\
+Lonestar-MST-graph & 87 & 770 & 86 \\
+Lonestar-MST-mesh & 71 & 895 & 75 \\
+HPC-CoMD & 350 & 3588 & 319 \\
+HPC-CoMD-wa & 350 & 13691 & 393 \\
+HPC-CoMD-ta & 350 & 5724 & 394 \\
+HPC-HPGMG-UVM-opt & 359 & 10436 & 1975 \\
+HPC-HPGMG & 317 & 10506 & 1571 \\
+HPC-HPGMG-UVM-base & 359 & 10728 & 1975 \\
+HPC-Lulesh-Unstruct-small & 2000 & 435 & 19 \\
+HPC-Nekbone-medium & 510 & 3093 & 170 \\
+Lonestar-SSSP-wln & 1000 & 60 & 21 \\
+HPC-SNAP & 118 & 200 & 744 \\
+HPC-Nekbone-large & 300 & 5583 & 294 \\
+HPC-MiniAMR & 33 & 76033 & 2752 \\
+HPC-MiniContact-large & 127 & 15423 & 257 \\
+HPC-MiniContact-small & 500 & 250 & 21 \\
+HPC-Lulesh-Unstruct-large & 200 & 4940 & 208 \\
+HPC-AMG & 88 & 241549 & 3744 \\
+HPC-RSBench & 1 & 7813 & 19 \\
+HPC-MCB & 1 & 5001 & 162 \\
+Lonestar-DMR & 3 & 82 & 248 \\
+Lonestar-SSSP-wlc & 1300 & 163 & 21 \\
+Lonestar-SSSP & 102 & 1046 & 38 \\
+Stream-Triad & 5 & 699051 & 3146 \\
 \toprule
 \end{tabular}
 \caption{Application footprint and average number of CTAs (threadblocks) available during time-weighted execution.}
