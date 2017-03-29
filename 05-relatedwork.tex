@@ -1,85 +1,83 @@
-\section {Discussion}
 
-\label{discussion}
-\begin{figure*}[tp]
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/resultscombined.jpg}
-    \caption{Performance of multi-socket GPU with combined assymetric 
-optimizations.}
-    \label{fig:combined}
-\end{figure*}
+\section{Related Work}
 
-In Sections~\ref{interconnect} and~\ref{caching} we explored the performance 
-implications of dynamically managing GPU interconnect bandwidth and allowing 
-individual GPUs to dymnamically allocate on-chip cache capacity to decrease 
-dependance on memory system resources when oversubscribed.  Both of these 
-techniques aim to more efficiently utilize the available system bandwidth within 
-our NUMA multi-GPU system, closing the gap between multi-socket bandwidth and 
-local memory bandwidth.  These two techniques are orthoginal and could be 
-applied in isolation or in combination.  Dynamic interconnect balancing has an 
-implementation advantage in that the system level changes to enable this feature 
-are very isolated from the larger GPU, only the link level load balancer on both 
-the GPU and switch need to be modified.  Conversely, enabling GPU caching of 
-remote memory and dynamic balancing of cache capacity based on interconnect 
-utilization requires changes to both the physical cache architectures and the 
-GPU coherence protocol.
+\textbf{Stolen from the MCM paper - needs to be redone with refs for, dynamic
+cache partitioning, Cache coherence, SIGNALLING}
 
-Because these two features target similar improvements, when employed together 
-their effects are not strictly additive.  Figure~\ref{fig:combined} shows the 
-improvement when applying both dynamic interconnect and dynamic cache management 
-together.  For benchmarks such as \texttt{CoMD}, these features contribute 
-nearly equally to the overall improvement, but for others such as 
-\texttt{HPGMG} or \texttt{MST}, interconnect improvements or caching are the 
-primary contributor respectively.  On average, we observe that when combined we 
-see XXX\% improvement in multi-GPU performance when applying our proposed 
-optimizations.
+Multi-GPU work.
+Cache partitioning work.
+We do not optimize for latency (the highest hit rate) but for 
+bandwidth (the hit rate is not the highest; we can show some graph later 
+to support that the best cache configuration does not provide the highest hit 
+rate).
+Not sure about NVLink/interconnection related work.
+Discuss simplex vs duplex interconnects / point-to-point links.
+At least mention which interconnects / point to point links can have 
+reversible links vs statically partitioned links (Ethernet, Infiniband, QPI).
+Is there a reference that says that GRS signal links can reverse direction?
 
-\begin{figure}[tp]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{figures/scalability.jpg}
-    \caption{Scalability of multi-socket GPU as we move from 1-8 GPUs}
-    \label{fig:scalability}
-\end{figure}
+Multi-Chip-Modules are an attractive design point that have
+been extensively used in industry to integrate multiple heterogeneous
+or homogeneous chips in the same package. For example, on the
+homogeneous front, IBM Power 7~\cite{IBM:Power} integrates 4 modules
+of 8 cores each, AMD Opteron 6300~\cite{AMD:Opteron} integrates 2
+modules of 8 cores each. On the heterogeneous front, the IBM
+z196~\cite{IBM:z196} integrates 6 processors with 4 cores each and 2
+storage controller units in the same package. The
+Xenos~\cite{ATI:Xenos} processor instead used in the Microsoft Xbox360
+integrates a GPU and a EDRAM memory module with its memory controller.
+Similarly, Intel offers heterogeneous and homogeneous MCM designs such
+as the Iris Pro ~\cite{Intel:IrisPro} and the Xeon
+X5365~\cite{Intel:Xeon} processor respectively. While MCMs are popular
+in various domains, we are unaware of any attempt to integrate
+homogeneous high performance GPU modules on the same package in an OS
+and programmer transparent fashion. To the best of our knowledge, this
+is the first effort to utilize MCM technology to scale GPU
+performance.
 
-\textbf{Scalability:} When considering moving from a single socket GPU to
-multi-socket GPU solutions the question arises of what level of efficiency
-can be maintained with this approach.  Figure~\ref{fig:scalability} shows the
-scalability of a multi-socket GPU approach as we move from a single to 
-eight socket multi-GPU implementation.  While larger multi-socket GPUs
-may be possible to power and cool within a single node, we observe that due
-to parallel efficiency XXX, XXX, XXX.
+MCM package level integration require efficient signaling
+technologies. Recently, Kannan et al.~\cite{kannan2015} explored
+various packaging and architectural options for disintegrating
+multi-core CPU chips and its suitability to provide cache-coherent
+traffic in an efficient manner. 
+Most recent work in the area of low-power
+links has focused on differential signaling because of its better
+noise immunity and lower noise
+generation~\cite{Poulton2007,Mansuri2013}. Some contemporary MCMs,
+like those used in the Power 6, have over 800 single-ended links,
+operating at speeds of up to 3.2 Gbps, from a single
+processor~\cite{Dreps2007}. NVIDIA's Ground-Referenced Signaling (GRS)
+technology for organic package substrates has been demonstrated to
+work at 20 Gbps while consuming just 0.54pJ/bit in a standard 28nm
+process~\cite{poulton2013}.
 
-Another paragraph here once we have results.\vspace{1in}
+The MCM-GPU design exposes a non-uniform memory accesses (NUMA)
+architecture. One of the main mechanisms to improve performance of
+NUMA systems is to preserve locality by assigning threads in close
+proximity to the data. In a multi-core domain, existing work tries to
+minimize the memory access latency by thread-to-core
+mapping~\cite{tam2007thread,blagodurov2010case,li1993locality}, or
+memory allocation
+policy~\cite{bolosky1989simple,larowe1991exploiting,dashti2013traffic}.
+Similar problem exists in MCM-GPU systems where the primary bottleneck
+is inter-GPM interconnection bandwidth. Moreover, improved CTA
+scheduling has been proposed to exploit the inter-CTA locality, higher
+cache hit ratios, and memory bank-level
+parallelism~\cite{leehpca2014,mao2016temp,wanglaperm} for monolithic
+GPUs. In our case, distributed CTA scheduling along with first-touch
+memory mapping policy exploits inter-CTA localities both within a
+kernel and across multiple kernels and improves efficiency of newly
+introduced GPM-side L1.5 cache.
 
-\textbf{Multi-Tenancy of Large GPUs:} In this work we have shown that many 
-workloads today have the ability to
-saturate (with sufficient parallel work) a GPU that is at least 4$\times$
-larger than today's GPUs.  With deep data becoming commonplace across many
-computing paradigms, we believe that the trend of having enough computation
-to saturate much larger single GPUs will continue into the forseeable future.
-However, when GPUs become larger at the expense of having multiple discrete
-GPUs within the system, questions related to GPU provisioning arise.  Applications
-that cannot saturate such a GPU will leave resources underutilized and applications
-that may be running concurrently in the system currently have to coarse grain
-multi-plex the GPU in time cooperatively.  
-
-While not the focus of this work,
-there is significant effort in both industry and academia to support finer
-grain sharing of GPUs through either shared SM execution~\cite{XXX}, spatial
-multi-plexing of a GPU~\cite{XXX}, or through improved time division multiplexing
-with GPU pre-emptability~\cite{XXX}.  To support improved per GPU efficiency,
-any of these solutions could be applied to a multi-socket GPU to improve utilization
-in cases where applications can not fill a significantly larger GPU.  Alternatively,
-with additional software work multi-socket GPU designs should be able to be dynamically
-partitioned with granularity from 1--N logical GPUs if they are switch connected, providing
-yet another level of partitionable flexibility.
-
-\textbf{Power Implications:} \textit{Oreste or Evgeny}
-What happens to all the extra bandwidth we need over the interconnect and
-power.  we should calculate the extra power but note that even using P2P GPU
-access there will still be many remote accesses.  unfortunately we can't quantify
-that differential because (drives the point home) there are not multi-GPU versions
-for most of our 40+ benchmarks.
+Finally, we propose to expose MCM-GPU as a single GPU via hardware
+innovations and extensions to the driver software to provide
+programmer- and OS-transparent execution. The runtime divides a
+given kernel into multiple sub-kernels and dispatches them to the CTA
+scheduler on each GPM, providing first-touch page allocation policy.
+Similarly, there have been studies on efficiently utilizing multi-GPU
+systems~\cite{Kim2011,Cabezas2015,lee2013transparent,ben2015memory},
+but none of the proposals provided a fully transparent approach
+suitable for MCM-GPUs.
 
 % 
 % % 
