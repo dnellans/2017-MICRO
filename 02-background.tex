@@ -15,10 +15,8 @@ problem which can be solved either with some dynamic memory page allocation
 policy (migrations and replications) or NUMA-aware thread scheduling. We focus 
 on the architectural tweaks.
 
-
 Chart supports the fact that we have plenty of CTAs to fill a multi-GPU without a problem
 and that our memory footprints are big enough to not be cache resident in this study.
-
 
 \begin{table}[tp]
 \begin{small}
@@ -79,8 +77,6 @@ Stream-Triad & 5 & 699051.0 & 3145.7 \\
 \end{small}
 \end{table}
 
-
-
 \subsection{A Multi-Socket GPU Runtime}
 
 As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
@@ -104,6 +100,13 @@ which all GPU memory allocations are performed on system memory, explicit
 CUDA memory copies are disabled and we use the recently introduced feature to 
 migrate pages on demand at first touch (FT) using the UVM page faulting 
 mechanism~\cite{P100}. 
+
+\begin{figure*}[tp]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/plot_different_baselines.pdf}
+    \caption{Relative performance of multi-socket GPU to an unbuildable 4x larger GPU.}
+    \label{fig:motivation2}
+\end{figure*}
 
 With respect to data placement, while on a single GPU interleaving memory at 
 the granularity of single cache line is routinely done to reduce memory 
@@ -166,12 +169,7 @@ technology.
 % For others there is a long ways to go and we're going to try and close that gap now.
 
 
-\begin{figure*}[tp]
-    \centering
-    \includegraphics[width=1\linewidth]{figures/plot_different_baselines.pdf}
-    \caption{Relative performance of multi-socket GPU to an unbuildable 4x larger GPU.}
-    \label{fig:motivation2}
-\end{figure*}
+
 
 
 
