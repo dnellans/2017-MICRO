@@ -1,83 +1,92 @@
 
 \section{Related Work}
 
-\textbf{Stolen from the MCM paper - needs to be redone with refs for, dynamic
-cache partitioning, Cache coherence, SIGNALLING}
+%\textbf{Stolen from the MCM paper - needs to be redone with refs for, dynamic
+%cache partitioning, Cache coherence, SIGNALLING}
 
-Multi-GPU work.
-Cache partitioning work.
-We do not optimize for latency (the highest hit rate) but for 
-bandwidth (the hit rate is not the highest; we can show some graph later 
-to support that the best cache configuration does not provide the highest hit 
-rate).
-Not sure about NVLink/interconnection related work.
-Discuss simplex vs duplex interconnects / point-to-point links.
-At least mention which interconnects / point to point links can have 
-reversible links vs statically partitioned links (Ethernet, Infiniband, QPI).
-Is there a reference that says that GRS signal links can reverse direction?
+%Multi-GPU work.
+%Cache partitioning work.
+%We do not optimize for latency (the highest hit rate) but for 
+%%bandwidth (the hit rate is not the highest; we can show some graph later 
+%to support that the best cache configuration does not provide the highest hit 
+%rate).
+%Not sure about NVLink/interconnection related work.
+%Discuss simplex vs duplex interconnects / point-to-point links.
+%At least mention which interconnects / point to point links can have 
+%reversible links vs statically partitioned links (Ethernet, Infiniband, QPI).
+%Is there a reference that says that GRS signal links can reverse direction?
 
-Multi-Chip-Modules are an attractive design point that have
-been extensively used in industry to integrate multiple heterogeneous
-or homogeneous chips in the same package. For example, on the
-homogeneous front, IBM Power 7~\cite{IBM:Power} integrates 4 modules
-of 8 cores each, AMD Opteron 6300~\cite{AMD:Opteron} integrates 2
-modules of 8 cores each. On the heterogeneous front, the IBM
-z196~\cite{IBM:z196} integrates 6 processors with 4 cores each and 2
-storage controller units in the same package. The
-Xenos~\cite{ATI:Xenos} processor instead used in the Microsoft Xbox360
-integrates a GPU and a EDRAM memory module with its memory controller.
-Similarly, Intel offers heterogeneous and homogeneous MCM designs such
-as the Iris Pro ~\cite{Intel:IrisPro} and the Xeon
-X5365~\cite{Intel:Xeon} processor respectively. While MCMs are popular
-in various domains, we are unaware of any attempt to integrate
-homogeneous high performance GPU modules on the same package in an OS
-and programmer transparent fashion. To the best of our knowledge, this
-is the first effort to utilize MCM technology to scale GPU
-performance.
+Multi-GPUs are widely used for scaling single GPU perfromance
+via integration of multiple GPUs at the system
+level~\cite{pascal-tesla-wp,dgx,intersect360,titan_supercomputer} for a
+rapidly growing pool of applications~\cite{coral,cudnn,Lavin15b,SimonyanZ14a}.
+Similarly, multi-socket, and multi-node homogeneous and heterogeneous CPU
+installations have been employed and studied in context of HPC and
+data-center applications~\cite{Intel:Xeon,IBM:Power,IBM:z196,AMD:Opteron}
 
-MCM package level integration require efficient signaling
-technologies. Recently, Kannan et al.~\cite{kannan2015} explored
-various packaging and architectural options for disintegrating
-multi-core CPU chips and its suitability to provide cache-coherent
-traffic in an efficient manner. 
-Most recent work in the area of low-power
-links has focused on differential signaling because of its better
-noise immunity and lower noise
-generation~\cite{Poulton2007,Mansuri2013}. Some contemporary MCMs,
-like those used in the Power 6, have over 800 single-ended links,
-operating at speeds of up to 3.2 Gbps, from a single
-processor~\cite{Dreps2007}. NVIDIA's Ground-Referenced Signaling (GRS)
-technology for organic package substrates has been demonstrated to
-work at 20 Gbps while consuming just 0.54pJ/bit in a standard 28nm
-process~\cite{poulton2013}.
+Multi-GPU programming models require explicit programming of multiple GPUs
+using SW APIs such as Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of
+MPI and CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. These extensions require
+unique programming experience and non-negligible SW effort while adapting a
+single GPU application to take advantage of a Multi-GPU system. In this paper
+we execute single GPU application on a Multi-GPU system as if it was a single
+larger GPU via hardware innovations and extensions to the driver software to
+provide programmer- and OS-transparent execution, similarly to approaches
+proposed in the past~\cite{Cabezas2015,lee2013transparent,ben2015memory}.
 
-The MCM-GPU design exposes a non-uniform memory accesses (NUMA)
-architecture. One of the main mechanisms to improve performance of
-NUMA systems is to preserve locality by assigning threads in close
-proximity to the data. In a multi-core domain, existing work tries to
-minimize the memory access latency by thread-to-core
-mapping~\cite{tam2007thread,blagodurov2010case,li1993locality}, or
-memory allocation
-policy~\cite{bolosky1989simple,larowe1991exploiting,dashti2013traffic}.
-Similar problem exists in MCM-GPU systems where the primary bottleneck
-is inter-GPM interconnection bandwidth. Moreover, improved CTA
-scheduling has been proposed to exploit the inter-CTA locality, higher
-cache hit ratios, and memory bank-level
-parallelism~\cite{leehpca2014,mao2016temp,wanglaperm} for monolithic
-GPUs. In our case, distributed CTA scheduling along with first-touch
-memory mapping policy exploits inter-CTA localities both within a
-kernel and across multiple kernels and improves efficiency of newly
-introduced GPM-side L1.5 cache.
+Modern multi-socket CPU and GPU systems leverage most advanced interconnect
+technologies such as Nvidia NVLINK, Intel QPI and AMD
+IFINITY~\cite{dgx,INTELQPI,AMDINFINITYFABRIC}. These modern fabrics utilize serial
+high speed signalling technologies on uni-directional lanes collectively
+comprizing full-duplex links. This way each link capacity is statically
+allocated at design time and usually is symmetric in nature. 
+On the contrary, in this paper we propose to
+dynamically re-allocate available link bandwidth resources by using same on-board
+and on-system wires and on-chip I/O interfaces, while implementing both recever
+and transmitter drivers at each lane. This approach resembles previously proposed tri-state
+bi-directional bus technologies ~\cite{tri-state}, or former Intel front-side
+bus ~\cite{fsb}. Our proposal however allows leveraging ultra fast
+unidirectional serial signalling, while allowing a dynamically controled
+assymetric bandwidth allocation via on-the-fly reconfiguration of the
+individual lane direction within a link.
 
-Finally, we propose to expose MCM-GPU as a single GPU via hardware
-innovations and extensions to the driver software to provide
-programmer- and OS-transparent execution. The runtime divides a
-given kernel into multiple sub-kernels and dispatches them to the CTA
-scheduler on each GPM, providing first-touch page allocation policy.
-Similarly, there have been studies on efficiently utilizing multi-GPU
-systems~\cite{Kim2011,Cabezas2015,lee2013transparent,ben2015memory},
-but none of the proposals provided a fully transparent approach
-suitable for MCM-GPUs.
+
+
+% While MCMs are popular
+%in various domains, we are unaware of any attempt to integrate
+%homogeneous high performance GPU modules on the same package in an OS
+%and programmer transparent fashion. To the best of our knowledge, this
+%is the first effort to utilize MCM technology to scale GPU
+%performance.
+
+
+%The MCM-GPU design exposes a non-uniform memory accesses (NUMA)
+%architecture. One of the main mechanisms to improve performance of
+%NUMA systems is to preserve locality by assigning threads in close
+%proximity to the data. In a multi-core domain, existing work tries to
+%minimize the memory access latency by thread-to-core
+%mapping~\cite{tam2007thread,blagodurov2010case,li1993locality}, or
+%memory allocation
+%policy~\cite{bolosky1989simple,larowe1991exploiting,dashti2013traffic}.
+%Similar problem exists in MCM-GPU systems where the primary bottleneck
+%is inter-GPM interconnection bandwidth. Moreover, improved CTA
+%scheduling has been proposed to exploit the inter-CTA locality, higher
+%cache hit ratios, and memory bank-level
+%parallelism~\cite{leehpca2014,mao2016temp,wanglaperm} for monolithic
+%GPUs. In our case, distributed CTA scheduling along with first-touch
+%memory mapping policy exploits inter-CTA localities both within a
+%kernel and across multiple kernels and improves efficiency of newly
+%introduced GPM-side L1.5 cache.
+
+%Finally, we propose to expose MCM-GPU as a single GPU via hardware
+%innovations and extensions to the driver software to provide
+%programmer- and OS-transparent execution. The runtime divides a
+%given kernel into multiple sub-kernels and dispatches them to the CTA
+%scheduler on each GPM, providing first-touch page allocation policy.
+%Similarly, there have been studies on efficiently utilizing multi-GPU
+%systems~\cite{Kim2011,Cabezas2015,lee2013transparent,ben2015memory},
+%but none of the proposals provided a fully transparent approach
+%suitable for MCM-GPUs.
 
 % 
 % % 
