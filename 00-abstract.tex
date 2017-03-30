@@ -4,21 +4,23 @@ data parallelism exposed through the programming model. GPUs use round robin
 thread block scheduling and fine grained memory interleaving to reduce the 
 overhead of resource management in both hardware and software. However, these 
 simple distributed policies place a burden on GPU hardware to provide high 
-bandwidth on chip memory systems attached by large global crossbars.  With the 
-slowing of Moore's law, for GPUs to continue scaling performance (which largely 
+bandwidth on chip memory systems attached by large global crossbars providing
+uniform memory access to all cores.  With Moore's law slowing, for GPUs to 
+continue scaling performance (which largely 
 depends GPU core count) they are likely embrace multi-socket designs where 
 transistors are readily available. However when moving to multi-socket designs, 
-maintaining the illusion of system symmetry becomes increasingly difficult.  In 
-this work we investigate a future multi-socket GPU design that is subject to 
-non-uniform memory access properties. To achieve good performance, we show that 
-significant changes are needed to current GPU cache and interconnect designs.  
+maintaining the illusion of a uniform memory system becomes increasingly difficult.  
+In this work we investigate a future multi-socket NUMA GPU design and show that 
+to achieve good performance scalability significant changes are needed to 
+both the GPU cache and interconnect designs.  
 Rather than employing uniform global policies, we propose allowing individual 
-GPU sockets to dynamically optimize their local HW policies to take advantage of 
+GPU sockets to dynamically optimize their hardware policies to take advantage of 
 application phase effects which can exacerbate or minimize observed NUMA 
-effects.  By leveraging dynamic interconnect rebalancing, asymmetry aware GPUs 
-(AA-GPUs) achieve XXX\% the performance of doubling the inter-GPU interconnect 
-bandwidth.  By dynamically reallocating cache capacity between local and remote 
-portions of memory, AA-GPUs improve performance by XXX\% over existing GPU cache 
-policies.  Employed together an asymmetry aware GPU able to outperform a 
-symmetric GPU designs by XXX\% in a 4-socket NUMA context.
+effects.  By leveraging dynamic interconnect rebalancing, NUMA-aware GPUs 
+achieve can improve performance up to XXX\% and by XXX\% on average.
+By dynamically reallocating cache capacity between local and remote 
+portions of memory, NUMA-aware GPUs improve performance by XXX\% over 
+existing GPU cache policies.  Employed together a NUMA-aware GPU design 
+able to outperform a UMA optimized GPU by XXX\%, XXX\%, and XXX\% in
+2, 4, and 8 socket designs respectively.
 \end{abstract}
