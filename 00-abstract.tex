@@ -18,9 +18,10 @@ GPU sockets to dynamically optimize their hardware policies to take advantage of
 application phase effects which can exacerbate or minimize observed NUMA 
 effects.  By leveraging dynamic interconnect rebalancing, NUMA-aware GPUs 
 achieve can improve performance up to XXX\% and by XXX\% on average.
-By dynamically reallocating cache capacity between local and remote 
-portions of memory, NUMA-aware GPUs improve performance by XXX\% over 
-existing GPU cache policies.  Employed together a NUMA-aware GPU design 
+By dynamically reallocating capacity to cache local or remote memory depending
+on bandwidth saturation, NUMA-aware GPUs improve performance by XXX\% over 
+current GPU caching policies.  Overall, a NUMA-aware GPU is
 able to outperform a UMA optimized GPU by XXX\%, XXX\%, and XXX\% in
-2, 4, and 8 socket designs respectively.
+and achieve XXX\%, XXX\%, and XXX\% of theoretical scalability, 2, 4, and 8 
+socket designs respectively.
 \end{abstract}
