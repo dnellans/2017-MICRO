@@ -66,9 +66,9 @@ we need to dedicate more (all) of the GPU's L2 capacity to caching remote data, 
 the fact that SW based cache coherence will now effectively flush the entire L2 cache
 on all GPUs when those operations occur.
 
-\begin{figure}[tp]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\columnwidth]{figures/plot_remote_cache_WB.pdf}
+    \includegraphics[width=1.0\columnwidth]{figures/plot_static_cache_WB.pdf}
     \caption{Performance comparison of static cache partitioning in a 4-socket GPU.}
     \label{fig:staticcaching}
 \end{figure}
@@ -117,7 +117,6 @@ and dynamically adjust their cache resources to preference caching of remote NUM
 data when it is determined that the NVLINK bandwidth in our hypothetical GPU is
 oversubscribed.  We do this by implementing the following cache partitioning
 algorithm:  \textbf{XXX UGI - at least another 2 paragraphs here on how we are actually doing this XXX}
-\vspace{5in}
 
 \subsubsection{Results}
 
@@ -129,9 +128,9 @@ NVLink bandwidth, utilizing the same sampling hardware and mechanism described i
 Section~\ref{interconnect}.  We see that dynamic partitioning can improve average GPU
 performance by XXX\%.  More explain here.
 
-\begin{figure}[tp]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\columnwidth]{figures/plot_remote_cache_WB.pdf}
+    \includegraphics[width=1.0\columnwidth]{figures/plot_dynamic_cache_WB.pdf}
     \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU.}
     \label{fig:dynamiccaching}
 \end{figure}
