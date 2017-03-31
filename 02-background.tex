@@ -85,84 +85,77 @@ sub-kernels and executes them on multiple GPUs in parallel. On the Nvidia
 GPUs, this is doable by intercepting and remapping each single kernel call, 
 GPU memory allocation, GPU memory copy and GPU wide synchronization issued by 
 the CUDA driver. Special care needs to be put (i) to the GPU local memory 
-fences which needs to be promoted to system level and (ii) to the the 
-sub-kernels CTA identifiers which needs to be properly recomputed to 
+fences which needs to be promoted to system level and (ii) to the 
+sub-kernels CTA identifiers which needs to be properly corrected to 
 reflect those in the original kernel call. 
  
-In ~\cite{Cabezas2015} these two problems were solved by introducing custom 
+In ~\cite{Cabezas2015} these two problems were solved by introducing  
 code annotations and an additional source-to-source compiler which was also 
 responsible for statically assigning data and computation on each GPU. In our 
 work, we follow a very similar strategy but we do not use any additional 
 compiler for two reasons (i) we use a simulated environment in which 
-we can properly modify the architecture to account for required memory fences 
-and sub-kernel to kernel CTA identifiers mapping (ii) we model a system in 
-which all GPU memory allocations are performed on system memory, explicit 
-CUDA memory copies are disabled and we use the recently introduced feature to 
-migrate pages on demand at first touch (FT) using the UVM page faulting 
-mechanism~\cite{P100}. 
+we can properly model the requirements for system wide memory fences 
+and sub-kernel to kernel CTA identifiers mapping (ii) we model a system 
+which implements UVM page migration of on demand as recently introduced in the 
+Tesla P100 GPU~\cite{P100}. UVM page migration allows to allocate 
+all the memory upfront in system memory and to transparently migrate pages 
+on the GPU memory on demand as soon as the first access (also called first touch) 
+is performed.
+
 
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
-    \caption{Relative performance of multi-socket GPU to an unbuildable 4x larger GPU.}
+    \caption{Relative performance of NUMA multi-socket 4 GPUs system using NVlink
+	interconnect with respect single GPU. Red mark represents the maximum 
+	theoretical performance of a UMA multi-socket 4 GPUs system in which NVLink 
+	has infinite BW and zero latency.}
     \label{fig:motivation2}
 \end{figure*}
 
-With respect to data placement, while on a single GPU interleaving memory at 
+For sake of completion, while on a single GPU the interleaving of memory at 
 the granularity of single cache line is routinely done to reduce memory 
-camping effects and maximize bandwidth, doing it across multiple GPUs 
-disrupts locality and results in large amount of remote accesses even for 
-regular and dense applications. A middle ground alternative between first 
-touch page allocation and static fine grain cache line interleaving is to 
-perform page granularity interleaving across the various GPU memories.
+camping effects and to maximize bandwidth, doing it across multiple GPUs 
+disrupts locality and it can result in large amount of remote accesses even 
+for regular and dense applications. In the same way, while on a single GPU 
+fine grain dynamic assignment of CTAs to the SMs is performed to achieve good 
+load balancing, extending it on a Multi-GPU system (for instance creating a 
+large amount of small sub-kernels) results in huge overhead due to the cost 
+of starting a single sub-kernel.
 
-While on a single GPU, round-robin fine grain assignment of CTAs to the SMs 
-to achieve perfect load balancing is standard, extending this on a Multi-GPU 
-system does not make much sense. For start, the cost of launching a kernel on 
-a single GPU is in the order of 10 micro seconds, so trying to create large 
-amount of sub-kernels of the size of a few CTAs results in huge overheads. 
-For this reason as in~\cite{Cabezas2015}, we decompose a single kernel in N 
-sub-kernels (where N is the total number of GPUs in the system) and we assign 
-to each GPU an equal amount of contiguous CTAs. The danger of this approach 
-is to expose workload unbalance in the CTAs. This can be reduced by selecting 
-the CTAs in each sub-kernel to be non contiguous, for instance sending to 
-each GPU the CTAs which identifiers modulo the GPU identifier are zero or 
-randomly selecting them. However, selecting CTAs in not contiguous fashion
-also disrupts locality present in many dense and regular applications where 
-contiguous CTAs, access contiguous memory.
+For this reason as done in~\cite{Cabezas2015}, we decompose a single kernel 
+in only N sub-kernels, where N is the total number of GPUs in the system, and 
+we assign to each GPU an equal amount of CTAs. We also select CTAs in each 
+sub-kernel to be contiguous even if it could expose workload unbalance across 
+CTAs, still to preserve locality present in many dense and regular applications 
+where contiguous CTAs access contiguous memory. 
 
 In general the problems of data placement and task placement (minimizing 
-remote data access and ensuring perfect load balancing) can not be completely 
-decoupled. We found that first touch page placement and contiguous CTA 
-assignment to be the best choice across our benchmark suites, again because it 
-preserves locality when present. We will therefore use this as the baseline 
-architecture for our studies in the rest of this paper.
+remote data access and ensuring load balancing) can not be completely 
+decoupled and pathological case can always be found.
+However across our benchmark suites, we found first touch page placement and 
+contiguous CTA block scheduling to be the most reasonable choice, 
+again because it preserves locality when present. We will therefore use this 
+as the baseline architecture for our studies in the rest of this paper.
 
-Figure~\ref{fig:motivation2} quantitatively shows the reason behind our 
-choice. We can clearly see that the speedup with respect to a single GPU 
-(composed of 64 SM and with 768 GB/sec of memory bandwidth) achievable by a 4 
-GPU system connected with NVLink at 128 GB/sec is much higher for the choice 
-``contiguous CTA scheduling + FT page placement''. A more detailed 
-description of the methodology and simulation parameters is in 
-Section~\ref{methodology}. 
-Also in Figure, for each application, we show the maximum  performance 
-achievable by an hypothetically single GPU with 4x number of SMs and 4x 
-memory bandwidth (red mark in Figure~\ref{fig:motivation2}). This mark 
-represents a good approximation of the 
-maximum theoretical performance we could expect for a perfect 4 GPU system. 
-As we can see for some applications (on the right side of the graph) the 4 
-GPU system with ``contiguous CTA scheduling + FT page placement'' already 
-performs as good or better (in situations where larger cache capacity enables 
-super scaling) than an hypothetical 4x larger single GPU. For other 
-applications (on the left side of the graph) the gap between the red mark and 
-what we can achieve with the baseline multi-GPU system is quite large. In the 
-rest of this paper we present techniques aimed to reduce this gap. 
-We want to stress the red mark in Figure~\ref{fig:motivation2} represents an 
-upper bound and that a single GPU with 4x number of SMs and 4x bandwidth of 
-the largest existing GPU is impossible without changing underline silicon 
-technology. 
-
-
+In Figure~\ref{fig:motivation2} we show the relative performance of our 
+baseline NUMA multi-socket 4 GPUs system connected with a switch in which the 
+link bandwidth is 64 GB/sec with respect to a single GPU (composed of 64 SMs 
+with 768 GB/sec of memory bandwidth). A more detailed description of the 
+methodology and simulation parameters is in Section~\ref{methodology}. Also 
+in Figure we show with a red dash the performance achievable by an 
+Hypothetical UMA multi-socket 4 GPUs, in which the interconnect bandwidth 
+matches the memory bandwidth. This red mark represent a good approximation of 
+the maximum theoretical performance we could expect from our NUMA system. We 
+sorted the applications by the gap between relative performance of the 
+baseline and maximum theoretical performance. We can see that on the right 
+side part of the graph some applications (that are not sensitive to 
+interconnect bandwidth) already achieve the maximum theoretical performance, 
+while on the left there is quite large gap. In the rest of this paper we 
+present techniques aimed to reduce this gap. To simplify the discussion we 
+will exclude the benchmarks that already achieve 99\% of the theoretical 
+performance when explaining these techniques. We will re-include them in the 
+final plots to demonstrate that there was not performance regression. 
 
 
 % Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
