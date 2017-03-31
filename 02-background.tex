@@ -140,22 +140,23 @@ as the baseline architecture for our studies in the rest of this paper.
 
 In Figure~\ref{fig:motivation2} we show the relative performance of our 
 baseline NUMA multi-socket 4 GPUs system connected with a switch in which the 
-link bandwidth is 64 GB/sec with respect to a single GPU (composed of 64 SMs 
-with 768 GB/sec of memory bandwidth). A more detailed description of the 
-methodology and simulation parameters is in Section~\ref{methodology}. Also 
-in Figure we show with a red dash the performance achievable by an 
-Hypothetical UMA multi-socket 4 GPUs, in which the interconnect bandwidth 
-matches the memory bandwidth. This red mark represent a good approximation of 
-the maximum theoretical performance we could expect from our NUMA system. We 
-sorted the applications by the gap between relative performance of the 
-baseline and maximum theoretical performance. We can see that on the right 
-side part of the graph some applications (that are not sensitive to 
-interconnect bandwidth) already achieve the maximum theoretical performance, 
-while on the left there is quite large gap. In the rest of this paper we 
-present techniques aimed to reduce this gap. To simplify the discussion we 
-will exclude the benchmarks that already achieve 99\% of the theoretical 
-performance when explaining these techniques. We will re-include them in the 
-final plots to demonstrate that there was not performance regression. 
+link bandwidth is 64 GB/sec (comparable to NVlink) with respect to a single 
+GPU (composed of 64 SMs with 768 GB/sec of memory bandwidth). A more detailed 
+description of the methodology and simulation parameters is in 
+Section~\ref{methodology}. Also in Figure we show with a red dash the 
+performance achievable by an Hypothetical UMA multi-socket 4 GPUs, in which 
+the interconnect bandwidth matches the memory bandwidth. This red mark 
+represent a good approximation of the maximum theoretical performance we 
+could expect from our NUMA system. We sorted the applications by the gap 
+between relative performance of the baseline and maximum theoretical 
+performance. We can see that on the right side part of the graph some 
+applications (that are not sensitive to interconnect bandwidth) already 
+achieve the maximum theoretical performance, while on the left there is quite 
+large gap. In the rest of this paper we present techniques aimed to reduce 
+this gap. To simplify the discussion we will exclude the benchmarks that 
+already achieve 99\% of the theoretical performance when explaining these 
+techniques. We will re-include them in the final plots to demonstrate that 
+there was not performance regression. 
 
 
 % Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
