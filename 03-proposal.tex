@@ -63,14 +63,15 @@ Max number of Warps & 64 per SM \\
 \midrule
 Warp Scheduler & Greedy then Round Robin \\
 \midrule
-L1 Cache & Private, 128 KB per SM, 128B lines, 4 ways, \\ & GPU-side SW-based 
-coherency \\
+L1 Cache & Private, 128 KB per SM, 128B lines, 4-way, \\ 
+& GPU-side SW-based coherency \\
 \midrule
-L2 Cache & Shared, 4MB per 64 SM, 128B lines, 16 ways, \\ & Memory-side 
-non-coherent\\
+L2 Cache & Shared, 4MB per socket, 128B lines, 16-way, \\ 
+& Memory-side non-coherent\\
 \midrule
-Inter-GPU Interconnect & 128GB/s per socket (64GB/s each dirrection), 8 lanes 8B wide each per \\ & 
-direction, 128-cycle latency \\
+GPU--GPU Interconnect & 128GB/s per socket (64GB/s each direction) \\
+& 8 lanes 8B wide each per direction \\
+&128-cycle latency \\
 \midrule
 DRAM Bandwidth & 768GB/s per GPU socket\\
 \midrule
