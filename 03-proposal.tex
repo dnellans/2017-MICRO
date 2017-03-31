@@ -6,7 +6,7 @@ improvements that technologies like NVLink~\cite{NVLINK} and Unified Virtual
 Addressing~\cite{UVM} can provide. While the most basic multi-socket GPU 
 implementation may extend current GPU thread block scheduling and memory 
 management techniques across sockets, this results in sub-optimal 
-performance.  As shown in Figure~\ref{fig:motivation2}, even applying NUMA 
+performance.  As shown in Figure~\ref{fig:motivation}, even applying NUMA 
 optimization techniques in the multi-socket GPU runtime such as first touch 
 page placement and Block CTA partitioning leaves significant performance on 
 the table compared to an hypothetical 4x larger (all resources scaled) GPU on many 
@@ -40,7 +40,7 @@ remote memory bandwidth can not be decided at design time.  Due to the same
 application phasing that enabled dynamic interconnect rebalancing, we observe 
 that individual GPU sockets should be free to balance their cache capacity 
 between local and remote accesses to optimize performance.  When remote 
-interconnect bandwidth is saturated, a GPU will skew its cache capacity towards 
+interconnect bandwidth is saturated, a GPU will skew its cache capacity toward 
 the remote accesses,  however if that bandwidth is not saturated then optimizing 
 cache hit rates to eliminate the largest number of memory requests is 
 desirable. Before diving into detailed proposals and results for each of these 
@@ -86,15 +86,18 @@ systems.}
 
 \subsection{Methodology}
 \label{methodology}
- To evaluate the performance of multi-socket GPUs we use a proprietary, 
+
+To evaluate the performance of multi-socket GPUs we use a proprietary, 
 cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
 applications. For our baseline, we model a single GPU that approximates the 
-latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the Streaming 
-Multiprocessors (SM) is modeled as an in-order processor with multiple levels of cache hierarchy 
-containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
-GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU 
-system contains four of these GPUs interconnected through a full bandwidth GPU 
-switch as shown on Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview of the simulation parameters.
+latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the 
+Streaming Multiprocessors (SM) is modeled as an in-order processor with 
+multiple levels of cache hierarchy containing private, per-SM, L1 caches and 
+multi-banked, shared, L2 cache. Each GPU is backed by its local high 
+bandwidth DRAM memory. Our multi-socket GPU system contains four of these 
+GPUs interconnected through a full bandwidth GPU switch as shown on 
+Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview 
+of the simulation parameters.
 
 We study our proposal using XXX benchmarks taken from a broad range of 
 production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
@@ -104,6 +107,9 @@ This set of workloads covers a wide spectrum of GPU applications used in machine
 learning, fluid dynamic, image manipulation, graph traversal, scientific 
 computing, etc. We run our simulations until the completion of the entire 
 applications or the number of kernels shown on Table~\ref{tab:numctas}.
+Table~\ref{tab:numctas} also shows the average number of CTAs for each
+application (weighed by the time spent on each kernel) and the memory 
+footprint in MB.
 
 \begin{table}[t]
 \begin{small}
@@ -159,7 +165,8 @@ Lonestar-SSSP & 102 & 1046 & 38 \\
 Stream-Triad & 5 & 699051 & 3146 \\
 \toprule
 \end{tabular}
-\caption{Application footprint and average number of CTAs (threadblocks) available during time-weighted execution.}
+\caption{Application footprint and average number of CTAs (threadblocks) 
+available during time-weighted execution.}
 \label{tab:numctas}
 \end{small}
 \end{table}

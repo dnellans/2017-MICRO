@@ -30,14 +30,15 @@ transistor count,
     \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
 and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing 
 upper bound of performance this application can achieve via GPU hardware 
-scaling. Applications shown in grey achieve XXX\% of theoretical scaling without 
+scaling. For the Locality-Optimized design, applications shown in grey 
+achieve already 99\% of theoretical scaling (\emph{red dash}) without 
 microarchitectural modification.}
     \label{fig:motivation}
 \end{figure*}
 
 The evolution of GPU computing has moved from PCIe attached peripherals to full 
 systems designed around the GPU as the primary computing engine.  These systems 
-have custom PCB layouts that accomodate multiple high pin count socketed 
+have custom PCB layouts that accommodate multiple high pin count socketed 
 GPUs~\cite{DGX} that have GPU to GPU interconnects that resemble QPI or 
 Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy PCIe interfaces.  
 Despite the improvement in hardware capabilities, to-date these multi-GPU 
@@ -65,12 +66,12 @@ without any code-rewriting required by the application programmer.
 \\\\
 \textbf{A Multi-Socket GPU Runtime}
 \\\\
-\noindent As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
-a framework and a runtime system that transparently decomposes GPU kernels in 
-sub-kernels and executes them on multiple GPUs in parallel. On the Nvidia 
-GPUs, this is doable by intercepting and remapping each single kernel call, 
-GPU memory allocation, GPU memory copy and GPU wide synchronization issued by 
-the CUDA driver. Special care needs to be put (i) to the GPU local memory 
+\noindent As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible 
+to design a framework and a runtime system that transparently decomposes GPU 
+kernels in sub-kernels and executes them on multiple GPUs in parallel. On the 
+Nvidia GPUs, this is doable by intercepting and remapping each single kernel 
+call, GPU memory allocation, GPU memory copy and GPU wide synchronization issued 
+by the CUDA driver. Special care needs to be put (i) to the GPU local memory 
 fences which needs to be promoted to system level and (ii) to the 
 sub-kernels CTA identifiers which needs to be properly corrected to 
 reflect those in the original kernel call. 
@@ -80,56 +81,73 @@ code annotations and an additional source-to-source compiler which was also
 responsible for statically assigning data and computation on each GPU. In our 
 work, we follow a very similar strategy but we do not use any additional 
 compiler for two reasons (i) we use a simulated environment in which 
-we can properly model the requirements for system wide memory fences 
-and sub-kernel to kernel CTA identifiers mapping (ii) we model a system 
-which implements UVM page migration of on demand as recently introduced in the 
+we can properly model the architectural requirements for system wide memory 
+fences and sub-kernel to kernel CTA identifiers mapping (ii) we model a system 
+which implements UVM page migration on demand, as recently introduced in the 
 Tesla P100 GPU~\cite{P100}. UVM page migration allows to allocate 
 all the memory upfront in system memory and to transparently migrate pages 
 on the GPU memory on demand as soon as the first access (also called first 
-touch) 
-is performed.
+touch) is performed.
 
-For sake of completion, while on a single GPU the interleaving of memory at 
-the granularity of single cache line is routinely done to reduce memory 
-camping effects and to maximize bandwidth, doing it across multiple GPUs 
-disrupts locality and it can result in large amount of remote accesses even 
-for regular and dense applications. In the same way, while on a single GPU 
-fine grain dynamic assignment of CTAs to the SMs is performed to achieve good 
-load balancing, extending it on a Multi-GPU system (for instance creating a 
-large amount of small sub-kernels) results in huge overhead due to the cost 
-of starting a single sub-kernel.
+Another approach for memory placement is to mimic what a single GPU does, 
+which is to interleave memory at the granularity of single cache line to 
+reduce memory camping effects and to maximize bandwidth. However interleaving 
+at such fine granularity across multiple GPUs disrupts locality and it 
+results in large amount of remote accesses even for regular and dense 
+applications. A less fine grain solution is to interleave memory across GPUs 
+at the granularity of pages. With respect to kernel partitioning, while on a 
+single GPU fine grain dynamic assignment of CTAs to the SMs is performed to 
+achieve good load balancing, extending it to a Multi-GPU system (for instance 
+creating a large amount of small sub-kernels) results in huge overhead due to 
+the cost of starting a single sub-kernel. For this reason, as done 
+in~\cite{Cabezas2015}, we decompose a single kernel in only N sub-kernels, 
+where N is the total number of GPUs in the system, and we assign to each GPU 
+an equal amount of CTAs. We also select CTAs in each sub-kernel to be 
+contiguous. This last choice could expose workload unbalance across 
+sub-kernels, but it preserves locality present in many dense and regular 
+applications where contiguous CTAs access contiguous memory. In the attempt 
+to reduce unbalance an alternative solution consists in interleaving CTAs 
+across the sub-kernels trying to follow the way pages interleave across 
+memories. 
 
-For this reason as done in~\cite{Cabezas2015}, we decompose a single kernel 
-in only N sub-kernels, where N is the total number of GPUs in the system, and 
-we assign to each GPU an equal amount of CTAs. We also select CTAs in each 
-sub-kernel to be contiguous even if it could expose workload unbalance across 
-CTAs, still to preserve locality present in many dense and regular applications 
-where contiguous CTAs access contiguous memory. 
+In Figure~\ref{fig:motivation} we show the relative performance a 4-Socket 
+NUMA GPU with respect to a single GPU for two possible CTA scheduling and 
+memory placement strategies above explained (see Section~\ref{methodology} 
+for a detailed explanation of methodology and benchmark suites). With the 
+\emph{green bars} we show relative performance of the natural extension to 
+the traditional single GPU scheduling and memory interleaving to 
+multi-GPU, which consists in memory page interleave and sub-kernel CTA 
+interleave. With the \emph{light blue bars} instead we show the relative 
+performance of the locality optimized GPU scheduling and memory placement 
+consisting of contiguous block CTA scheduling and first touch page 
+migration. We can clearly see that the Locality-Optimized solution almost always 
+outperforms the traditional GPU scheduling and memory interleaving, in 
+average performing 2x better. In general the problems of data placement and 
+task placement (minimizing remote data access and ensuring good load balancing) 
+can not be completely decoupled and pathological case can always be found. It 
+is important to stress that we are not claiming the Locality-Optimized solution 
+as a contribution of this paper (indeed very similar considerations and findings 
+can be found in~\cite{Cabezas2015,Arunkumar2017}), instead we are setting up a 
+baseline architecture in which we can apply and present our proposed 
+optimizations in the next Sections.
 
-In general the problems of data placement and task placement (minimizing 
-remote data access and ensuring load balancing) can not be completely 
-decoupled and pathological case can always be found.
-However across our benchmark suites, we found first touch page placement and 
-contiguous CTA block scheduling to be the most reasonable choice, 
-again because it preserves locality when present. We will therefore use this 
-as the baseline architecture for our studies in the rest of this paper.
-
-In Figure~\ref{fig:motivation} we show the relative performance of our 
-baseline NUMA multi-socket 4 GPUs system connected with a switch in which the 
-link bandwidth is 64 GB/sec (comparable to NVlink) with respect to a single 
-GPU (composed of 64 SMs with 768 GB/sec of memory bandwidth). A more detailed 
-description of the methodology and simulation parameters is in 
-Section~\ref{methodology}. Also in Figure we show with a red dash the 
-performance achievable by an Hypothetical UMA multi-socket 4 GPUs, in which 
-the interconnect bandwidth matches the memory bandwidth. This red mark 
+Also in Figure~\ref{fig:motivation} we show with a \emph{red dash} the performance 
+achievable by an hypothetical (unrealizable) 4x larger GPUs. This \emph{red dash} 
 represent a good approximation of the maximum theoretical performance we 
-could expect from our NUMA system. We sorted the applications by the gap 
-between relative performance of the baseline and maximum theoretical 
-performance. We can see that on the right side part of the graph some 
-applications (that are not sensitive to interconnect bandwidth) already 
-achieve the maximum theoretical performance, while on the left there is quite 
-large gap. In the rest of this paper we present techniques aimed to reduce 
-this gap. To simplify the discussion we will exclude the benchmarks that 
-already achieve 99\% of the theoretical performance when explaining these 
-techniques. We will re-include them in the final plots to demonstrate that 
-there was not performance regression. 
+could expect from a perfect NUMA system. We sorted the applications by the 
+gap between relative performance of the Locality-Optimized and 
+Hypothetical 4x larger GPUs. We can see that on the right side of the graph 
+some applications (that have very good locality) already 
+achieve or surpasses the maximum theoretical performance. In particular for the 
+two far-most benchmarks on the right, the locality optimized solution outperforms 
+the hypothetical 4x larger GPU due a better reuse of L2 data originated by 
+the contiguous block scheduling of CTAs. For the applications on the left 
+side of the Figure there is quite large gap between locality optimized and 
+hypothetical. These are the applications in which either, locality does not 
+exists or the Locality-Optimized solution can't capture it, 
+resulting in large amount of remote transfers. In the rest of this paper we 
+present techniques aimed to reduce this gap. To simplify the discussion we 
+will exclude the benchmarks that already achieve 99\% of the theoretical 
+performance when explaining these techniques. We will re-include them in the 
+final plots to demonstrate that there was not performance regression due to 
+our proposed optimizations.
