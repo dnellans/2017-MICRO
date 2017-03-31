@@ -46,28 +46,6 @@ cache hit rates to eliminate the largest number of memory requests is
 desirable. Before diving into detailed proposals and results for each of these 
 optimizations we first describe our simulations methodology.
 
-
-\subsection{Methodology}
-\label{methodology}
- To evaluate the performance of multi-socket GPUs we use a proprietary, 
-cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
-applications. For our baseline, we model a single GPU that approximates the 
-latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the Streaming 
-Multiprocessors (SM) is modeled as an in-order processor with multiple levels of cache hierarchy 
-containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
-GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU 
-system contains four of these GPUs interconnected through a full bandwidth GPU 
-switch as shown on Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview of the simulation parameters.
-
-We study our proposal using XXX benchmarks taken from a broad range of 
-production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
-applications from Lonestar~\cite{lonestar}, compute applications from 
-Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
-This set of workloads covers a wide spectrum of GPU applications used in machine 
-learning, fluid dynamic, image manipulation, graph traversal, scientific 
-computing, etc. We run our simulations until the completion of the entire 
-applications or the number of kernels shown on Table~\ref{tab:numctas}.
-
 \begin{table}[tp]
 \begin{small}
 \centering
@@ -102,5 +80,85 @@ DRAM Latency & 100ns \\
 \caption{Simulation parameters for evaluation of single and multi-socket GPU 
 systems.}
 \label{tab:setup}
+\end{small}
+\end{table}
+
+\subsection{Methodology}
+\label{methodology}
+ To evaluate the performance of multi-socket GPUs we use a proprietary, 
+cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
+applications. For our baseline, we model a single GPU that approximates the 
+latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the Streaming 
+Multiprocessors (SM) is modeled as an in-order processor with multiple levels of cache hierarchy 
+containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
+GPU is backed by its local high bandwidth DRAM memory. Our multi-socket GPU 
+system contains four of these GPUs interconnected through a full bandwidth GPU 
+switch as shown on Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview of the simulation parameters.
+
+We study our proposal using XXX benchmarks taken from a broad range of 
+production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
+applications from Lonestar~\cite{lonestar}, compute applications from 
+Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
+This set of workloads covers a wide spectrum of GPU applications used in machine 
+learning, fluid dynamic, image manipulation, graph traversal, scientific 
+computing, etc. We run our simulations until the completion of the entire 
+applications or the number of kernels shown on Table~\ref{tab:numctas}.
+
+\begin{table}[t]
+\begin{small}
+\centering
+\begin{tabular}{lccc}
+ \toprule
+ \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
+& & \textbf{Average CTAs} & \textbf{(MB)} \\
+ \toprule
+ML-GoogLeNet-cudnn-L2 & 1 & 6272 & 1205 \\
+ML-AlexNet-cudnn-L2 & 1 & 1250 & 832 \\
+Optix-Raytracing & 1 & 3072 & 87 \\
+Bitcoin-Crypto & 1 & 60 & 5898 \\
+ML-OverFeat-cudann-L3 & 1 & 1800 & 388 \\
+%Encription & 1 & 128 & 1 \\
+ML-AlexNet-cudnn-L4 & 1 & 1014 & 32 \\
+ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
+HPC-Namd2.9 & 1 & 3888 & 88 \\
+HPC-RabbitCT & 1 & 131072 & 524 \\
+Rodinia-Backprop & 2 & 4096 & 160 \\
+Rodinia-Euler3D & 346 & 1008 & 25 \\
+Rodinia-BFS & 24 & 1954 & 38 \\
+Rodinia-Gaussian & 510 & 2599 & 78 \\
+Rodinia-Hotspot & 1 & 7396 & 64 \\
+Rodinia-Kmeans & 3 & 3249 & 221 \\
+Rodnia-Pathfinder & 20 & 4630 & 1570 \\
+Rodinia-Srad & 4 & 16384 & 98 \\
+Lonestar-SP & 11 & 75 & 8 \\
+HPC-Lulesh & 105 & 12202 & 578 \\
+Lonestar-MST-graph & 87 & 770 & 86 \\
+Lonestar-MST-mesh & 71 & 895 & 75 \\
+HPC-CoMD & 350 & 3588 & 319 \\
+HPC-CoMD-wa & 350 & 13691 & 393 \\
+HPC-CoMD-ta & 350 & 5724 & 394 \\
+HPC-HPGMG-UVM-opt & 359 & 10436 & 1975 \\
+HPC-HPGMG & 317 & 10506 & 1571 \\
+%HPC-HPGMG-UVM-base & 359 & 10728 & 1975 \\
+HPC-Lulesh-Unstruct-small & 2000 & 435 & 19 \\
+%HPC-Nekbone-medium & 510 & 3093 & 170 \\
+Lonestar-SSSP-wln & 1000 & 60 & 21 \\
+HPC-SNAP & 118 & 200 & 744 \\
+HPC-Nekbone-large & 300 & 5583 & 294 \\
+HPC-MiniAMR & 33 & 76033 & 2752 \\
+HPC-MiniContact-large & 127 & 15423 & 257 \\
+HPC-MiniContact-small & 500 & 250 & 21 \\
+HPC-Lulesh-Unstruct-large & 200 & 4940 & 208 \\
+HPC-AMG & 88 & 241549 & 3744 \\
+HPC-RSBench & 1 & 7813 & 19 \\
+HPC-MCB & 1 & 5001 & 162 \\
+Lonestar-DMR & 3 & 82 & 248 \\
+Lonestar-SSSP-wlc & 1300 & 163 & 21 \\
+Lonestar-SSSP & 102 & 1046 & 38 \\
+Stream-Triad & 5 & 699051 & 3146 \\
+\toprule
+\end{tabular}
+\caption{Application footprint and average number of CTAs (threadblocks) available during time-weighted execution.}
+\label{tab:numctas}
 \end{small}
 \end{table}

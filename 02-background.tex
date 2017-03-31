@@ -1,85 +1,71 @@
 \section{Motivation and Background}
 \label{background}
 
-Motivate moore's law slowing, we want continuous performance scalability, etc.
+GPU performance has scaled well over the last 10 years fueled by a significant 
+growth in per-GPU transistor count.  For example, in 2010 Nvidia's Fermi 
+generation GPUs contained 1.95B transistors with a die size of 
+529mm\textsuperscript{2} and as of 2016, Nvidia's Pascal generation contains 
+12B transistors and is 610 mm\textsuperscript{2}. As transistor density growth 
+slows, GPU manufacturers have to look beyond node scaling to alternative 
+solutions for increasing transistor count and performance. While GPU die sizes 
+have been increasing quickly over the past several generations, this growth is 
+expected to slow down due to limitations in lithography and manufacturing 
+costs. 
 
-About transparency. Multi-GPU systems are here but besides HPC (maybe graphics 
-as well) which knows how to use them efficiently (MPI process per GPU), the rest 
-of the market needs to re-think, re-write, and re-compile its code. We advocate 
-for the runtime which allows a kernel to be partitioned into sub-kernels and 
-distributes each of them to a different GPU device. In the future, the number of 
-GPUs and inter-GPU network complexity is going to increase, so we need to hide 
-that from a programmer.
-Problems of NUMA systems are well known in CPU world. Remote traffic is a 
-problem which can be solved either with some dynamic memory page allocation 
-policy (migrations and replications) or NUMA-aware thread scheduling. We focus 
-on the architectural tweaks.
+Without larger or denser dies, GPU manufacturers will need to turn to 
+alternative technologies to increase transistor count.  One possibility is 
+moving to 3D die-stacking as a solution for continued transistor growth. 
+Unfortunately 3D die-stacking still has a significant number of engineering 
+challenges related to power delivery, energy density, and 
+cooling~\cite{verbree2010cost} when employed in maximal die-sized chips such as 
+GPUs and moving beyond a 2 high stack to 4 or 8 stacks will be even more 
+difficult. Because of these challenges, GPU manufacturers are likely to 
+consider a tried and trued solution in the CPU world to gain additional 
+transistor count, 
+\textit{multi-socket GPUs}.
 
-Chart supports the fact that we have plenty of CTAs to fill a multi-GPU without a problem
-and that our memory footprints are big enough to not be cache resident in this study.
+\begin{figure*}[tp]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
+    \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
+and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing 
+upper bound of performance this application can achieve via GPU hardware 
+scaling. Applications shown in grey achieve XXX\% of theoretical scaling without 
+microarchitectural modification.}
+    \label{fig:motivation}
+\end{figure*}
 
-\begin{table}[t]
-\begin{small}
-\centering
-\begin{tabular}{lccc}
- \toprule
- \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
-& & \textbf{Average CTAs} & \textbf{(MB)} \\
- \toprule
-ML-GoogLeNet-cudnn-L2 & 1 & 6272 & 1205 \\
-ML-AlexNet-cudnn-L2 & 1 & 1250 & 832 \\
-Optix-Raytracing & 1 & 3072 & 87 \\
-Bitcoin-Crypto & 1 & 60 & 5898 \\
-ML-OverFeat-cudann-L3 & 1 & 1800 & 388 \\
-%Encription & 1 & 128 & 1 \\
-ML-AlexNet-cudnn-L4 & 1 & 1014 & 32 \\
-ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
-HPC-Namd2.9 & 1 & 3888 & 88 \\
-HPC-RabbitCT & 1 & 131072 & 524 \\
-Rodinia-Backprop & 2 & 4096 & 160 \\
-Rodinia-Euler3D & 346 & 1008 & 25 \\
-Rodinia-BFS & 24 & 1954 & 38 \\
-Rodinia-Gaussian & 510 & 2599 & 78 \\
-Rodinia-Hotspot & 1 & 7396 & 64 \\
-Rodinia-Kmeans & 3 & 3249 & 221 \\
-Rodnia-Pathfinder & 20 & 4630 & 1570 \\
-Rodinia-Srad & 4 & 16384 & 98 \\
-Lonestar-SP & 11 & 75 & 8 \\
-HPC-Lulesh & 105 & 12202 & 578 \\
-Lonestar-MST-graph & 87 & 770 & 86 \\
-Lonestar-MST-mesh & 71 & 895 & 75 \\
-HPC-CoMD & 350 & 3588 & 319 \\
-HPC-CoMD-wa & 350 & 13691 & 393 \\
-HPC-CoMD-ta & 350 & 5724 & 394 \\
-HPC-HPGMG-UVM-opt & 359 & 10436 & 1975 \\
-HPC-HPGMG & 317 & 10506 & 1571 \\
-%HPC-HPGMG-UVM-base & 359 & 10728 & 1975 \\
-HPC-Lulesh-Unstruct-small & 2000 & 435 & 19 \\
-%HPC-Nekbone-medium & 510 & 3093 & 170 \\
-Lonestar-SSSP-wln & 1000 & 60 & 21 \\
-HPC-SNAP & 118 & 200 & 744 \\
-HPC-Nekbone-large & 300 & 5583 & 294 \\
-HPC-MiniAMR & 33 & 76033 & 2752 \\
-HPC-MiniContact-large & 127 & 15423 & 257 \\
-HPC-MiniContact-small & 500 & 250 & 21 \\
-HPC-Lulesh-Unstruct-large & 200 & 4940 & 208 \\
-HPC-AMG & 88 & 241549 & 3744 \\
-HPC-RSBench & 1 & 7813 & 19 \\
-HPC-MCB & 1 & 5001 & 162 \\
-Lonestar-DMR & 3 & 82 & 248 \\
-Lonestar-SSSP-wlc & 1300 & 163 & 21 \\
-Lonestar-SSSP & 102 & 1046 & 38 \\
-Stream-Triad & 5 & 699051 & 3146 \\
-\toprule
-\end{tabular}
-\caption{Application footprint and average number of CTAs (threadblocks) available during time-weighted execution.}
-\label{tab:numctas}
-\end{small}
-\end{table}
+The evolution of GPU computing has moved from PCIe attached peripherals to full 
+systems designed around the GPU as the primary computing engine.  These systems 
+have custom PCB layouts that accomodate multiple high pin count socketed 
+GPUs~\cite{DGX} that have GPU to GPU interconnects that resemble QPI or 
+Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy PCIe interfaces.  
+Despite the improvement in hardware capabilities, to-date these multi-GPU 
+solutions have been exposed as single GPU solutions with improved GPU--GPU 
+interconnects.  While multi-GPU systems can provide high aggregate throughput, 
+the programming model for multi-GPU systems has diverged from the single GPU 
+programming model and requires layering additional software runtimes like MPI 
+or openshmem on top of the native GPU programming model (CUDA or openCL).  By 
+requiring re-writing of the GPU application to enable multi-GPU performance, 
+many applications never are ported to use multiple GPUs.
 
-\subsection{A Multi-Socket GPU Runtime}
-
-As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
+In this work, we examine the performance achievable by architecting a 
+multi-socket NUMA-aware single GPU.  Building upon existing work in the 
+NUMA-CPU and GPU community, we first describe the basic multi-socket GPU runtime 
+that allows a multi-socket GPU system to be exposed to GPU developers as a 
+single GPU and exploits some well known scheduling and memory locality 
+optimizations for NUMA systems. We then look at the performance implications 
+that this multi-socket NUMA design has on applications that have been optimized 
+for a traditional single GPU.  We identify that current GPU interconnect 
+utilization and cache policies are sub-optimal for a multi-socket NUMA GPU and 
+show how these problems can largely be overcome with architectural innovation.  
+Finally, we examine the scaling efficiency of a multi-socket NUMA-aware GPU to 
+understand if NUMA-aware GPUs will see significantly improve performance  
+without any code-rewriting required by the application programmer.
+\\\\
+\textbf{A Multi-Socket GPU Runtime}
+\\\\
+\noindent As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
 a framework and a runtime system that transparently decomposes GPU kernels in 
 sub-kernels and executes them on multiple GPUs in parallel. On the Nvidia 
 GPUs, this is doable by intercepting and remapping each single kernel call, 
@@ -99,19 +85,9 @@ and sub-kernel to kernel CTA identifiers mapping (ii) we model a system
 which implements UVM page migration of on demand as recently introduced in the 
 Tesla P100 GPU~\cite{P100}. UVM page migration allows to allocate 
 all the memory upfront in system memory and to transparently migrate pages 
-on the GPU memory on demand as soon as the first access (also called first touch) 
+on the GPU memory on demand as soon as the first access (also called first 
+touch) 
 is performed.
-
-
-\begin{figure*}[tp]
-    \centering
-    \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
-    \caption{Relative performance of NUMA multi-socket 4 GPUs system using NVlink
-	interconnect with respect single GPU. Red mark represents the maximum 
-	theoretical performance of a UMA multi-socket 4 GPUs system in which NVLink 
-	has infinite BW and zero latency.}
-    \label{fig:motivation2}
-\end{figure*}
 
 For sake of completion, while on a single GPU the interleaving of memory at 
 the granularity of single cache line is routinely done to reduce memory 
@@ -138,7 +114,7 @@ contiguous CTA block scheduling to be the most reasonable choice,
 again because it preserves locality when present. We will therefore use this 
 as the baseline architecture for our studies in the rest of this paper.
 
-In Figure~\ref{fig:motivation2} we show the relative performance of our 
+In Figure~\ref{fig:motivation} we show the relative performance of our 
 baseline NUMA multi-socket 4 GPUs system connected with a switch in which the 
 link bandwidth is 64 GB/sec (comparable to NVlink) with respect to a single 
 GPU (composed of 64 SMs with 768 GB/sec of memory bandwidth). A more detailed 
@@ -157,136 +133,3 @@ this gap. To simplify the discussion we will exclude the benchmarks that
 already achieve 99\% of the theoretical performance when explaining these 
 techniques. We will re-include them in the final plots to demonstrate that 
 there was not performance regression. 
-
-
-% Second figure now shows our baseline we're going to compare against - for some benchmarks we can't expect speedup, its quite good already.
-% For others there is a long ways to go and we're going to try and close that gap now.
-
-
-
-
-
-
-% Heterogeneous CPU--GPU systems have been widely
-% adopted by the high performance computing community 
-% and are becoming increasingly common in other computing paradigms.  High performance GPUs have 
-% developed into stand-alone PCIe-attached accelerators requiring explicit memory 
-% management by the programmer to control data transfers into the GPU's 
-% high-bandwidth locally attached memory. As GPUs have evolved, the onus of 
-% explicit memory management has been addressed by providing a unified shared
-% memory address space between the GPU and CPU~\cite{UVM,HSA}.  Whereas a single 
-% unified virtual address space improves programmer productivity, discrete GPU and 
-% CPU systems still have separate locally attached physical memories, optimized for 
-% bandwidth and latency respectively. 
-% 
-% Managing the physical location of data, and guaranteeing that reads access 
-% the most up-to-date copies of 
-% data in a unified shared memory can be done through the use of page level 
-% migration and protection. Such mechanisms move data at the OS page granularity between 
-% physical memories~\cite{UVM}.  With the advent of non-PCIe high-bandwidth, low-latency
-% CPU--GPU interconnects, the possibility of performing cache-line, rather than OS-page-granularity, accesses
-% becomes feasible.  Without OS page protection
-% mechanisms to support correctness guarantees, however,  the responsibility of coherence
-% has typically fallen on hardware cache-coherence implementations.
-% 
-% \ignore{Managing the physical location and coherence guarantee of 
-% data in a unified shared memory can be done through the use of page level 
-% migration and protection, which moves data at the OS page granularity between 
-% physical memories~\cite{UVM}.  With the advent of non-PCIe high bandwidth, low latency,
-% CPU--GPU interconnects the possibility of performing cache-line based accesses,
-% rather than OS page granularity, becomes feasible.  Without OS page protection
-% mechanisms to support shared memory guarantees, however,  the responsibility of coherence
-% has typically fallen on hardware cache-coherence implementations.}
-% 
-% \begin{table}[t]
-% \begin{center}
-% \begin{tabular}{ddd}
-%  \hline
-%  \multicolumn{1}{l}{Workload} &   \multicolumn{1}{c}{L1 Hit Rate (\%)}  &  \multicolumn{1}{c}{L2 Hit Rate (\%)}  \\
-%  \hline
-%  \hline
-%  \multicolumn{1}{l}{backprop}  &   62.4  &   70.0\\
-%  \hline
-%  \multicolumn{1}{l}{bfs}  &   19.6  &   58.6  \\
-%  \hline
-%  \multicolumn{1}{l}{btree}  &   81.8  &   61.8  \\
-%  \hline
-%  \multicolumn{1}{l}{cns}  &   47.0  &   55.2  \\
-%  \hline
-%  \multicolumn{1}{l}{comd}  &   62.5  &   97.1  \\
-%  \hline
-%  \multicolumn{1}{l}{kmeans}  &   5.6  &   29.5  \\
-%  \hline
-%  \multicolumn{1}{l}{minife}  &   46.7  &   20.4  \\
-%  \hline
-%  \multicolumn{1}{l}{mummer}  &   60.0  &   30.0  \\
-%  \hline
-%  \multicolumn{1}{l}{needle}  &   7.0  &   55.7  \\
-%  \hline
-%  \multicolumn{1}{l}{pathfinder}  &   42.4  &   23.0  \\
-%  \hline
-%  \multicolumn{1}{l}{srad\_v1}  &   46.9  &   25.9  \\
-%  \hline
-%  \multicolumn{1}{l}{xsbench}  &   30.7  &   63.0  \\
-%  \hline
-%  \hline
-%  \multicolumn{1}{l}{Arith Mean}  &   44.4  &   51.6  \\
-% \hline
-% \end{tabular}
-% \caption{GPU L1 and L2 cache hit rates (average).}
-% \label{tab:gpuhitrate}
-% \end{center}
-% \vspace{-.2in}
-% \end{table}
-% 
-% \begin{figure*}[t]
-%     \centering
-%     \includegraphics[width=0.9\textwidth]{figures/cache_bw_latency.png}
-%     \caption{GPU performance sensitivity to L1 and L2 latency and bandwidth
-% changes.}
-%     \label{fig:cache_bw_latency}
-%     \vspace{-.05in}
-% \end{figure*}
-% 
-% As programming models supporting transparent CPU--GPU sharing become 
-% more prevalent and sharing becomes more fine-grain and frequent, the 
-% performance gap between page-level coherence and fine-grained hardware cache-coherent
-% access will grow~\cite{Agarwal2015,Agarwal2015b,Lim2012}. 
-% On-chip caches, and thus HW cache coherence, are widely used in CPUs because they 
-% provide substantial memory bandwidth and latency 
-% improvements~\cite{Martin2012}.
-% Building scalable, high-performance cache coherence requires 
-% a holistic system that strikes a balance between directory storage 
-% overhead, cache probe bandwidth, and application 
-% characteristics~\cite{Power2013,Pugsley2010,Cantin2005,johnson2011,Hong2012,Sanchez2012,Kelm2010}.
-% Although relaxed or scoped consistency models allow coherence operations
-% to be re-ordered or deferred, hiding latency, they do not obviate the need 
-% for HW cache coherence. However, supporting a CPU-like HW coherence model
-% in large GPUs, where many applications do not require coherence, is a tax on GPU designers.  Similarly,
-% requiring CPUs to relax or change their HW coherence implementations or implement instructions
-% enabling software management of the cache hierarchy adds significant system complexity.
-% 
-% Prior work has shown that due to their many threaded design, GPUs are 
-% insensitive to off-package memory latency but very sensitive to off-chip memory 
-% bandwidth~\cite{Agarwal2015,Agarwal2015b}. Table~\ref{tab:gpuhitrate}
-% shows the L1 and L2 cache hit rates across a variety of workloads from the Rodinia 
-% and United States Department of Energy application suites~\cite{Che2009,villa2014}.  These low hit 
-% rates cause GPUs to also be fairly
-% insensitive to small changes in L1 and L2 cache latency and bandwidth, as shown in 
-% Figure~\ref{fig:cache_bw_latency}.  This lack of sensitivity raises the question whether GPUs need 
-% to uniformly employ on-chip caching of all off-chip memory to achieve good performance.  If GPUs do not 
-% need or can selectively employ on-chip caching, then CPU--GPU systems can be built that
-% present a unified, coherent shared-memory address space to the CPU, while not requiring a 
-% HW cache-coherence implementation within the GPU. 
-% 
-% Avoiding hardware cache coherence benefits GPUs by decoupling them from the coherence protocol 
-% implemented within the CPU complex, enables simplified GPU designs, and improves
-% compatibility across future systems. It also reduces the scaling load on the 
-% existing CPU coherence and directory structures by eliminating the potential addition
-% of hundreds of caches, all of which may be sharing data. However, selective caching does not come without
-% a cost. Some portions of the global memory space will become un-cacheable
-% within the GPU\@ and bypassing on-chip caches can place additional load 
-% on limited off-chip memory resources.  In the following sections, we show that by leveraging
-% memory request coalescing, small CPU-side caches, improved interconnect efficiency, and
-% promiscuous read-only caching, selective caching GPUs can perform nearly as well
-% as HW cache-coherent CPU--GPU\@ systems.
