@@ -1,4 +1,4 @@
-\section{Asymmetry Aware GPUs}
+\section{NUMA-Aware GPUs}
 
 As shown in Section~\ref{background}, creating larger multi-socket GPUs that 
 perform well across all the benchmarks is not trivial despite the 
@@ -9,12 +9,12 @@ management techniques across sockets, this results in sub-optimal
 performance.  As shown in Figure~\ref{fig:motivation2}, even applying NUMA 
 optimization techniques in the multi-socket GPU runtime such as first touch 
 page placement and Block CTA partitioning leaves significant performance on 
-the table compared to an idealize fully symmetric multi-socket GPU on a large 
-fraction of benchmarks.
+the table compared to an hypothetical 4x larger (all resources scaled) GPU on many 
+benchmarks.
 
 To improve the performance of our baseline multi-socket GPU implementation we 
 propose two classes of improvements that leverage application phasing to reduced 
-the observed penalty of asymmetry in such NUMA systems.  First, in 
+the effective NUMA penalty.  First, in 
 Section~\ref{interconnect} we examine the ability of a switch connected GPU to 
 dynamically change its interconnect signaling from a balanced up and down 
 stream bandwidth design, to allowing flexible re-partitioning of these channels.  
@@ -69,7 +69,7 @@ coherency \\
 L2 Cache & Shared, 4MB per 64 SM, 128B lines, 16 ways, \\ & Memory-side 
 non-coherent\\
 \midrule
-Inter-GPU Interconnect & 128GB/s per socket, 8 lanes 8B wide each per \\ & 
+Inter-GPU Interconnect & 128GB/s per socket (64GB/s each dirrection), 8 lanes 8B wide each per \\ & 
 direction, 128-cycle latency \\
 \midrule
 DRAM Bandwidth & 768GB/s per GPU socket\\

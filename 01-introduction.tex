@@ -47,7 +47,7 @@ is a natural progression when trying to improve intra-GPU communication.
 Multi-socket GPUs provide a pivot point for GPU vendors.  In one direction, they
 could continue to expose multi-socket GPUs as discrete GPUs and force programmers
 to re-write their applications to try and improve scaling beyond a single socket.
-In the other, they could now choose to expose these multi-socket designs as asymmetric
+In the other, they could now choose to expose these multi-socket designs as
 non-uniform memory access (NUMA) GPUs.  We believe the later solution is more likely
 because it allows significant performance scaling (2-8 GPUs in a single node) beyond
 that which is achievable through the evolution of single GPU transistor growth, all
@@ -62,7 +62,7 @@ technology.  These restrictions cause prior work to primarily solve programming 
 interface issues when trying to aggregate multiple discrete GPUs.  We propose
 that in the era of unified virtual addressing, cache line addressable high bandwidth
 interconnects, and dedicated CPU--GPU socketed PCB designs, multi-socket GPUs
-should be treated as asymmetric NUMA-GPUs and their microarchitectures need to be optimized
+should be treated a single NUMA-GPUs and their microarchitectures need to be optimized
 to maximize multi-socket GPU performance.
 
 In this work we examine future an evolutionary multi-socket GPU system and describe the 
@@ -72,7 +72,7 @@ several well known NUMA techniques from the CPU world to this system and show th
 while having a positive effect, simply applying CPU NUMA design principles to GPUs 
 will be insufficient to achieve scalable performance.  Thus we propose that to design
 single program scalable multi-GPU systems GPU architectures themselves must become
-\textit{asymmetry-aware} to handle the NUMA effects that are implicit in a multi-socket
+\textit{NUMA-aware} to handle the NUMA effects that are implicit in a multi-socket
 design.
 
 In this work, we make the following contributions:
@@ -92,8 +92,8 @@ turn around $N$ of $M$ high speed serial links at run time to support asymmetric
 bandwidth requirements.  We demonstrate that our dynamic policy is coarse
 grained enough that the performance improvement is largely insensitive to link turn 
 around and policy sample time.  We show that dynamic policies must be made on a
-per GPU basis, global observation and management fails to capture asymmetry 
-within the system.
+per GPU basis, global observation and management fails to capture per GPU locality
+within the system resulting in underperformance.
 
 \item
 We show that the current GPUs which utilize a SW based coherency among L1's and 

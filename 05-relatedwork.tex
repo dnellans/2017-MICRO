@@ -1,21 +1,4 @@
-
 \section{Related Work}
-
-%\textbf{Stolen from the MCM paper - needs to be redone with refs for, dynamic
-%cache partitioning, Cache coherence, SIGNALLING}
-
-%Multi-GPU work.
-%Cache partitioning work.
-%We do not optimize for latency (the highest hit rate) but for 
-%%bandwidth (the hit rate is not the highest; we can show some graph later 
-%to support that the best cache configuration does not provide the highest hit 
-%rate).
-%Not sure about NVLink/interconnection related work.
-%Discuss simplex vs duplex interconnects / point-to-point links.
-%At least mention which interconnects / point to point links can have 
-%reversible links vs statically partitioned links (Ethernet, Infiniband, QPI).
-%Is there a reference that says that GRS signal links can reverse direction?
-
 Multi-GPUs are widely used for scaling single GPU perfromance
 via integration of multiple GPUs at the system
 level~\cite{pascal-tesla-wp,dgx,intersect360,titan_supercomputer} for a
@@ -45,9 +28,9 @@ by using same system wire resources and on-chip I/O interfaces, while
 implementing both recever and transmitter driver circuitry at each lane. This
 approach resembles previously proposed tri-state bi-directional bus
 technologies ~\cite{tri-state}, or former technologies such as Intel front-side
-bus ~\cite{fsb}. Our proposal however allows leveraging ultra fast
-unidirectional serial signalling, while allowing a dynamically controled
-assymetric bandwidth allocation via on-the-fly reconfiguration of the
+bus ~\cite{fsb}. Our proposal however allows leveraging fast
+singled ended signalling, while allowing a dynamically controlled
+asymmetric bandwidth allocation via on-the-fly reconfiguration of the
 individual lane direction within a link.
 
 Static and dynamic cache partitioning techniques were widely explored in
