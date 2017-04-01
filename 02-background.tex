@@ -11,7 +11,7 @@ have been also increasing over the past generations, this growth is expected to
 slow down due to limitations in lithography and manufacturing costs. 
 Without larger or denser dies, GPU manufacturers are likely to turn to 
 alternative technologies such as the tried and trued solution from CPU world,
-the \textit{multi-socket GPUs}, to keep scaling effective GPU performance via 
+the \textit{multi-socket GPUs}, to keep scaling effective GPU perfromance via 
 growing overall transistor counts and DRAM bandwidths. 
 
 %One moving to 3D die-stacking as a solution for continued transistor growth. 
@@ -23,6 +23,13 @@ growing overall transistor counts and DRAM bandwidths.
 %GPU manufacturers are likely to 
 %consider a tried and trued solution in the CPU world to gain additional 
 %transistor count, \textit{multi-socket GPUs}.
+
+\begin{figure}[t] 
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figures/plot_ctas_per_sm.pdf}
+    \caption{Do we have enough CTAs to fill bigger GPUs.}
+    \label{fig:ctas}
+\end{figure}
 
 \begin{figure*}[tp] 
     \centering
@@ -38,7 +45,7 @@ microarchitectural modification.}
 
 The evolution of GPU computing has moved from it being a PCIe attached peripherals 
 to computing platforms designed around the GPU as the primary computing engine. 
-Such systems employ custom PCB designs that accommodate multiple high pin count socketed 
+Such systems epmloy custom PCB designs that accommodate multiple high pin count socketed 
 GPUs~\cite{DGX} with inter-GPU interconnects resembling QPI or 
 Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy PCIe interfaces.  
 Despite the improvement in hardware capabilities, to-date these multi-GPU 
@@ -46,7 +53,7 @@ solutions have been exposed as a collection of single GPU solutions with improve
 interconnects. While multi-GPU systems can provide high aggregate throughput, 
 the programming models for multi-GPU systems has diverged from the single GPU 
 programming model and requires layering additional software runtimes like MPI 
-or openshmem on top of the native GPU programming interfaces such as CUDA or OpenCL.
+or openshmem on top of the native GPU programming interfaces such as CUDA or openCL.
 By requiring re-writing of the GPU application to enable multi-GPU performance, 
 many applications are never ported to use multiple GPUs.
 
