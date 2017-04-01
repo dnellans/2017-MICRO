@@ -21,28 +21,29 @@ multi-socket accelerators utilizing switched interconnects.}
 \vspace{-.15in}
 \end{figure}
 
-Nevertheless, with GPU dies nearing the reticle limitation for maximal die size, and transistor
-density growth rate slowing down~\cite{mooredead2016}, programmers looking to
-scale the performance of their programs on a single-GPU are in a precarious
-position. Multi-GPU programming models support explicit programming of multiple GPUs,
-nevertheless it is still a very challenging task requiring unique programming skills
-along with leveraging special mechanisms such as Peer-2-Peer
-access~\cite{NVIDIAP2P}, or a combination of MPI and CUDA~\cite{NVIDIAMPI} to
-manage multiple GPUs. These programming extensions enable advanced programmers
-to leverage more than one GPU for high throughput computation but require
-re-writing of the single-GPU application, which may slow its adoption rate. 
+Nevertheless, with GPU dies nearing the reticle limitation for maximal die
+size, and transistor density growth rate slowing down~\cite{mooredead2016},
+programmers looking to scale the performance of their programs on a single-GPU
+are in a precarious position. Multi-GPU programming models support explicit
+programming of multiple GPUs, nevertheless it is still a very challenging task
+requiring unique programming skills along with leveraging special mechanisms
+such as Peer-2-Peer access~\cite{NVIDIAP2P}, or a combination of MPI and
+CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. These programming extensions
+enable advanced programmers to leverage more than one GPU for high throughput
+computation but require re-writing of the single-GPU application, which may
+slow its adoption rate. 
 
-Recently GPUs have started making the transition from using the PCIe peripheral 
-interface to having improved interconnections between both the GPUs and 
-CPUs~\cite{dgx,AMDINFINITYFABRIC} as shown in Figure~\ref{fig:systemdiagram}. 
+Recently GPUs have started making the transition from using the PCIe peripheral
+interface to having improved interconnections between both the GPUs and
+CPUs~\cite{dgx,AMDINFINITYFABRIC} as shown in Figure~\ref{fig:systemdiagram}.
 This way GPUs evolved from being a discrete pluggable PCIe accelerator into a
 first-class system component using a high pin-count socket very similar to
-modern CPU interfaces.
-This socket interface is required not only for power delivery, 
-but because the GPU and CPU interconnects require printed
-circuit board (PCB) level integration to provide its massive interconnect bandwidth.
-This evolution of GPUs from single socket, to high connectivity multi-socket designs
-is a natural progression when trying to improve intra-GPU communication.
+modern CPU interfaces. This socket interface is required not only for power
+delivery, but because the GPU and CPU interconnects require printed circuit
+board (PCB) level integration to provide its massive interconnect bandwidth.
+This evolution of GPUs from single socket, to high connectivity multi-socket
+designs is a natural progression when trying to improve intra-GPU
+communication.
 
 Multi-socket GPUs provide a pivot point for GPU and system vendors. On one hand, they
 could continue to expose multi-socket GPUs as discrete GPUs and force programmers
@@ -53,7 +54,7 @@ significant performance scaling beyond the single GPU transistor growth, all
 while maintaining the single-GPU programming model GPU developers have standardized upon.
 
 We are not the first group to propose that there may be potential performance
-benefits to aggregating GPUs together, without changing programming
+benefits to aggregating GPUs togethern in a programmer-transparrent way and without changing programming
 interface~\cite{Cabezas2015,lee2013transparent}. However, much of this work was
 done in an era where GPUs were limited in the memory they could address in the
 system and high latency PCIe interconnects were the standard interconnect
@@ -61,37 +62,36 @@ technology. These restrictions cause prior work to primarily focus on improving
 programming and runtime interfaces when trying to aggregate multiple discrete
 GPUs. In this work we propose that in the era of unified virtual addressing,
 cache line addressable high bandwidth interconnects, and dedicated CPU--GPU
-socketed PCB designs, multi-socket GPUs should be treated as single NUMA-GPUs
-and their microarchitectures need to be optimized to maximize multi-socket GPU
-performance.
+socketed PCB designs, such transparrent multi-socket GPUs (TMS-GPUs) should 
+be treated as single NUMA-GPUs, and as a result GPU microarchitecture need to be optimized
+ to maximize its performance in such new TMS-GPU environment.
 
-In this work we examine an evolutionary multi-socket GPU system and describe the 
-basic architectural modifications needed to allow this multi-socket GPU system to appear to the programmer
-as single large GPU, obeying all of the current GPU programming paradigms. We apply 
-several well known NUMA techniques from the CPU world and show that
-while having a positive effect, simply applying CPU NUMA design principles to GPUs 
-will be insufficient. Thus we propose that to design
-a single program scalable multi-GPU system, GPU architectures themselves must become
-\textit{NUMA-aware} to handle the NUMA effects that are implicit in a multi-socket
-design. In this work, we make the following contributions:
+In this paper we present an evolutionary TMS-GPU system and describe the
+basic architectural modifications needed to allow it to transparently appear to
+the programmer as single large GPU, obeying all of the current single-GPU
+programming paradigms. Then we optimize the basic TMS-GPU architecture via
+appling several well known NUMA techniques from the CPU world on to a TMS-GPU
+system.We observe that while having a positive effect, simply applying CPU
+NUMA design principles to TMS-GPUs will be insufficient. We demonstrate that
+to design a single program scalable multi-GPU system, GPU architectures
+themselves must become\textit{NUMA-aware} to handle the NUMA effects that are
+implicit in a transpoarrent multi-socket GPU design. In this work, we make the following
+contributions:
 
-\begin{enumerate}
-\item
-We show that despite being highly data parallel, GPU programs have significant
-dynamic phase behavior both between kernels and among CTAs within a single
-kernel that should be microarchitecturally exploited to eliminate observed
-NUMA effects.
+\begin{enumerate} \item We show that despite being highly data parallel, GPU
+programs have significant dynamic phase behavior both between kernels and among
+CTAs within a single kernel that should be microarchitecturally exploited to
+eliminate observed NUMA effects.
 
-\item
-We demonstrate that traditionally used symmetric and statically assigned inter-GPU link bandwidth allocations 
-limit multi-GPU scalability in many cases. We propose
-that GPU interconnects need to support dynamic bandwidth balancing that can
-turn around $N$ of $M$ high speed serial links at run time to support asymmetric
-bandwidth settings. We demonstrate that our dynamic policy is coarse
-grained enough that the performance improvement is largely insensitive to link turn 
-around and policy sample time. Moreover, we show that dynamic policies must be on a
-per GPU basis, as unified global policies fail to capture per GPU locality
-resulting in suboptimal performance.
+\item We demonstrate that traditionally used symmetric and statically assigned
+inter-GPU link bandwidth allocations limit multi-GPU scalability in many cases.
+We propose that GPU interconnects need to support dynamic bandwidth balancing
+that can turn around $N$ of $M$ high speed serial links at run time to support
+asymmetric bandwidth settings. We demonstrate that our dynamic policy is coarse
+grained enough that the performance improvement is largely insensitive to link
+turn around and policy sample time. Moreover, we show that dynamic policies
+must be on a per GPU basis, as unified global policies fail to capture per GPU
+locality resulting in suboptimal performance.
 
 \item
 Our findings indicate that simple extension of GPUs SW-based L1s coherency into
