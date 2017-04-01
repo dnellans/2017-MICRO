@@ -1,4 +1,12 @@
-\subsection{Asymmetric Interconnect Management}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
+    \caption{Normalized NVLink bandwidth profile for HPC-HPGMG-UVM showing example of asymmetric 
+    link utilization between GPUs and within a GPU depending on kernel and application phasing.}
+    \label{fig:link-motivation}
+\end{figure}
+
+\section{Asymmetric Interconnects}
 \label{interconnect}
 
 The fundamental idea behind asymmetric interconnect management is the following.
@@ -8,6 +16,14 @@ of the incoming and outgoing interconnect bandwidth. If one of the two direction
 is saturated and the other is not, there could be some advantages in trying to 
 dynamically reconfigure some of the not saturated links on the direction 
 that is saturated.
+
+\begin{figure*}[tp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
+    \caption{Show that we can adapt to application phasing without too many 
+issues}
+    \label{fig:sampletime}
+\end{figure*}
 
 Figure~\ref{fig:link-motivation} shows the saturation behaviour for a 
 snapshot of the UVM optimized HPC-CORAL application 
@@ -45,7 +61,9 @@ the traffic to be drained from the lane and to physically reconfigure the
 lane to transmit on the other direction, with the term \emph{switch\_time} we 
 refer to the later. 
 
-\subsubsection{Results}
+
+
+\subsection{Results}
 Figure~\ref{fig:sampletime} shows the expected performance improvement, with 
 respect to our baseline architecture by exploring different values 
 of the ``sample\_time'' and assuming a ``switch\_time'' of 100 cycles 
@@ -97,21 +115,9 @@ less performance with respect to 100 cycles (``HPC-CORAL-CoMD\_ta'' and
 %Area: 8 Lane PHY (8 TX + 8 RX + PLL) ~= 3.3mm^2
 %Physical Data: .5pJ/b transferred
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{Normalized NVLink bandwidth profile for HPC-HPGMG-UVM showing example of asymmetric 
-    link utilization between GPUs and within a GPU depending on kernel and application phasing.}
-    \label{fig:link-motivation}
-\end{figure}
 
-\begin{figure*}[tp]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
-    \caption{Show that we can adapt to application phasing without too many 
-issues}
-    \label{fig:sampletime}
-\end{figure*}
+
+
 
 \begin{figure*}[tp]
     \centering

@@ -6,7 +6,7 @@
     \label{fig:cacheorg}
 \end{figure*}
 
-\subsection{NUMA-Aware Cache Management}
+\section{NUMA-Aware Cache Management}
 \label{caching}
 In Section~\ref{interconnect} we have shown that intersocket bandwidth is one
 of the most important factors in achieving scalable NUMA-GPU performance. By
@@ -39,7 +39,7 @@ caches memory-side, they do not need to participate in the coherence protocol (w
 it may be).  Because of the fine grained interleaving of physical memory addresses
 across memory channels, the L2 caches are inherently load balanced.
 
-\subsubsection{Static Cache Partitioning}
+\subsection{Static Cache Partitioning}
 In NUMA-designs interleaving memory references across the low bandwidth NUMA
 interconnections results in poor performance, as shown in Figure~\ref{fig:motivation}.
 Similarly, in NUMA-GPUs utilizing the traditional memory side L2 caches that 
@@ -90,7 +90,7 @@ application need not endure NUMA effects.  To effectively capture locality in su
 a situation, NUMA-aware GPUs need to be able to flexibly move from 100\% local to
 100\% remote caching at runtime, rather than be statically partitioned at design time.
 
-\subsubsection{Dynamic Cache Partitioning}
+\subsection{Dynamic Cache Partitioning}
 
 Static L2 cache partitioning between local and remote data results in a GPU cache
 organization in which the L1 caches contain both local and remote data but the GPU
@@ -118,7 +118,7 @@ data when it is determined that the NVLINK bandwidth in our hypothetical GPU is
 oversubscribed.  We do this by implementing the following cache partitioning
 algorithm:  \textbf{XXX UGI - at least another 2 paragraphs here on how we are actually doing this XXX}
 
-\subsubsection{Results}
+\subsection{Results}
 
 Figure~\ref{fig:dynamiccaching} shows the performance of a UMA cache policy versus
 a NUMA-aware cache policy for our 4-socket GPU system.  By implementing our dynamic
