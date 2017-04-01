@@ -1,30 +1,30 @@
 \section{Motivation and Background}
 \label{background}
 
-GPU performance has scaled well over the last 10 years fueled by a significant 
-growth in per-GPU transistor count.  For example, in 2010 Nvidia's Fermi 
-generation GPUs contained 1.95B transistors with a die size of 
-529mm\textsuperscript{2} and as of 2016, Nvidia's Pascal generation contains 
-12B transistors and is 610 mm\textsuperscript{2}. As transistor density growth 
-slows, GPU manufacturers have to look beyond node scaling to alternative 
-solutions for increasing transistor count and performance. While GPU die sizes 
-have been increasing quickly over the past several generations, this growth is 
-expected to slow down due to limitations in lithography and manufacturing 
-costs. 
+Single GPU performance has been scaling very well amassing a significant
+growth in per-GPU transistor count and DRAM BW. For example a 2010 Nvidia's
+529mm\textsuperscript{2} Fermi GPUs integrated 1.95B transistors with 180 GB/s
+DRAM bandwidth, while 2016 Nvidia 610 mm\textsuperscript{2} Pascal GPUs reached
+a 12B transistor count with 720 GB/s memory bandwidth. Unfortunately transistor density
+growth slows down and expected to come to a halt at 7nm. Moreover, as GPU die sizes
+have been also increasing over the past generations, this growth is expected to
+slow down due to limitations in lithography and manufacturing costs. 
+Without larger or denser dies, GPU manufacturers are likely to turn to 
+alternative technologies such as the tried and trued solution from CPU world,
+the \textit{multi-socket GPUs}, to keep scaling effective GPU perfromance via 
+growing overall transistor counts and DRAM bandwidths. 
 
-Without larger or denser dies, GPU manufacturers will need to turn to 
-alternative technologies to increase transistor count.  One possibility is 
-moving to 3D die-stacking as a solution for continued transistor growth. 
-Unfortunately 3D die-stacking still has a significant number of engineering 
-challenges related to power delivery, energy density, and 
-cooling~\cite{verbree2010cost} when employed in maximal die-sized chips such as 
-GPUs and moving beyond a 2 high stack to 4 or 8 stacks will be even more 
-difficult. Because of these challenges, GPU manufacturers are likely to 
-consider a tried and trued solution in the CPU world to gain additional 
-transistor count, 
-\textit{multi-socket GPUs}.
+%One moving to 3D die-stacking as a solution for continued transistor growth. 
+%Unfortunately 3D die-stacking still has a significant number of engineering 
+%challenges related to power delivery, energy density, and 
+%cooling~\cite{verbree2010cost} when employed in maximal die-sized chips such as 
+%GPUs and moving beyond a 2 high stack to 4 or 8 stacks will be even more 
+%difficult. Because of these challenges, 
+%GPU manufacturers are likely to 
+%consider a tried and trued solution in the CPU world to gain additional 
+%transistor count, \textit{multi-socket GPUs}.
 
-\begin{figure*}[tp]
+\begin{figure*}[tp] 
     \centering
     \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
     \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
