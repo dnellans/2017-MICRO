@@ -64,3 +64,48 @@ Finally, we examine the scaling efficiency of a multi-socket NUMA-aware GPU to
 understand if NUMA-aware GPUs will see significantly improve performance  
 without any code-rewriting required by the application programmer.
 
+
+----------Evgeny ---- 
+the following paragraphs moved from next section, need to be merged here or in
+Intro ----------
+
+To improve the performance of our
+basic TMS-GPU implementation we propose two classes of improvements that 
+leverage application phasing to reduced the effective NUMA penalty.  First, in 
+Section~\ref{interconnect} we examine the ability of a switch connected GPU to 
+dynamically change its interconnect signaling from a balanced up and down 
+stream bandwidth design, to allowing flexible re-partitioning of these channels.  
+When bi-directional bandwidth is observed to be under-utilized, the direction 
+which has excess capacity can be re-assigned to support the oversubscribed 
+channels. This allows any individual GPU to improve its bandwidth utilization at 
+times when it finds itself most bandwidth constrained.
+
+Second, because we observe that inter-GPU bandwidth has a strong correlation to
+overall multi-socket GPU performance we investigate the performance impact of
+enabling multi-socket GPU cache coherence in Section~\ref{caching}.  We propose
+extending the software based L1 coherence into the L2 caches of multi-socket
+GPUs.  By extending this coherence, the L2 caches of each GPU socket move from
+being memory-side, where coherence is not needed, to GPU-side, where coherence
+guarantees are required in the same manner as current GPU L1 caches.  We
+evaluate the effect of this coherence overhead on multi-socket GPUs and show
+that because of the GPU's weak coherence guarantees multi-socket coherence on
+GPUs should scale significantly better than traditional CPU coherence
+protocols.
+
+Finally, we show that after extending coherence into the GPU L2 caches, the
+appropriate allocation of cache capacity between local memory bandwidth and
+remote memory bandwidth can not be decided at design time.  Due to the same
+application phasing that enabled dynamic interconnect rebalancing, we observe
+that individual GPU sockets should be free to balance their cache capacity
+between local and remote accesses to optimize performance.  When remote
+interconnect bandwidth is saturated, a GPU will skew its cache capacity toward
+the remote accesses,  however if that bandwidth is not saturated then
+optimizing cache hit rates to eliminate the largest number of memory requests
+is desirable.
+
+Before diving into detailed proposals and results for our proposed
+optimizations we first describe the TMS-GPU runtime that consolidates
+prior work from both the NUMA-GPU world and GPU then describe our multi-socket
+GPU methodology.
+
+
