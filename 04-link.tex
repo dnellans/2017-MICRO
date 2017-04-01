@@ -31,12 +31,12 @@ HPGMG~\cite{adams2014hpgmg} running on our baseline 4 GPUs system. The Figure
 show outgoing and incoming bandwidth utilization for each of the 4 GPUs. 
 Vertical dotted black lines represent the beginning kernel calls (which are 
 split across the 4 GPUs as explained in Section~\ref{background}). We can see 
-that after few initial small kernels (that never reach normalized 1.0 utilization) on any 
-of the GPU links, three large kernels start (interleaved by few small 
-kernels). On those three large kernels GPU0 and GPU2 fully saturate incoming 
-links, while GPU1 and GPU3 fully saturate outgoing links. At the same time 
-GPU0 and GPU2 barely use outgoing links and the opposite is true for GPU1 and 
-GPU3.
+that after few initial small kernels (that have a small interconnect 
+utilization) on any of the GPU links, three large kernels start (interleaved 
+by few small kernels). On those three large kernels GPU0 and GPU2 fully 
+saturate incoming links, while GPU1 and GPU3 fully saturate outgoing links. 
+At the same time GPU0 and GPU2 barely use outgoing links and the opposite is 
+true for GPU1 and GPU3.
 
 In our simulations we model point-to-point connections composed of multiple 
 lanes similarly of those found in NVLink (called Sub-Links in NVidia NVLink 
@@ -49,11 +49,11 @@ the lanes in one direction are not saturated, while the lanes in the other
 direction are 99\% saturated, we reverse the direction of one of the 
 unsaturated lanes. We periodically repeat the check and we stop either when 
 equilibrium is reached or all the lanes but one have been reversed (we always 
-leave at least a minimum of aggregate 8GB/s in one direction). If all 
+leave at least a minimum of 8GB/s in one direction). If all 
 lanes are saturated or not-saturated we do nothing. We have a threshold of 
 1GB/sec to prevent switching for minimum variations in traffic shape.
 
-There are two important factors that characterize the above behaviour(i) 
+There are two important factors that characterize the above behaviour (i) 
 \emph{switch\_time}: the cost of switching the direction a lane (ii) 
 \emph{sample\_time}: the frequency at which we want to sample for a possible 
 reconfiguration. The cost of switching a lane consists in waiting all 
