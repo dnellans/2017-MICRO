@@ -26,8 +26,8 @@ issues}
 \end{figure*}
 
 Figure~\ref{fig:link-motivation} shows the saturation behaviour for a 
-snapshot of the UVM optimized HPC-CORAL application 
-HPGMG~\cite{adams2014hpgmg} running on our baseline 4 GPUs system. The Figure 
+snapshot of the UVM optimized 
+HPGMG~\cite{adams2014hpgmg} application running on our baseline 4 GPUs system. The Figure 
 show outgoing and incoming bandwidth utilization for each of the 4 GPUs. 
 Vertical dotted black lines represent the beginning kernel calls (which are 
 split across the 4 GPUs as explained in Section~\ref{background}). We can see 
@@ -81,8 +81,8 @@ In Figure~\ref{fig:switchtime} we used 5K cycles sample time to
 explore values of ``switch\_time'' from 10 cycles to 500 cycles.
 We found that a faster switch does not produce better results than 100 cycles
 but that in few applications a long (500 cycles) switch time results 25\% 
-less performance with respect to 100 cycles (``HPC-CORAL-CoMD-Ta'' and 
-``HPC-CORAL-CoMD-Wa'').
+less performance with respect to 100 cycles (``HPC-CoMD-Ta'' and 
+``HPC-CoMD-Wa'').
 
 
 
@@ -124,6 +124,6 @@ less performance with respect to 100 cycles (``HPC-CORAL-CoMD-Ta'' and
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_switch_time_sample_time5000.pdf}
     \caption{Show that when we're using a reasonable sample time like even 5k 
 cycles, switch time is largely irrelevant, except few 
-outliers such as ``HPC-CORAL-CoMD-Ta'' and ``HPC-CORAL-CoMD-Wa''.}
+outliers such as ``HPC-CoMD-Ta'' and ``HPC-CoMD-Wa''.}
     \label{fig:switchtime}
 \end{figure*}
