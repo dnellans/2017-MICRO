@@ -19,6 +19,7 @@
 \usepackage{pifont}
 \usepackage{flushend}
 \usepackage{booktabs}
+\usepackage{tikz}
 \newcommand*\mycirc[1]{{\large \ding{\numexpr201+#1\relax}}}
 % Always include hyperref last
 % \usepackage[bookmarks=true,breaklinks=true,letterpaper=true,colorlinks,linkcolor=black,citecolor=blue,urlcolor=black]{hyperref}
@@ -40,6 +41,9 @@
 %%%%%%%%%%%---SETME-----%%%%%%%%%%%%%
 \newcommand{\microsubmissionnumber}{265}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=1pt] (char) {#1};}}
 
 \fancypagestyle{firstpage}{
   \fancyhf{}

@@ -1,6 +1,6 @@
 \begin{figure*}[t]
     \centering
-    \includegraphics[width=1.0\textwidth]{figures/cache_configurations.pdf}
+    \includegraphics[width=1.0\textwidth]{figures/cache_configurations_static_dynamic.pdf}
     \caption{Potential L2 cache organizations to balance capacity between NUMA remote
     local NUMA memory systems.}
     \label{fig:cacheorg}
@@ -115,8 +115,10 @@ We propose that rather than allowing both the L1 and L2 caches to be contended b
 and remote memory accesses,  both levels of the GPU cache hierarchy become NUMA-aware
 and dynamically adjust their cache resources to preference caching of remote NUMA
 data when it is determined that the NVLINK bandwidth in our hypothetical GPU is
-oversubscribed.  We do this by implementing the following cache partitioning
-algorithm:  \textbf{XXX UGI - at least another 2 paragraphs here on how we are actually doing this XXX}
+oversubscribed.  We do this by implementing the cache partitioning
+algorithm, similar to the adaptive NVLink switching policy.
+
+Right side of Figure~\ref{fig:cacheorg} provides a brief summary. At the beginning, we allocate one half of the L2 ways for local, and another half for caching remote data (Step \circled{0}). After the sampling period, we collect the bandwidth values on the outgoing NVLink and local memory channels. Link utilization above 99\% is considered to be saturated (Step \circled{1}). In case where NVLink is saturated and local memory bandwidth is not, the partitioning algorithm tries to reduce remote traffic by assigning one way from a set of local ways, and allocating it to a set of remote ways (Step \circled{2}). If the L2 is a write-back cache, dirty lines from the assigned way are written back to the local memory. Similarly, if the local memory BW is saturated and NVLink is not, the policy takes one way from remote, and allocates it now to a set of local ways (Step \circled{3}). If needed, the policy allows a cache to be completely remote only or local only cache. That way, our NUMA-aware cache partitioning algorithm reduces remote or local link utilization depending on which one of the two stands as a performance bottleneck. In case where both NVLink and local memory channels are saturated, we gradually equalize the number of ways assigned for remote and local cache lines (Step \circled{4}). Finally, if none of the links have been saturated, the policy takes no action (Step \circled{5}). 
 
 \subsection{Results}
 
