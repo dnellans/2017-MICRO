@@ -2,7 +2,7 @@
 \label{introduction}
 
 GPUs have revolutionized and massively transformed the high
-performance computing, machine learning, and data analytics lanscapes that were
+performance computing, machine learning, and data analytics landscapes that were
 previously dominated by CPU-based
 installations~\cite{pascal,intersect360,cudnn,Lavin15b,SimonyanZ14a}. Modern
 computing systems rely on combination of GPUs and CPUs to leverage high
@@ -21,7 +21,7 @@ multi-socket accelerators utilizing switched interconnects.}
 \vspace{-.15in}
 \end{figure}
 
-Nevertheless, with GPU dies nearing the reticle limitaion for maximal die size, and transistor
+Nevertheless, with GPU dies nearing the reticle limitation for maximal die size, and transistor
 density growth rate slowing down~\cite{mooredead2016}, programmers looking to
 scale the performance of their programs on a single-GPU are in a precarious
 position. Multi-GPU programming models support explicit programming of multiple GPUs,
@@ -59,7 +59,7 @@ done in an era where GPUs were limited in the memory they could address in the
 system and high latency PCIe interconnects were the standard interconnect
 technology. These restrictions cause prior work to primarily focus on improving
 programming and runtime interfaces when trying to aggregate multiple discrete
-GPUs. IN thsi work we propose that in the era of unified virtual addressing,
+GPUs. In this work we propose that in the era of unified virtual addressing,
 cache line addressable high bandwidth interconnects, and dedicated CPU--GPU
 socketed PCB designs, multi-socket GPUs should be treated as single NUMA-GPUs
 and their microarchitectures need to be optimized to maximize multi-socket GPU
@@ -84,7 +84,7 @@ NUMA effects.
 
 \item
 We demonstrate that traditionally used symmetric and statically assigned inter-GPU link bandwidth allocations 
-limit multi-GPU scalability inmany cases. We propose
+limit multi-GPU scalability in many cases. We propose
 that GPU interconnects need to support dynamic bandwidth balancing that can
 turn around $N$ of $M$ high speed serial links at run time to support asymmetric
 bandwidth settings. We demonstrate that our dynamic policy is coarse
@@ -102,11 +102,11 @@ caching efficiency with invalidation overheads. We show that with minor modifica
 current GPU coherence protocols can perform well in properly architected multi-GPU caches.
 
 \item Finally, we show that architecting a single static cache architecture for
-multi-GPUs yields a sub-optimal performance. We demosntrate that rebalancing cache
+multi-GPUs yields a sub-optimal performance. We demonstrate that re-balancing cache
 capacity between local and remote accesses in multi-socket GPU systems is
 required both on a per workload basis, but also a per socket basis to leverage
-applications phase behavior. We develop a mechanims that allows cache capacity
-to be idynamically reallocated to compensate for constantly changing bandwidth
+applications phase behavior. We develop a mechanisms that allows cache capacity
+to be dynamically reallocated to compensate for constantly changing bandwidth
 bottlenecks and help mitigate NUMA effects in multi-socket GPUs.
 
 % Dynamic cache partitioning: given that different benchmarks prefer different 
