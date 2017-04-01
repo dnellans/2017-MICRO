@@ -36,19 +36,19 @@ microarchitectural modification.}
     \label{fig:motivation}
 \end{figure*}
 
-The evolution of GPU computing has moved from PCIe attached peripherals to full 
-systems designed around the GPU as the primary computing engine.  These systems 
-have custom PCB layouts that accommodate multiple high pin count socketed 
-GPUs~\cite{DGX} that have GPU to GPU interconnects that resemble QPI or 
+The evolution of GPU computing has moved from it being a PCIe attached peripherals 
+to computing platforms designed around the GPU as the primary computing engine. 
+Such systems epmloy custom PCB designs that accommodate multiple high pin count socketed 
+GPUs~\cite{DGX} with inter-GPU interconnects resembling QPI or 
 Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy PCIe interfaces.  
 Despite the improvement in hardware capabilities, to-date these multi-GPU 
-solutions have been exposed as single GPU solutions with improved GPU--GPU 
-interconnects.  While multi-GPU systems can provide high aggregate throughput, 
-the programming model for multi-GPU systems has diverged from the single GPU 
+solutions have been exposed as a collection of single GPU solutions with improved GPU--GPU 
+interconnects. While multi-GPU systems can provide high aggregate throughput, 
+the programming models for multi-GPU systems has diverged from the single GPU 
 programming model and requires layering additional software runtimes like MPI 
-or openshmem on top of the native GPU programming model (CUDA or openCL).  By 
-requiring re-writing of the GPU application to enable multi-GPU performance, 
-many applications never are ported to use multiple GPUs.
+or openshmem on top of the native GPU programming interfaces such as CUDA or openCL.
+By requiring re-writing of the GPU application to enable multi-GPU performance, 
+many applications are never ported to use multiple GPUs.
 
 In this work, we examine the performance achievable by architecting a 
 multi-socket NUMA-aware single GPU.  Building upon existing work in the 
