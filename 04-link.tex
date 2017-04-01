@@ -20,8 +20,9 @@ that is saturated.
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
-    \caption{Show that we can adapt to application phasing without too many 
-issues}
+    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
+	the baseline architecture by varying sample time and assuming switch time of
+	100 cycles. In red, relative speedup achievable by doubling the bandwidth.}
     \label{fig:sampletime}
 \end{figure*}
 
@@ -122,8 +123,8 @@ less performance with respect to 100 cycles (``HPC-CoMD-Ta'' and
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_switch_time_sample_time5000.pdf}
-    \caption{Show that when we're using a reasonable sample time like even 5k 
-cycles, switch time is largely irrelevant, except few 
-outliers such as ``HPC-CoMD-Ta'' and ``HPC-CoMD-Wa''.}
+    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
+	the baseline architecture varying switch time for a fixed sample time
+of 5k cycles. In red, relative speedup achievable by doubling the bandwidth.}
     \label{fig:switchtime}
 \end{figure*}
