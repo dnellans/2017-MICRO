@@ -45,12 +45,12 @@ interleaving memory across GPUs at the granularity of pages.
 
 While on a single GPU fine grain dynamic assignment of CTAs to SMs is performed
 to achieve good load balancing, extending it to a Multi-GPU system is
-sub-optimal due to the relatovely high penalty of a single sub-kernel launch.
-Therefore similarly to~\cite{Cabezas2015}, we decompose a single kernel into N
+sub-optimal due to the relatively high penalty of a single sub-kernel launch.
+Therefore, similarly to~\cite{Cabezas2015}, we decompose a single kernel into N
 sub-kernels, where N is the total number of GPUs in the system, and we assign
 equal amount of contigous CTAs to each GPU.  This design choice can potentially
 expose workload unbalance across sub-kernels, but it preserves data locality
-present in many applications where contiguous CTAs access contiguous memory.  A
+present in many applications where contiguous CTAs access contiguous memory. A
 possible alternative solution can focus on interleaving CTAs across
 sub-kernels, in attempt to mimic the way pages interleave across memories. 
 
@@ -66,17 +66,17 @@ instead we show the relative performance of the locality optimized GPU
 scheduling and memory placement consisting of contiguous block CTA scheduling
 and first touch page migration. We can clearly see that the Locality-Optimized
 solution almost always outperforms the traditional GPU scheduling and memory
-interleaving, in average performing 2x better. In general the problems of data
+interleaving, in average performing 2$\times$ better. In general, the problems of data
 placement and task placement (minimizing remote data access and ensuring good
 load balancing) can not be completely decoupled and pathological case can
 always be found. It is important to stress that we are not claiming the
-Locality-Optimized solution as a contribution of this paper (indeed very
+Locality-Optimized solution as a contribution of this paper (very
 similar considerations and findings can be found
-in~\cite{Cabezas2015,Arunkumar2017}), instead we are setting up a basic TMS-GPU
+in~\cite{Cabezas2015, Arunkumar2017}). Instead, we are setting up a basic TMS-GPU
 architecture in which we can apply and present our proposed NUMA-aware optimizations.
 
 Moreover in Figure~\ref{fig:motivation} we show with a \emph{red dash} the performance 
-achievable by a hypothetical (unbuildable) 4x larger GPU. This \emph{red dash} 
+achievable by a hypothetical (unbuildable) 4$\times$ larger GPU. This \emph{red dash} 
 represent a good approximation of the maximum theoretical performance we 
 could expect from a perfect TMS-GPU. We sorted the applications by the 
 gap between relative performance of the Locality-Optimized and 
@@ -84,7 +84,7 @@ Hypothetical 4x larger GPUs. We can see that on the right side of the graph
 some applications (that have very good locality) already 
 achieve or surpass the maximum theoretical performance. In particular for the 
 two far-most benchmarks on the right, the locality optimized solutions outperform 
-the hypothetical 4x larger GPU due a higher L2 data-locality originated by 
+the hypothetical 4x larger GPU due a higher cache data-locality originated by 
 the contiguous block scheduling of CTAs. For the applications on the left 
 side of the Figure there is quite large gap between locality optimized and 
 hypothetical. These are the applications in which either, locality does not 
@@ -150,7 +150,7 @@ GPUs interconnected through a full bandwidth GPU switch as shown on
 Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview 
 of the simulation parameters.
 
-We study our proposal using XXX benchmarks taken from a broad range of 
+We study our proposal using 41 workloads taken from a broad range of 
 production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
 applications from Lonestar~\cite{lonestar}, compute applications from 
 Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
@@ -170,15 +170,14 @@ footprint in MB.
  \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
 & & \textbf{Average CTAs} & \textbf{(MB)} \\
  \toprule
-ML-GoogLeNet-cudnn-L2 & 1 & 6272 & 1205 \\
-ML-AlexNet-cudnn-L2 & 1 & 1250 & 832 \\
-Optix-Raytracing & 1 & 3072 & 87 \\
-Bitcoin-Crypto & 1 & 60 & 5898 \\
-ML-OverFeat-cudann-L3 & 1 & 1800 & 388 \\
-%Encription & 1 & 128 & 1 \\
-ML-AlexNet-cudnn-L4 & 1 & 1014 & 32 \\
+ML-GoogLeNet-Cudnn-L2 & 1 & 6272 & 1205 \\
+ML-AlexNet-Cudnn-L2 & 1 & 1250 & 832 \\
+Other-Raytracing & 1 & 3072 & 87 \\
+Other-Crypto & 1 & 60 & 5898 \\
+ML-OverFeat-Cudann-L3 & 1 & 1800 & 388 \\
+ML-AlexNet-Cudnn-L4 & 1 & 1014 & 32 \\
 ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
-HPC-Namd2.9 & 1 & 3888 & 88 \\
+HPC-NAMD2.9 & 1 & 3888 & 88 \\
 HPC-RabbitCT & 1 & 131072 & 524 \\
 Rodinia-Backprop & 2 & 4096 & 160 \\
 Rodinia-Euler3D & 346 & 1008 & 25 \\
@@ -190,30 +189,30 @@ Rodnia-Pathfinder & 20 & 4630 & 1570 \\
 Rodinia-Srad & 4 & 16384 & 98 \\
 Lonestar-SP & 11 & 75 & 8 \\
 HPC-Lulesh & 105 & 12202 & 578 \\
-Lonestar-MST-graph & 87 & 770 & 86 \\
-Lonestar-MST-mesh & 71 & 895 & 75 \\
+Lonestar-MST-Graph & 87 & 770 & 86 \\
+Lonestar-MST-Mesh & 71 & 895 & 75 \\
 HPC-CoMD & 350 & 3588 & 319 \\
-HPC-CoMD-wa & 350 & 13691 & 393 \\
-HPC-CoMD-ta & 350 & 5724 & 394 \\
+HPC-CoMD-Wa & 350 & 13691 & 393 \\
+HPC-CoMD-Ta & 350 & 5724 & 394 \\
 HPC-HPGMG-UVM-opt & 359 & 10436 & 1975 \\
 HPC-HPGMG & 317 & 10506 & 1571 \\
-%HPC-HPGMG-UVM-base & 359 & 10728 & 1975 \\
-HPC-Lulesh-Unstruct-small & 2000 & 435 & 19 \\
+HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
+HPC-Lulesh-Unstruct-In1 & 2000 & 435 & 19 \\
 %HPC-Nekbone-medium & 510 & 3093 & 170 \\
-Lonestar-SSSP-wln & 1000 & 60 & 21 \\
+Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
 HPC-SNAP & 118 & 200 & 744 \\
-HPC-Nekbone-large & 300 & 5583 & 294 \\
+HPC-Nekbone-Large & 300 & 5583 & 294 \\
 HPC-MiniAMR & 33 & 76033 & 2752 \\
-HPC-MiniContact-large & 127 & 15423 & 257 \\
-HPC-MiniContact-small & 500 & 250 & 21 \\
-HPC-Lulesh-Unstruct-large & 200 & 4940 & 208 \\
+HPC-MiniContact-In2 & 127 & 15423 & 257 \\
+HPC-MiniContact-In1 & 500 & 250 & 21 \\
+HPC-Lulesh-Unstruct-In2 & 200 & 4940 & 208 \\
 HPC-AMG & 88 & 241549 & 3744 \\
 HPC-RSBench & 1 & 7813 & 19 \\
 HPC-MCB & 1 & 5001 & 162 \\
 Lonestar-DMR & 3 & 82 & 248 \\
-Lonestar-SSSP-wlc & 1300 & 163 & 21 \\
+Lonestar-SSSP-Wlc & 1300 & 163 & 21 \\
 Lonestar-SSSP & 102 & 1046 & 38 \\
-Stream-Triad & 5 & 699051 & 3146 \\
+Other-Stream-Triad & 5 & 699051 & 3146 \\
 \toprule
 \end{tabular}
 \caption{Application footprint and average number of CTAs (threadblocks) 
