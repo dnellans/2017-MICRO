@@ -170,15 +170,11 @@ footprint in MB.
  \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
 & & \textbf{Average CTAs} & \textbf{(MB)} \\
  \toprule
-ML-GoogLeNet-Cudnn-L2 & 1 & 6272 & 1205 \\
-ML-AlexNet-Cudnn-L2 & 1 & 1250 & 832 \\
-Other-Raytracing & 1 & 3072 & 87 \\
-Other-Crypto & 1 & 60 & 5898 \\
-ML-OverFeat-Cudann-L3 & 1 & 1800 & 388 \\
-ML-AlexNet-Cudnn-L4 & 1 & 1014 & 32 \\
+ML-GoogLeNet-cudnn-Lev2 & 1 & 6272 & 1205 \\
+ML-AlexNet-cudnn-Lev2 & 1 & 1250 & 832 \\
+ML-OverFeat-cudann-Lev3 & 1 & 1800 & 388 \\
+ML-AlexNet-cudnn-Lev4 & 1 & 1014 & 32 \\
 ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
-HPC-NAMD2.9 & 1 & 3888 & 88 \\
-HPC-RabbitCT & 1 & 131072 & 524 \\
 Rodinia-Backprop & 2 & 4096 & 160 \\
 Rodinia-Euler3D & 346 & 1008 & 25 \\
 Rodinia-BFS & 24 & 1954 & 38 \\
@@ -187,32 +183,36 @@ Rodinia-Hotspot & 1 & 7396 & 64 \\
 Rodinia-Kmeans & 3 & 3249 & 221 \\
 Rodnia-Pathfinder & 20 & 4630 & 1570 \\
 Rodinia-Srad & 4 & 16384 & 98 \\
-Lonestar-SP & 11 & 75 & 8 \\
-HPC-Lulesh & 105 & 12202 & 578 \\
-Lonestar-MST-Graph & 87 & 770 & 86 \\
-Lonestar-MST-Mesh & 71 & 895 & 75 \\
-HPC-CoMD & 350 & 3588 & 319 \\
-HPC-CoMD-Wa & 350 & 13691 & 393 \\
-HPC-CoMD-Ta & 350 & 5724 & 394 \\
-HPC-HPGMG-UVM-opt & 359 & 10436 & 1975 \\
-HPC-HPGMG & 317 & 10506 & 1571 \\
-HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
-HPC-Lulesh-Unstruct-In1 & 2000 & 435 & 19 \\
-%HPC-Nekbone-medium & 510 & 3093 & 170 \\
-Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
 HPC-SNAP & 118 & 200 & 744 \\
 HPC-Nekbone-Large & 300 & 5583 & 294 \\
 HPC-MiniAMR & 33 & 76033 & 2752 \\
-HPC-MiniContact-In2 & 127 & 15423 & 257 \\
-HPC-MiniContact-In1 & 500 & 250 & 21 \\
-HPC-Lulesh-Unstruct-In2 & 200 & 4940 & 208 \\
+HPC-MiniContact-Mesh1 & 500 & 250 & 21 \\
+HPC-MiniContact-Mesh2 & 127 & 15423 & 257 \\
+HPC-Lulesh-Unstruct-Mesh1 & 2000 & 435 & 19 \\
+HPC-Lulesh-Unstruct-Mesh2 & 200 & 4940 & 208 \\
 HPC-AMG & 88 & 241549 & 3744 \\
 HPC-RSBench & 1 & 7813 & 19 \\
 HPC-MCB & 1 & 5001 & 162 \\
+HPC-NAMD2.9 & 1 & 3888 & 88 \\
+HPC-RabbitCT & 1 & 131072 & 524 \\
+HPC-Lulesh & 105 & 12202 & 578 \\
+HPC-CoMD & 350 & 3588 & 319 \\
+HPC-CoMD-Wa & 350 & 13691 & 393 \\
+HPC-CoMD-Ta & 350 & 5724 & 394 \\
+HPC-HPGMG-UVM & 359 & 10436 & 1975 \\
+HPC-HPGMG & 317 & 10506 & 1571 \\
+%HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
+Lonestar-SP & 11 & 75 & 8 \\
+Lonestar-MST-Graph & 87 & 770 & 86 \\
+Lonestar-MST-Mesh & 71 & 895 & 75 \\
+%HPC-Nekbone-medium & 510 & 3093 & 170 \\
+Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
 Lonestar-DMR & 3 & 82 & 248 \\
 Lonestar-SSSP-Wlc & 1300 & 163 & 21 \\
 Lonestar-SSSP & 102 & 1046 & 38 \\
 Other-Stream-Triad & 5 & 699051 & 3146 \\
+Other-Optix-Raytracing & 1 & 3072 & 87 \\
+Other-Bitcoin-Crypto & 1 & 60 & 5898 \\
 \toprule
 \end{tabular}
 \caption{Application footprint and average number of CTAs (thread blocks) 
