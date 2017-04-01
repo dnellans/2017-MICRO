@@ -36,7 +36,7 @@ and sub-kernel to kernel CTA identifiers mapping.
 We assume and model a system with UVM page migration on demand~\cite{P100} that
 allows transparent on-demand page migration from system memory to GPU memory as
 soon as the first access (also called first-touch allocation) is performed.
-Alternative approach for memory placement is memory interlieaving at the
+Alternative approach for memory placement is memory interleaving at the
 granularity of single cache line to reduce memory camping effects and to
 maximize bandwidth. However interleaving at such fine granularity across
 multiple GPUs reduces data locality, and results in growing number of remote
@@ -48,7 +48,7 @@ to achieve good load balancing, extending it to a Multi-GPU system is
 sub-optimal due to the relatively high penalty of a single sub-kernel launch.
 Therefore, similarly to~\cite{Cabezas2015}, we decompose a single kernel into N
 sub-kernels, where N is the total number of GPUs in the system, and we assign
-equal amount of contigous CTAs to each GPU.  This design choice can potentially
+equal amount of contiguous CTAs to each GPU.  This design choice can potentially
 expose workload unbalance across sub-kernels, but it preserves data locality
 present in many applications where contiguous CTAs access contiguous memory. A
 possible alternative solution can focus on interleaving CTAs across
@@ -215,7 +215,7 @@ Lonestar-SSSP & 102 & 1046 & 38 \\
 Other-Stream-Triad & 5 & 699051 & 3146 \\
 \toprule
 \end{tabular}
-\caption{Application footprint and average number of CTAs (threadblocks) 
+\caption{Application footprint and average number of CTAs (thread blocks) 
 available during time-weighted execution.}
 \label{tab:numctas}
 \end{small}
