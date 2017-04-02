@@ -1,6 +1,7 @@
 \begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
+
+        \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
     \caption{Normalized NVLink bandwidth profile for HPC-HPGMG-UVM showing example of asymmetric 
     link utilization between GPUs and within a GPU depending on kernel and application phasing.}
     \label{fig:link-motivation}
@@ -24,13 +25,7 @@ applications. As I/O bandwidth is a very limited and expensive resource, this
 result motivates us to look for alternbatives that keep wire and I/O resources
 at very high utilization. 
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
-    assymeteric capacity assignments}
-    \label{fig:symmetric_assymetric}
-\end{figure}
+
 
 We note that the typically employed symmetric link
 capacity asignments may result in lower overall utilization of the link wires
@@ -47,14 +42,15 @@ figure GPU0 and GPU2 fully saturate their ingress links, while GPU1 and GPU3
 fully saturate their egress links. At the same time GPU0 and GPU2 pair,
 and GPU1 and GPU3 pair barely use their egress or ingress links accordingly.
 
-\begin{figure*}[tp]
+\begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
-    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
-	the baseline architecture by varying sample time and assuming switch time of
-	100 cycles. In red, relative speedup achievable by doubling the bandwidth.}
-    \label{fig:sampletime}
-\end{figure*}
+    \includegraphics[width=1.0\columnwidth]{figures/tms_links.pdf}
+    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
+    assymeteric capacity assignments}
+    \label{fig:symmetric_assymetric}
+\end{figure}
+
+
 
 Motivated by these findings, we propose to dynamically control multi-socket
 link bandwidth assignments in each direction on a per-GPU basis resulting in
@@ -94,6 +90,14 @@ direction.
 ------  Evgeny : still need to add what are teh disadvnatages of assymetric
 (double IO interfaces and switching complexity)
 
+\begin{figure*}[tp]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
+    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
+	the baseline architecture by varying sample time and assuming switch time of
+	100 cycles. In red, relative speedup achievable by doubling the bandwidth.}
+    \label{fig:sampletime}
+\end{figure*}
 
 
  \subsection{Results}
