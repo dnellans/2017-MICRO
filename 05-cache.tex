@@ -120,6 +120,13 @@ data when it is determined that the NVLINK bandwidth in our hypothetical GPU is
 oversubscribed.  We do this by implementing the cache partitioning
 algorithm, similar to the adaptive NVLink switching policy.
 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
+    \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU compared to memory-side L2 and previously proposed static partitioning.}
+    \label{fig:dynamiccaching}
+\end{figure*}
+
 Right side of Figure~\ref{fig:cacheorg} provides a brief summary. At the beginning, 
 we allocate one half of the L2 ways for local, and another half for caching 
 remote data (Step \circled{0}). After the sampling period, we collect the 
@@ -150,12 +157,7 @@ NVLink bandwidth, utilizing the same sampling hardware and mechanism described i
 Section~\ref{interconnect}.  We see that dynamic partitioning can improve average GPU
 performance by XXX\%.  More explain here.
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
-    \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU compared to memory-side L2 and previously proposed static partitioning.}
-    \label{fig:dynamiccaching}
-\end{figure*}
+
 
  When extending the software controlled GPU coherence protocol into the GPU L2 caches,
 L1 coherence operations (flushes) must also be extended into the GPU L2 caches.  To understand
