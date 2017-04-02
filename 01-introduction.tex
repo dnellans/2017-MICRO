@@ -54,7 +54,7 @@ significant performance scaling beyond the single GPU transistor growth, all
 while maintaining the single-GPU programming model GPU developers have standardized upon.
 
 We are not the first group to propose that there may be potential performance
-benefits to aggregating GPUs togethern in a programmer-transparrent way and without changing programming
+benefits to aggregating GPUs together in a programmer-transparent way and without changing programming
 interface~\cite{Cabezas2015,lee2013transparent}. However, much of this work was
 done in an era where GPUs were limited in the memory they could address in the
 system and high latency PCIe interconnects were the standard interconnect
@@ -62,25 +62,25 @@ technology. These restrictions cause prior work to primarily focus on improving
 programming and runtime interfaces when trying to aggregate multiple discrete
 GPUs. In this work we propose that in the era of unified virtual addressing,
 cache line addressable high bandwidth interconnects, and dedicated CPU--GPU
-socketed PCB designs, such transparrent multi-socket GPUs (TMS-GPUs) should 
-be treated as single NUMA-GPUs, and as a result GPU microarchitecture need to be optimized
+socketed PCB designs, such transparent multi-socket GPUs (TMS-GPUs) should 
+be treated as single NUMA-GPUs, and as a result GPU micro-architecture need to be optimized
  to maximize its performance in such new TMS-GPU environment.
 
 In this paper we present an evolutionary TMS-GPU system and describe the
 basic architectural modifications needed to allow it to transparently appear to
 the programmer as single large GPU, obeying all of the current single-GPU
 programming paradigms. Then we optimize the basic TMS-GPU architecture via
-appling several well known NUMA techniques from the CPU world on to a TMS-GPU
+applying several well known NUMA techniques from the CPU world on to a TMS-GPU
 system.We observe that while having a positive effect, simply applying CPU
 NUMA design principles to TMS-GPUs will be insufficient. We demonstrate that
 to design a single program scalable multi-GPU system, GPU architectures
 themselves must become\textit{NUMA-aware} to handle the NUMA effects that are
-implicit in a transpoarrent multi-socket GPU design. In this work, we make the following
+implicit in a transparent multi-socket GPU design. In this work, we make the following
 contributions:
 
 \begin{enumerate} \item We show that despite being highly data parallel, GPU
 programs have significant dynamic phase behavior both between kernels and among
-CTAs within a single kernel that should be microarchitecturally exploited to
+CTAs within a single kernel that should be micro-architecturally exploited to
 eliminate observed NUMA effects.
 
 \item We demonstrate that traditionally used symmetric and statically assigned

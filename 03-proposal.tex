@@ -16,22 +16,21 @@ Addressing~\cite{UVM} bring to the table.
 % benchmarks.
 
 \subsection{Basic TMS-GPU Architecture}
-As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible 
-to design a framework and a runtime system that transparently decomposes GPU 
-kernels in sub-kernels and executes them on multiple GPUs in parallel. For
-example, on Nvidia GPUs this can be implemented by intercepting and remapping each kernel 
+As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
+a framework and a runtime system that transparently decomposes GPU kernels in 
+sub-kernels and executes them on multiple GPUs in parallel. For example, on 
+Nvidia GPUs this can be implemented by intercepting and remapping each kernel 
 call, GPU memory allocation, memory copy, and GPU-wide synchronization issued 
 by the CUDA driver. Special care needs to be put (i) to the GPU local memory 
-fences which needs to be promoted to system level and (ii) to the 
-sub-kernels CTA identifiers which needs to be properly corrected to 
-reflect those in the original kernel call. 
-In ~\cite{Cabezas2015} these two problems were solved by introducing  
-code annotations and an additional source-to-source compiler which was also 
-responsible for statically assigning data and computation on each GPU. In our 
-work, we follow a similar strategy but without using any additional 
-compiler as we leverage a simulated environment with properly modeled 
-the architectural requirements for system wide memory fences,
-and sub-kernel to kernel CTA identifiers mapping. 
+fences which needs to be promoted to system level and (ii) to the sub-kernels 
+CTA identifiers which needs to be properly corrected to reflect those in the 
+original kernel call. In ~\cite{Cabezas2015} these two problems were solved 
+by introducing  code annotations and an additional source-to-source compiler 
+which was also responsible for statically assigning data and computation on 
+each GPU. In our work, we follow a similar strategy but without using any 
+additional compiler as we leverage a simulated environment with properly 
+modeled the architectural requirements for system wide memory fences, and 
+sub-kernel to kernel CTA identifiers mapping. 
 
 We assume and model a system with UVM page migration on demand~\cite{P100} that
 allows transparent on-demand page migration from system memory to GPU memory as
@@ -54,48 +53,48 @@ present in many applications where contiguous CTAs access contiguous memory. A
 possible alternative solution can focus on interleaving CTAs across
 sub-kernels, in attempt to mimic the way pages interleave across memories. 
 
-\subsection{Basic TMS-GPU Performance}
-In Figure~\ref{fig:motivation} we show the relative performance of a 4-Socket
-TMS-GPU with respect to a single-GPU for two possible CTA scheduling and memory
-placement strategies explained above. For a detailed explanation of methodology
-and benchmark suites see Section~\ref{methodology}. With the \emph{green bars}
-we show relative performance of the natural extension to the traditional single
-GPU scheduling and memory interleaving to multi-GPU, which consists in memory
-page interleave and sub-kernel CTA interleave. With the \emph{light blue bars}
-instead we show the relative performance of the locality optimized GPU
-scheduling and memory placement consisting of contiguous block CTA scheduling
-and first touch page migration. We can clearly see that the Locality-Optimized
-solution almost always outperforms the traditional GPU scheduling and memory
-interleaving, in average performing 2$\times$ better. In general, the problems of data
-placement and task placement (minimizing remote data access and ensuring good
-load balancing) can not be completely decoupled and pathological case can
-always be found. It is important to stress that we are not claiming the
-Locality-Optimized solution as a contribution of this paper (very
-similar considerations and findings can be found
-in~\cite{Cabezas2015, Arunkumar2017}). Instead, we are setting up a basic TMS-GPU
-architecture in which we can apply and present our proposed NUMA-aware optimizations.
+\subsection{Basic TMS-GPU Performance} 
+In Figure~\ref{fig:motivation} we show the relative performance of a 4-Socket 
+TMS-GPU with respect to a single-GPU for two possible CTA scheduling and 
+memory placement strategies explained above. For a detailed explanation of 
+methodology and benchmark suites see Section~\ref{methodology}. With the 
+\emph{green bars} we show relative performance of the natural extension to 
+the traditional single GPU scheduling and memory interleaving to multi-GPU, 
+which consists in memory page interleave and sub-kernel CTA interleave. With 
+the \emph{light blue bars} instead we show the relative performance of the 
+locality optimized GPU scheduling and memory placement consisting of 
+contiguous block CTA scheduling and first touch page migration. We can 
+clearly see that the Locality-Optimized solution almost always outperforms 
+the traditional GPU scheduling and memory interleaving, in average performing 
+2$\times$ better. In general, the problems of data placement and task 
+placement (minimizing remote data access and ensuring good load balancing) 
+can not be completely decoupled and pathological case can always be found. It 
+is important to stress that we are not claiming the Locality-Optimized 
+solution as a contribution of this paper (very similar considerations and 
+findings can be found in~\cite{Cabezas2015, Arunkumar2017}). Instead, we are 
+setting up a basic TMS-GPU architecture in which we can apply and present our 
+proposed NUMA-aware optimizations.
 
-Moreover in Figure~\ref{fig:motivation} we show with a \emph{red dash} the performance 
-achievable by a hypothetical (unbuildable) 4$\times$ larger GPU. This \emph{red dash} 
-represent a good approximation of the maximum theoretical performance we 
-could expect from a perfect TMS-GPU. We sorted the applications by the 
-gap between relative performance of the Locality-Optimized and 
-Hypothetical 4x larger GPUs. We can see that on the right side of the graph 
-some applications (that have very good locality) already 
-achieve or surpass the maximum theoretical performance. In particular for the 
-two far-most benchmarks on the right, the locality optimized solutions outperform 
-the hypothetical 4x larger GPU due a higher cache data-locality originated by 
-the contiguous block scheduling of CTAs. For the applications on the left 
-side of the Figure there is quite large gap between locality optimized and 
-hypothetical. These are the applications in which either, locality does not 
-exist or the Locality-Optimized solution is not effective, 
-resulting in large amount of remote data transfers. In the rest of this paper we 
-present techniques aimed to reduce this gap. To simplify the discussion we 
-will exclude the benchmarks that already achieve 99\% of the theoretical 
-performance when explaining these techniques. We will re-include them in the 
-final plots to demonstrate that there was not performance regression due to 
-our proposed optimizations.
-
+Moreover in Figure~\ref{fig:motivation} we show with a \emph{red dash} the 
+performance achievable by a hypothetical (unbuildable) 4$\times$ larger GPU. 
+This \emph{red dash} represent a good approximation of the maximum 
+theoretical performance we could expect from a perfect TMS-GPU. We sorted the 
+applications by the gap between relative performance of the 
+Locality-Optimized and Hypothetical 4x larger GPUs. We can see that on the 
+right side of the graph some applications (that have very good locality) 
+already achieve or surpass the maximum theoretical performance. In particular 
+for the two far-most benchmarks on the right, the locality optimized 
+solutions outperform the hypothetical 4x larger GPU due a higher cache 
+data-locality originated by the contiguous block scheduling of CTAs. For the 
+applications on the left side of the Figure there is quite large gap between 
+locality optimized and hypothetical. These are the applications in which 
+either, locality does not exist or the Locality-Optimized solution is not 
+effective, resulting in large amount of remote data transfers. In the rest of 
+this paper we present techniques aimed to reduce this gap. To simplify the 
+discussion we will exclude the benchmarks that already achieve 99\% of the 
+theoretical performance when explaining these techniques. We will re-include 
+them in the final plots to demonstrate that there was not performance 
+regression due to our proposed optimizations. 
 
 \begin{table}[tp]
 \begin{small}

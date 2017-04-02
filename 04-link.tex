@@ -24,14 +24,14 @@ drivers or ingress receivers) along with only one type of control logic need to
 be implemented at each on-chip interface. Moreover, multi-socket switches
 result in simpler designs that support a statically provisioned worst-case
 bandwidth scenario. On the other hand, multi-socket link bandwidth has a very
-important impact on overall system perfromance. For the applications which saturate links between sockets, doubling NVLink capacity potentially achieves a 2$\times$ speedup.
+important impact on overall system performance. For the applications which saturate links between sockets, doubling NVLink capacity potentially achieves a 2$\times$ speedup.
 %As shown in Figure~\ref{fig:switchtime}, where doubling NVLink capacity from 128GB/s to 256GB/s reached 1.5x average speedup reaching a 2x speedup for many applications. 
 As I/O bandwidth is a very limited and expensive resource, this
 result motivates us to look for alternatives that keep wire and I/O resources
 at very high utilization. 
 
 We note that the typically employed symmetric link
-capacity asignments may result in lower overall utilization of the link wires
+capacity assignments may result in lower overall utilization of the link wires
 in many cases. Moreover, in case of TMS-GPU systems, we do observe that there
 are applications in which some GPUs have a very different utilization of its
 egress and ingress channels in different phases of execution.
@@ -56,10 +56,10 @@ and GPU1 and GPU3 pair barely use their egress or ingress links accordingly.
 
 Motivated by these findings, we propose to dynamically control multi-socket
 link bandwidth assignments in each direction on a per-GPU basis resulting in
-dynamically assymetric link capacity assignments, as shown in
-Figure~\ref{fig:symmetric_assymetric}(b). Such dynamic and assymetric link
+dynamically asymmetric link capacity assignments, as shown in
+Figure~\ref{fig:symmetric_assymetric}(b). Such dynamic and asymmetric link
 capacity distribution is expected to yield higher wire utilization and
-essentially higher effective bandwidth and perfromance for a given set of I/O
+essentially higher effective bandwidth and performance for a given set of I/O
 resources. This mechanism is somewhat similar to DRAM interface for example,
 where the same set of wires is used for both read and write directions
 interchangeably, and link direction is reversed based on a dynamic state of the
@@ -69,47 +69,61 @@ For basic link configuration we assume and model point-to-point
 links with multiple lanes each, similarly to NVLink
 sub-links~\cite{pascal-tesla-wp}.  In such link, 8 lanes with 8GB/s capacity
 per lane results in an aggregate bandwidth of 64GB/s in each direction. We
-propose an adaptive assymetric scheme that works as following. For each link
+propose an adaptive asymmetric scheme that works as following. For each link
 in the system, at kernel launch we start with symmetric link assignments with 8
 lanes per direction. Then, we propose to periodically sample the saturation
 status of each link. If the lanes in one direction are not saturated, while the
 lanes in the opposite direction are 99\% saturated, we reverse the direction of
 one of the unsaturated lanes. Periodically repeating and sampling the lanes
-status, we stop either when equilibrium is reached, or alternatively all the lanes but one
-have been reversed (we always keep a minimum bandwith of 8GB/s in each
-direction).  
+status, we stop either when equilibrium is reached, or alternatively all the 
+lanes but one have been reversed (we always keep a minimum bandwidth of 8GB/s 
+in each direction).  
 %We have a threshold of 
 %1GB/sec to prevent switching for minimum variations in traffic shape.  
 % EVGENY - I dint get it\ldots if you belive its importnat rephrase.  
-There are two important factors that characterize the
-behaviour above (i) \texttt{SampleTime}: the frequency at which the scheme samples for a
-possible reconfiguration and (ii) \texttt{SwitchTime}: the cost of switching the direction of a
-lane. Switching period is comprised of the time
-it takes to drain all the pending packets in a given diretion, and the time it
-takes to physically reconfigure the lane to start transmitting in the opposite
-direction.
-
+There are two important factors that characterize the behaviour above (i) 
+\texttt{SampleTime}: the frequency at which the scheme samples for a possible 
+reconfiguration and (ii) \texttt{SwitchTime}: the cost of switching the 
+direction of a lane. Switching period is comprised of the time it takes to 
+drain all the pending packets in a given direction, and the time it takes to 
+physically reconfigure the lane to start transmitting in the opposite 
+direction. 
 ------  Evgeny : still need to add what are teh disadvnatages of assymetric
 (double IO interfaces and switching complexity)
 
 
 
 \subsection{Results}
-Figure~\ref{fig:sampletime} shows the performance improvement, with 
-respect to our baseline architecture by exploring different values 
-of the \texttt{SampleTime} and assuming a \texttt{SwitchTime} of 100 cycles 
-as reported in~\cite{REALLY_NEED_REF_HERE}. Also, Figure~\ref{fig:sampletime}
-gives an upper-bound performance when doubling
-the available interconnect bandwidth to 256GB/s (128GB/s per direction). For the benchmarks on the right side, where the baseline TMS-GPU performs close to 4$\times$ larger single GPU, increasing the inter-socket bandwidth does not improve performance significantly. Contiguous CTA scheduling and first-touch memory placement preserves good data locality in those cases, so that both ingress and egress links are underutilized.
-On the left side, we can see that for some applications, 2$\times$ NVLink bandwidth translates to 2$\times$ speedup, while dynamic lane switching achieves up to
-80\% performance improvement (\texttt{Lonestar-SP}). On average, double the interconnect 
-bandwidth gives 50\% while our dynamic solution 
-achieves 15\% improvements. We can also see that the sampling frequency plays a 
-critical role and a too large sample time doesn't capture application dynamics 
-resulting in smaller improvements. We find 5K cycles to be a reasonable sampling
-period able to achieve good results and never degrade performance. 
+Figure~\ref{fig:sampletime} shows the performance improvement, with respect 
+to our baseline architecture by exploring different values of the 
+\texttt{SampleTime} and assuming a \texttt{SwitchTime} of 100 cycles as 
+reported in~\cite{REALLY_NEED_REF_HERE}. Also, Figure~\ref{fig:sampletime} 
+gives an upper-bound performance when doubling the available interconnect 
+bandwidth to 256GB/s (128GB/s per direction). For the benchmarks on the right 
+side, where the baseline TMS-GPU performs close to 4$\times$ larger single 
+GPU, increasing the inter-socket bandwidth does not improve performance 
+significantly. Contiguous CTA scheduling and first-touch memory placement 
+preserves good data locality in those cases, so that both ingress and egress 
+links are underutilized. On the left side, we can see that for some 
+applications, 2$\times$ NVLink bandwidth translates to 2$\times$ speedup, 
+while dynamic lane switching achieves up to 80\% performance improvement 
+(\texttt{Lonestar-SP}). On average, double the interconnect bandwidth gives 
+50\% while our dynamic solution achieves 15\% improvements. We can also see 
+that the sampling frequency plays a critical role and a too large sample time 
+doesn't capture application dynamics resulting in smaller improvements. We 
+find 5K cycles to be a reasonable sampling period able to achieve good 
+results and never degrade performance. 
 
-Another important parameter is switching period needed to turn around a single lane direction. Our results point that higher \texttt{SwitchTime} values, like 200 and 500 cycles, only degrade the average performance by less than 2\% compared to 100 cycle switching period. We observe the maximum slowdown of 25\% in case of \texttt{HPC-CoMD-Ta} and \texttt{HPC-CoMD-Wa} when switch time reaches 500 cycles. At the same time, faster lane switch (10 cycles) does not improve the performance compared to 100 cycles. Thus from now, we define our adaptive link assignment policy which samples saturation status on every 5K cycles and eventually turn link direction with 100 cycles penalty. 
+Another important parameter is switching period needed to turn around a 
+single lane direction. Our results point that higher \texttt{SwitchTime} 
+values, like 200 and 500 cycles, only degrade the average performance by less 
+than 2\% compared to 100 cycle switching period. We observe the maximum 
+slowdown of 25\% in case of \texttt{HPC-CoMD-Ta} and \texttt{HPC-CoMD-Wa} 
+when switch time reaches 500 cycles. At the same time, faster lane switch (10 
+cycles) does not improve the performance compared to 100 cycles. Thus from 
+now, we define our adaptive link assignment policy which samples saturation 
+status on every 5K cycles and eventually turn link direction with 100 cycles 
+penalty. 
 
 %In Figure~\ref{fig:switchtime} we used 5K cycles sample time to
 %explore values of ``switch\_time'' from 10 cycles to 500 cycles.
@@ -146,9 +160,6 @@ Another important parameter is switching period needed to turn around a single l
 %Power: 8 lanes (TX + RX) at 25GT/s ~= 1.5W
 %Area: 8 Lane PHY (8 TX + 8 RX + PLL) ~= 3.3mm^2
 %Physical Data: .5pJ/b transferred
-
-
-
 
 
 %\begin{figure*}[tp]

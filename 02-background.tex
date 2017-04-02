@@ -1,7 +1,16 @@
 \section{Motivation and Background}
 \label{background}
 
-Figure~\ref{fig:ctas} shows the percentage of benchmarks we use in our evalutation that expose enough parallelism to feed larger GPUs than we have today. We provide additional details on the application set in Section~\ref{sec:methodology} and Table~\ref{tab:numctas}. More than 80\% of them have more CTAs (threadblocks) than even an 8$\times$ larger single GPU has Streaming Multiprocessors (SM). Acording to the latest Nvidia's GPU devices~\ref{}, we consider a single GPU to have 64 SMs. Such workloads would be able to exploit larger GPUs, with more SMs, reducing their execution time. Increasing a single GPU performance thus stands as a reasonable way to scale up the existing, as well as future applications.
+Figure~\ref{fig:ctas} shows the percentage of benchmarks we use in our 
+evaluation that expose enough parallelism to feed larger GPUs than we have 
+today. We provide additional details on the application set in 
+Section~\ref{sec:methodology} and Table~\ref{tab:numctas}. More than 80\% of 
+them have more CTAs (Thread Blocks) than even an 8$\times$ larger single GPU 
+has Streaming Multiprocessors (SM). According to the latest Nvidia's GPU 
+devices~\ref{}, we consider a single GPU to have 64 SMs. Such workloads would 
+be able to exploit larger GPUs, with more SMs, reducing their execution time. 
+Increasing a single GPU performance thus stands as a reasonable way to scale 
+up the existing, as well as future applications.
 
 Single GPU performance has been scaling very well amassing a significant
 growth in per-GPU transistor count and DRAM BW. For example a 2010 Nvidia's
@@ -13,7 +22,7 @@ have been also increasing over the past generations, this growth is expected to
 slow down due to limitations in lithography and manufacturing costs. 
 Without larger or denser dies, GPU manufacturers are likely to turn to 
 alternative technologies such as the tried and trued solution from CPU world,
-the \textit{multi-socket GPUs}, to keep scaling effective GPU perfromance via 
+the \textit{multi-socket GPUs}, to keep scaling effective GPU performance via 
 growing overall transistor counts and DRAM bandwidths. 
 
 %One moving to 3D die-stacking as a solution for continued transistor growth. 
@@ -35,19 +44,20 @@ growing overall transistor counts and DRAM bandwidths.
 
 
 
-The evolution of GPU computing has moved from it being a PCIe attached peripherals 
-to computing platforms designed around the GPU as the primary computing engine. 
-Such systems epmloy custom PCB designs that accommodate multiple high pin count socketed 
-GPUs~\cite{DGX} with inter-GPU interconnects resembling QPI or 
-Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy PCIe interfaces.  
-Despite the improvement in hardware capabilities, to-date these multi-GPU 
-solutions have been exposed as a collection of single GPU solutions with improved GPU--GPU 
-interconnects. While multi-GPU systems can provide high aggregate throughput, 
-the programming models for multi-GPU systems has diverged from the single GPU 
-programming model and requires layering additional software runtimes like MPI 
-or openshmem on top of the native GPU programming interfaces such as CUDA or openCL.
-By requiring re-writing of the GPU application to enable multi-GPU performance, 
-many applications are never ported to use multiple GPUs.
+The evolution of GPU computing has moved from it being a PCIe attached 
+peripherals to computing platforms designed around the GPU as the primary 
+computing engine. Such systems employ custom PCB designs that accommodate 
+multiple high pin count socketed GPUs~\cite{DGX} with inter-GPU interconnects 
+resembling QPI or Hypertransport~\cite{INTELQPI,AMDHT} much more than legacy 
+PCIe interfaces.  Despite the improvement in hardware capabilities, to-date 
+these multi-GPU solutions have been exposed as a collection of single GPU 
+solutions with improved GPU--GPU interconnects. While multi-GPU systems can 
+provide high aggregate throughput, the programming models for multi-GPU 
+systems has diverged from the single GPU programming model and requires 
+layering additional software runtimes like MPI or openshmem on top of the 
+native GPU programming interfaces such as CUDA or openCL. By requiring 
+re-writing of the GPU application to enable multi-GPU performance, many 
+applications are never ported to use multiple GPUs.
 
 In this work, we examine the performance achievable by architecting a 
 multi-socket NUMA-aware single GPU.  Building upon existing work in the 
@@ -94,7 +104,7 @@ protocols.
 Finally, we show that after extending coherence into the GPU L2 caches, the
 appropriate allocation of cache capacity between local memory bandwidth and
 remote memory bandwidth can not be decided at design time.  Due to the same
-application phasing that enabled dynamic interconnect rebalancing, we observe
+application phasing that enabled dynamic interconnect re-balancing, we observe
 that individual GPU sockets should be free to balance their cache capacity
 between local and remote accesses to optimize performance.  When remote
 interconnect bandwidth is saturated, a GPU will skew its cache capacity toward
@@ -115,6 +125,6 @@ and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing
 upper bound of performance this application can achieve via GPU hardware 
 scaling. For the Locality-Optimized design, applications shown in grey 
 achieve already 99\% of theoretical scaling (\emph{red dash}) without 
-microarchitectural modification.}
+micro-architectural modification.}
     \label{fig:motivation}
 \end{figure*}
