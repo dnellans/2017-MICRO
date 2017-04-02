@@ -1,14 +1,6 @@
 \begin{figure}[t]
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
-    assymeteric capacity assignments}
-    \label{fig:symmetric_assymetric}
-\end{figure}
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
     \caption{Normalized NVLink bandwidth profile for HPC-HPGMG-UVM showing example of asymmetric 
     link utilization between GPUs and within a GPU depending on kernel and application phasing.}
     \label{fig:link-motivation}
@@ -31,6 +23,14 @@ Figure~\ref{fig:switchtime}, where doubling NVLink capacity from 128GB/s to
 applications. As I/O bandwidth is a very limited and expensive resource, this
 result motivates us to look for alternbatives that keep wire and I/O resources
 at very high utilization. 
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
+    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
+    assymeteric capacity assignments}
+    \label{fig:symmetric_assymetric}
+\end{figure}
 
 We note that the typically employed symmetric link
 capacity asignments may result in lower overall utilization of the link wires
@@ -117,29 +117,10 @@ but that in few applications a long (500 cycles) switch time results 25\%
 less performance with respect to 100 cycles (``HPC-CoMD-Ta'' and 
 ``HPC-CoMD-Wa'').
 
+%when editing resuls, make sure we include more detail about variance to the switch time
+%because we've removed the plot on it
 
 
-% Graph 0: We need a stacked-bar graph that shows what’s the percentage of total 
-% exe time spent in configs where: both directions are saturated (no room for 
-% improvement), only one direction is saturated (here we can improve), none is 
-% saturated (we don’t care for this). Do we want to show this as aggregate number 
-% of per-GPU?
-% We explain the algorithm how and when we increment and decrement the number of 
-% sub-channels per direction. Two important parameters: link switch time and 
-% sample time.
-
-% Graph 1: baseline is 1x NVLink, upper bound is 2x NVLink, link switch time is 
-% 100 cycles, we show the speedup for different sample time values (1K, 2K, 5K, 
-% 10K, 100K cycles). Finner measurements are better.
-
-% Graph 2a: baseline is 1x NVLink, upper bound is 2x NVLink, sample\_time is 1K. 
-% We swipe through link\_switch\_time (10, 100, 200, 500 cycles). Here, link 
-% switch time is important, we want it to be low.
-
-% Graph 2b: the same, but sample\_time is 100K. Here, we do not care about link 
-% switch time. The point where it starts to matter is 5K (or 2K) cycles and below. 
-% From now on, we assume 100 cycles for link switch time and 5K (or 2K) cycles for 
-% sampling period.
 
 
 % DO NOT REMOVE, we can use this to compute POWER later
@@ -151,12 +132,13 @@ less performance with respect to 100 cycles (``HPC-CoMD-Ta'' and
 
 
 
-
- \begin{figure*}[tp]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_switch_time_sample_time5000.pdf}
-    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
-	the baseline architecture varying switch time for a fixed sample time
-of 5k cycles. In red, relative speedup achievable by doubling the bandwidth.}
-    \label{fig:switchtime}
-\end{figure*}
+%REMOVING THIS FIGURE BECAUSE SWITCH TIME DOESN'T PROVIDE MUCH, SHOULD BE PUT
+%IN TXT INSTEAD
+%  \begin{figure*}[tp]
+%     \centering
+%     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_switch_time_sample_time5000.pdf}
+%     \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
+% 	the baseline architecture varying switch time for a fixed sample time
+% of 5k cycles. In red, relative speedup achievable by doubling the bandwidth.}
+%     \label{fig:switchtime}
+% \end{figure*}
