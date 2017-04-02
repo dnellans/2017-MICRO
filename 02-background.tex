@@ -1,6 +1,8 @@
 \section{Motivation and Background}
 \label{background}
 
+Figure~\ref{fig:ctas} shows the percentage of benchmarks we use in our evalutation that expose enough parallelism to feed larger GPUs than we have today. We provide additional details on the application set in Section~\ref{sec:methodology} and Table~\ref{tab:numctas}. More than 80\% of them have more CTAs (threadblocks) than even an 8$\times$ larger single GPU has Streaming Multiprocessors (SM). Acording to the latest Nvidia's GPU devices~\ref{}, we consider a single GPU to have 64 SMs. Such workloads would be able to exploit larger GPUs, with more SMs, reducing their execution time. Increasing a single GPU performance thus stands as a reasonable way to scale up the existing, as well as future applications.
+
 Single GPU performance has been scaling very well amassing a significant
 growth in per-GPU transistor count and DRAM BW. For example a 2010 Nvidia's
 529mm\textsuperscript{2} Fermi GPUs integrated 1.95B transistors with 180 GB/s
@@ -27,7 +29,7 @@ growing overall transistor counts and DRAM bandwidths.
 \begin{figure}[t] 
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/plot_ctas_per_sm.pdf}
-    \caption{Do we have enough CTAs to fill larger GPUs with more SMs.}
+    \caption{Percentage of benchmarks that have more CTAs on average than available SMs.}
     \label{fig:ctas}
 \end{figure}
 
