@@ -42,15 +42,6 @@ figure GPU0 and GPU2 fully saturate their ingress links, while GPU1 and GPU3
 fully saturate their egress links. At the same time GPU0 and GPU2 pair,
 and GPU1 and GPU3 pair barely use their egress or ingress links accordingly.
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1.0\columnwidth]{figures/tms_links.pdf}
-    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
-    assymeteric capacity assignments}
-    \label{fig:symmetric_assymetric}
-\end{figure}
-
-
 
 Motivated by these findings, we propose to dynamically control multi-socket
 link bandwidth assignments in each direction on a per-GPU basis resulting in
@@ -62,6 +53,8 @@ resources. This mechanism is somewhat similar to DRAM interface for example,
 where the same set of wires is used for both read and write directions
 interchangeably, and link direction is reversed based on a dynamic state of the
 system. 
+
+
 
 Specifically, for basic link configuration we assume and model point-to-point
 links with multiple lanes each, similarly to NVLink
@@ -86,6 +79,14 @@ possible reconfiguration. The cost of switching a lane is comprised of the time
 it takes to drain all the pending packets in a given diretion, and teh time it
 takes to physically reconfigure the lane to start transmitting in the opposite
 direction.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figures/tms_links.pdf}
+    \caption{PLACEHOLDER FOR REAL FIG: Multi-socket systems with symmetric and
+    assymeteric capacity assignments}
+    \label{fig:symmetric_assymetric}
+\end{figure}
 
 ------  Evgeny : still need to add what are teh disadvnatages of assymetric
 (double IO interfaces and switching complexity)

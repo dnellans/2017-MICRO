@@ -33,17 +33,7 @@ growing overall transistor counts and DRAM bandwidths.
     \label{fig:ctas}
 \end{figure}
 
-\begin{figure*}[tp] 
-    \centering
-    \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
-    \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
-and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing 
-upper bound of performance this application can achieve via GPU hardware 
-scaling. For the Locality-Optimized design, applications shown in grey 
-achieve already 99\% of theoretical scaling (\emph{red dash}) without 
-microarchitectural modification.}
-    \label{fig:motivation}
-\end{figure*}
+
 
 The evolution of GPU computing has moved from it being a PCIe attached peripherals 
 to computing platforms designed around the GPU as the primary computing engine. 
@@ -117,4 +107,14 @@ optimizations we first describe the TMS-GPU runtime that consolidates
 prior work from both the NUMA-GPU world and GPU then describe our multi-socket
 GPU methodology.
 
-
+\begin{figure*}[tp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
+    \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
+and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing 
+upper bound of performance this application can achieve via GPU hardware 
+scaling. For the Locality-Optimized design, applications shown in grey 
+achieve already 99\% of theoretical scaling (\emph{red dash}) without 
+microarchitectural modification.}
+    \label{fig:motivation}
+\end{figure*}
