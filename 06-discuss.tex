@@ -1,63 +1,61 @@
-\section {Discussion}
-\label{sec:discussion}
-
-\begin{figure*}[tp]
+\begin{figure*}[t]
     \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_final_speedup_WB_nvlink_first.pdf}
-    \caption{Performance of a 4-socket NUMA-aware GPU compared to a single GPU and a hypothetical 4x large single GPU with proportionally scaled resources.}
-    \label{fig:combined}
+    \includegraphics[width=1.0\textwidth]{figures/plot_scalability_mgpu_WB.pdf}
+    \caption{Performance scalability of a NUMA-aware GPU compared to theoretical 
+    maximum applications performance moving from 1 to 8 GPU sockets.}
+    \label{fig:scalability}
     \vspace{-.2in}
 \end{figure*}
 
-Sections~\ref{sec:interconnect} and~\ref{caching} we explored the performance 
-implications of dynamically managing GPU interconnect bandwidth and allowing 
-individual GPUs to dymnamically allocate on-chip cache capacity to decrease 
-dependance on memory system resources when oversubscribed.  Both of these 
-techniques aim to more efficiently utilize the available system bandwidth within 
-our NUMA multi-GPU system, closing the gap between multi-socket bandwidth and 
-local memory bandwidth.  These two techniques are orthoginal and could be 
-applied in isolation or in combination.  Dynamic interconnect balancing has an 
+\section {Discussion}
+\label{sec:discussion}
+\textbf{Combined Improvement:} Sections~\ref{sec:interconnect} and~\ref{caching} provide two techniques
+aimed at more efficiently utilizing scarce NUMA bandwidth within future
+NUMA multi-GPU system. These two techniques (interconnect balancing and NUMA-aware
+cashing) are orthogonal and can be applied in isolation or combination.  Dynamic 
+interconnect balancing has an 
 implementation advantage in that the system level changes to enable this feature 
-are very isolated from the larger GPU, only the link level load balancer on both 
-the GPU and switch need to be modified.  Conversely, enabling GPU caching of 
-remote memory and dynamic balancing of cache capacity based on interconnect 
+are isolated from the larger GPU design.  Conversely, enabling GPU caching of 
+both remote memory and dynamic balancing of cache capacity based on interconnect 
 utilization requires changes to both the physical cache architectures and the 
 GPU coherence protocol.
 
 Because these two features target similar improvements, when employed together 
 their effects are not strictly additive.  Figure~\ref{fig:combined} shows the 
-improvement when applying both dynamic interconnect and dynamic cache management 
-together.  For benchmarks such as \texttt{CoMD}, these features contribute 
-nearly equally to the overall improvement, but for others such as 
-\texttt{HPGMG} or \texttt{MST}, interconnect improvements or caching are the 
-primary contributor respectively.  On average, we observe that when combined we 
-see XXX\% improvement in multi-GPU performance when applying our proposed 
-optimizations.
+improvement when applying both dynamic interconnects and NUMA-aware cache 
+management together.  For benchmarks such as \texttt{CoMD}, these features 
+contribute nearly equally to the overall improvement, but for others such as 
+\texttt{ML-AlexNet-cudnn-Lev2} or \texttt{HPC-MST-Mesh1}, interconnect 
+improvements or caching are the primary contributor respectively.  On average, 
+we observe that when combined we see XXX\% a XXX\% improvement over the baseline 
+software locality optimized 4-socket NUMA GPU using memory side L2 caches.
 
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_scalability_mgpu_WB.pdf}
-    \caption{Performance scalability of a NUMA-aware GPU compared to theoretical maximim applications performance moving from 1 to 8 GPU sockets.}
-    \label{fig:scalability}
-    \vspace{-.2in}
-\end{figure*}
-
-\textbf{Scalability:} When considering moving from a single socket GPU to
-multi-socket GPU solutions the question arises of what level of efficiency
-can be maintained with this approach.  Figure~\ref{fig:scalability} shows the
-scalability of a multi-socket GPU approach as we move from a single to 
-eight socket multi-GPU implementation.  While larger multi-socket GPUs
-may be possible to power and cool within a single node, we observe that due
-to parallel efficiency XXX, XXX, XXX.
-
-Another paragraph here once we have results.\vspace{1in}
+\textbf{Scalability:} Ultimately, for vendors to produce multi-socket NUMA GPUs
+they must scale efficiently enough for single application customers to see
+large enough performance improvements to justify their cost.  To understand
+the scalability of this approach Figure~\ref{fig:scalability} shows the
+performance of a NUMA-aware multi-socket GPU compared to a single GPU, when
+scaled across 2,4, and 8 sockets respectively.  On average a 2 socket NUMA
+GPU achieves XXX\% speedup, while 4 sockets and 8 sockets achieve XXX\% speedup
+respectively.  Depending on customer expectations these speedups may look attractive
+or lackluster, particularly when per-benchmark variance is included.  However,
+the scalability of NUMA GPU's is not solely dependent on NUMA GPU microarchitecture.
+We observe that for some applications, even if the application was run on much
+larger hypothetical single GPUs, performance would not scale.  This may be due to
+a variety of reasons beyond NUMA effects, including number of CTA's available, expensive
+global synchronizations, or other factors.  Comparing our NUMA-aware GPU implementation
+to this hypothetical scaling that applications could achieve, we see that we can
+achieve XXX\%, XXX\%, and XXX\% of overall application scalability at 2, 4, and 8 socket
+configurations respectively.  This good scaling factor indicates that the NUMA
+aspects of future multi-socket GPUs have largely been eliminated as performance limiters
+in single GPU application scaling via a NUMA-aware GPU design.
 
 \textbf{Multi-Tenancy of Large GPUs:} In this work we have shown that many 
 workloads today have the ability to
 saturate (with sufficient parallel work) a GPU that is at least 4$\times$
 larger than today's GPUs.  With deep data becoming commonplace across many
 computing paradigms, we believe that the trend of having enough computation
-to saturate much larger single GPUs will continue into the forseeable future.
+to saturate much larger single GPUs will continue into the foreseeable future.
 However, when GPUs become larger at the expense of having multiple discrete
 GPUs within the system, questions related to GPU provisioning arise.  Applications
 that cannot saturate such a GPU will leave resources underutilized and applications
@@ -80,182 +78,4 @@ What happens to all the extra bandwidth we need over the interconnect and
 power.  we should calculate the extra power but note that even using P2P GPU
 access there will still be many remote accesses.  unfortunately we can't quantify
 that differential because (drives the point home) there are not multi-GPU versions
-for most of our 40+ benchmarks.
-
-% 
-% % 
-% % One use case in the future
-% % may be that GPU programmers will size their application's data to extend well 
-% beyond
-% % the performance-optimal footprint in CPU and GPU memory.  With excess data 
-% spilling over
-% % into the additional capacity provided by the CPU memory, performance
-% % bottlenecks will shift away from the GPU towards the CPU memory system.  In 
-% such
-% % cases, the GPU caching policy for CPU memory will come under additional 
-% pressure due to
-% % the increased traffic skewed towards CPU memory.
-% % 
-% % To understand how selective caching affects performance under such a scenario, 
-% we evaluate
-% % a situation wherein the application data has been
-% % sized so that 90\% of the footprint resides in CPU memory and just 10\% can 
-% fit within GPU memory, as compared to the nearly
-% % inverse performance-optimal 20\%-80\% ratio.
-% % Figure~\ref{fig:capacityconstrained} shows the performance of this 
-% memory-capacity-constrained case relative 
-% % to the baseline optimal ratio.  We see that naive selective caching and
-% % our proposed enhancements follow the same trend of performance improvements
-% % shown previously in Section~\ref{results}.  Because this scenario is primarily 
-% limited
-% % by the CPU memory system, we see that in some cases the client cache and 
-% variable sized transfer interconnect optimizations
-% % can actually outperform the hardware cache-coherent GPU due to a reduction in 
-% data overfetch between the CPU memory and the GPU client.
-% % To validate our observation, we added the same client cache and variable
-% % transfers to the hardware cache-coherent baseline configuration and saw an 
-% average
-% % speedup of 4.5\%.  Whereas the absolute
-% % performance achieved, compared to a performance-optimal memory footprint and 
-% allocation, may not always be compelling, should
-% % software designers chose to partition their problems in this way, we believe 
-% selective caching will continue to 
-% % perform as well as a hardware cache-coherent GPU.
-% % 
-% % \begin{figure}[t]
-% % \includegraphics[width=1.0\columnwidth]{figures/capacityconstrained.png}
-% % \caption{GPU performance under memory capacity constraints. (CC: Client-Cache,
-% % VT: Variable-sized Transfer Units)}
-% % \label{fig:capacityconstrained}
-% % \end{figure}
-% % 
-% % In this work, we have primarily investigated a system where bandwidth-aware 
-% page placement
-% % provides an initial page placement that has been shown to have optimal 
-% performance~\cite{Agarwal2015}.
-% % Bandwidth-aware page placement is based on the premise that the GPU will place 
-% pressure on
-% % the CPU and GPU memory system in proportion to the number of pages placed in 
-% each memory.  Proposals
-% % like selective caching that change the on-chip caching policy of the GPU can 
-% cause dramatic
-% % shifts in the relative pressure placed on each memory system, effectively 
-% changing the bandwidth-optimal 
-% % placement ratio.  Although we do not evaluate this phenomenon in this work, 
-% balancing
-% % initial page placement with dynamic page migration to help compensate for the 
-% lack of on-chip
-% % caching is an area that needs further investigation.
-% % 
-% % \section{Related Work}
-% % \label{related_work}
-% % 
-% % Cache coherence for CPUs has received great attention in the literature.
-% % Recent proposals have started to explore intra-GPU and CPU--GPU cache 
-% coherence.
-% % 
-% % \textbf{CPU Systems:} Scalable cache coherence has been studied extensively 
-% for CPU-based
-% %  multicore systems. Kelm et al. show that scaling up coherence to hundreds
-% % or thousands of cores will be difficult without moving away from pure
-% % hardware-based coherence~\cite{Kelm2009,Hill92}, due to high directory storage
-% % overheads and coherence traffic~\cite{Lebeck95,Cheng06}.  
-% % Whereas some groups have
-% % evaluated software shared memory implementations~\cite{Falsafi94,Hill92}, 
-% Martin
-% % et al. argue that hardware cache coherence for mainstream processors is here 
-% to
-% % stay, because shifting away from it simply shifts the burden of correctness 
-% into
-% % software instead of hardware~\cite{Martin2012}. Nevertheless, disciplined 
-% programming
-% % models coupled with efficient hardware implementations are still being 
-% pursued~\cite{choi2011,Sung2013,Sung2015}.
-% % 
-% % Self-invalidation protocols have been proposed to reduce invalidation traffic 
-% and reduce
-% % coherence miss latency~\cite{Lebeck95,Lai2000}. Our selective caching request 
-% coalescing scheme uses a similar idea,
-% % discarding a block immediately after fulfilling requests pending at the MSHR.
-% % Other proposals have classified data into private, shared, and
-% % instruction pages and have devised techniques to curtail coherence 
-% transactions
-% % for private data~\cite{Pugsley2010,Hardavellas2009,Cuesta2011,Ros2012}. We 
-% instead classify
-% % pages into read-only versus read-write and exploit the fact that read-only 
-% data
-% % can be safely cached in incoherent caches.
-% % 
-% % Ros and Kaxiras~\cite{Ros2012} have proposed a
-% % directory\hyp{}less\slash{}broadcast\hyp{}less coherence protocol where all 
-% shared
-% % data is self\hyp{}invalidated at synchronization points. In this scheme,
-% % at each synchronization point (e.g., lock acquire/release, memory barrier) all
-% % caches need to be searched for shared lines and those lines have to be
-% % flushed---an expensive operation to implement across hundreds of GPU caches 
-% with data
-% % shared across thousands of concurrent threads.
-% % 
-% % \textbf{Heterogeneous Systems and GPUs:} With the widespread adoption of GPUs 
-% as a primary
-% % computing platform, the integration of CPU and GPU systems has
-% % resulted in multiple works assuming that CPUs and GPUs will eventually become
-% % hardware cache-coherent with shared page
-% % tables~\cite{power2014,Pichai2014,Agarwal2015,Agarwal2015b}.  CPU--GPU 
-% coherence
-% % mechanisms have been investigated, revisiting many ideas from distributed 
-% shared
-% % memory and coherence verification~\cite{Gelado2010,wu2014,Kaxiras2013}. Power 
-% et
-% % al.~\cite{Power2013} target a hardware cache-coherent CPU--GPU system by
-% % exploiting the idea of region
-% % coherence~\cite{Cantin2005,Alisafaee2012,Moshovos2005,Zebchuk2007}. They treat 
-% the CPU and the
-% % GPU as separate regions and mitigate the effects of coherence traffic by
-% % replacing a standard directory with a region directory. 
-% % In contrast, we identify that CPUs and GPUs need not be cache-coherent; 
-% % the benefits of unified shared memory can also be achieved via selective 
-% caching, which has lower
-% % implementation complexity.
-% % 
-% % Mixing incoherent and coherent shared address spaces has been explored before 
-% in the context of
-% % CPU-only systems~\cite{Huh04} and the appropriate memory model for mixed
-% % CPU--GPU systems is still up for
-% % debate~\cite{Lim2012,Hechtman2014,Hower2014,Gaster2015}.  Hechtman et 
-% al.~propose 
-% % a consistency model for GPUs based on release consistency, which allows
-% % coherence to be enforced only at release operations.  They propose a 
-% % write-through no-write-allocate write-combining cache that tracks dirty data
-% % at byte granularity.  Writes must be flushed (invalidating other cached 
-% copies) only 
-% % at release operations.  Under such a consistency model, our selective caching 
-% scheme 
-% % can be used to avoid the need to implement hardware support for these 
-% invalidations between
-% % the CPU and GPU.
-% % 
-% % Cache coherence for GPU-only systems has been studied by
-% % Singh et al.~\cite{Singh2013}, where they propose a timestamp-based hardware 
-% % cache-coherence protocol to self-invalidate cache lines. Their scheme targets 
-% % single-chip systems and would require synchronized timers across multiple 
-% % chips when implemented in multi-chip CPU--GPU environments.
-% % Kumar et al.~\cite{Kumar2015} examine CPUs and fixed-function accelerator
-% % coherence, balancing coherence and DMA transfers to prevent data ping-pong.
-% % Suh et al.~\cite{Suh2004} propose integrating different coherence
-% % protocols in separate domains (such as MESI in one domain and MEI in 
-% another). 
-% % However, this approach requires invasive changes to
-% % the coherence protocols implemented in both domains and
-% % requires significant implementation effort by both CPU and GPU vendors.
-% % 
-% % \textbf{Bloom Filters:} Bloom Filters~\cite{Bloom1970} and Cuckoo
-% % Filters~\cite{Pagh2004,fan2014} have been used by several
-% % architects~\cite{Strauss2006,Zebchuk2009,Hongzhou2011} in the past. Fusion
-% % coherence~\cite{wu2014} uses a cuckoo directory to optimize for power and area 
-% in
-% % a CMP system. JETTY filters~\cite{Moshovos2001} have been proposed for 
-% reducing
-% % the energy spent on snoops in an SMP system. We use a cuckoo filter to 
-% implement
-% % the GPU remote directory.
+for most of our 41 benchmarks.
