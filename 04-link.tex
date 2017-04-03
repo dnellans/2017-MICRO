@@ -14,7 +14,7 @@
 \end{figure}
 
 \section{Asymmetric Links for TMS-GPUs}
-\label{interconnect}
+\label{sec:interconnect}
 
 Figure~\ref{fig:symmetric_assymetric}(a) shows a generic multi-socket system
 with symmetric bandwidth assignments at each inter-socket communication link.
@@ -38,7 +38,7 @@ egress and ingress channels in different phases of execution.
 Figure~\ref{fig:link-motivation} shows dynamic link utilization for a snapshot
 of \texttt{HPC-HPGMG-UVM} application running on our baseline 4 GPUs TMS-GPU
 system. Vertical dotted black lines represent the beginning kernel calls that
-are split across 4 sockets as explained in Section~\ref{background}. We can see
+are split across 4 sockets as explained in Section~\ref{sec:background}. We can see
 that few initial small kernels have a negligible interconnect
 utilization on all links. However, for the the upcoming larger kernels at the
 figure, GPU0 and GPU2 fully saturate their ingress links, while GPU1 and GPU3

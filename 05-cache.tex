@@ -1,8 +1,6 @@
-
-
 \section{NUMA-Aware Cache Management}
 \label{caching}
-In Section~\ref{interconnect} we have shown that intersocket bandwidth is one
+In Section~\ref{sec:interconnect} we have shown that intersocket bandwidth is one
 of the most important factors in achieving scalable NUMA-GPU performance. By
 dynamically retraining the link to support asymmetric bandwidth configurations,
 rather than a static half-half balance, we are able to improve the performance
@@ -154,12 +152,10 @@ a NUMA-aware cache policy for our 4-socket GPU system.  By implementing our dyna
 policy, all caches in the multi-GPU system are able to independently change their local
 behavior based on just four hardware counters monitoring the outgoing and incoming
 NVLink bandwidth, utilizing the same sampling hardware and mechanism described in 
-Section~\ref{interconnect}.  We see that dynamic partitioning can improve average GPU
+Section~\ref{sec:interconnect}.  We see that dynamic partitioning can improve average GPU
 performance by XXX\%.  More explain here.
 
-
-
- When extending the software controlled GPU coherence protocol into the GPU L2 caches,
+When extending the software controlled GPU coherence protocol into the GPU L2 caches,
 L1 coherence operations (flushes) must also be extended into the GPU L2 caches.  To understand
 the impact of these coherence operations on our dynamic cache performance we evaluated a hypothetical
 cache implementation that need not flush on software defined boundaries.  This experiment
