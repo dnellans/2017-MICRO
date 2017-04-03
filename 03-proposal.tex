@@ -35,18 +35,16 @@ advancements, we assume that through dynamic compilation of PTX to SASS at
 executions the GPU runtime will be able to statically identify and promote 
 system wide memory fences as well as manage sub-kernel CTA identifiers.
 
-Current GPUs perform fine grained memory interleaving at a sub-page granularity
-across memory channels.  In a NUMA GPU this policy would destroy locality and
-result in 75\% of all accesses to be to remote memory in a 4 GPU system, an
+Current GPUs perform fine grained memory interleaving at a sub-page granularity 
+across memory channels.  In a NUMA GPU this policy would destroy locality and 
+result in 75\% of all accesses to be to remote memory in a 4 GPU system, an 
 undesireable effect in NUMA systems.  Similarly, a round-robin page level 
-interleaving
-could be utilized, similar to the Linux INTERLEAVE page allocation strategy,
-but despite the inherent memory load balancing, this still results in 75\% of
-memory accesses occurring over low bandwidth NUMA links. Instead we leverage
-UVM page migration functionality to migrate pages on-demand from system memory 
-to local GPU memory as soon as the first access (also called first-touch 
-allocation) 
-is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
+interleaving could be utilized, similar to the Linux INTERLEAVE page allocation 
+strategy, but despite the inherent memory load balancing, this still results in 
+75\% of memory accesses occurring over low bandwidth NUMA links. Instead we 
+leverage UVM page migration functionality to migrate pages on-demand from system 
+memory to local GPU memory as soon as the first access (also called first-touch 
+allocation) is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
 
 On a single-GPU fine grain dynamic assignment of CTAs to SMs is performed to 
 achieve good load balancing.  Extending this policy to a multi-socket GPU 
@@ -108,31 +106,35 @@ achievable with NUMA-aware multi-socket GPUs.
 \subsection{Simulation Methodology}
 \label{sec:methodology}
 
-To evaluate the performance of multi-socket GPUs we use a proprietary, 
-cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
-applications. For our baseline, we model a single GPU that approximates the 
-latest NVIDIA Pascal architecture~\cite{pascal-tesla-wp}. Each of the 
-Streaming Multiprocessors (SM) is modeled as an in-order processor with 
-multiple levels of cache hierarchy containing private, per-SM, L1 caches and 
-multi-banked, shared, L2 cache. Each GPU is backed by its local high 
-bandwidth DRAM memory. Our multi-socket GPU system contains four of these 
-GPUs interconnected through a full bandwidth GPU switch as shown on 
-Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview 
-of the simulation parameters.
+To evaluate the performance of future NUMA-aware multi-socket GPUs we use a 
+proprietary, cycle-level, trace-driven simulator for single and multi-GPU 
+systems. Our baseline GPU in both single GPU and multi-socket GPU 
+configurations, approximates the latest NVIDIA Pascal 
+architecture~\cite{pascal-tesla-wp}. Each streaming multiprocessors (SM) is 
+modeled as an in-order processor with multiple levels of cache hierarchy 
+containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
+GPU is backed by local on-package high bandwidth memory~\cite{HBM}. Our 
+multi-socket GPU systems contains two to eight of these GPUs interconnected 
+through a full bandwidth GPU switch as shown on Figure~\ref{fig:systemdiagram}. 
+Table~\ref{tab:setup} provides a more detailed overview of the simulation 
+parameters.
 
-We study our proposal using 41 workloads taken from a broad range of 
+We study the scalability of multi-socket NUMA GPUs using 41 workloads 
+taken from a range of 
 production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
-applications from Lonestar~\cite{lonestar}, compute applications from 
+applications from Lonestar~\cite{lonestar}, HPC applications from 
 Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
 This set of workloads covers a wide spectrum of GPU applications used in 
-machine 
-learning, fluid dynamic, image manipulation, graph traversal, scientific 
-computing, etc. We run our simulations until the completion of the entire 
-applications or the number of kernels shown on Table~\ref{tab:numctas}.
-Table~\ref{tab:numctas} shown after the conclusions is provided to show
-more complete data about each workload including average number of CTAs for each
-application (weighed by the time spent on each kernel) and the memory 
-footprint in MB.
+machine learning, fluid dynamic, image manipulation, graph traversal, and
+scientific computing.  Each of our benchmarks is hand selected to identify
+the region of interest deemed representative for each workload, which may
+be as small as a single kernel containing a tight inner loop or several thousand
+kernel invocations.  We run each benchmark to completion for the determine
+region of interest. Table~\ref{tab:numctas} provides both the memory footprint
+of these workloads as well as the average number of active CTAs in the workload
+(weighted by the time spent on each kernel) to provide a representation of 
+how many parallel threadblocks (CTAs) can are generally available
+during workload execution.
 
 \begin{table}[tp]
 \begin{small}
@@ -166,6 +168,7 @@ DRAM Bandwidth & 768GB/s per GPU socket\\
 DRAM Latency & 100ns \\
 \toprule
 \end{tabular}
+\vspace{-.1in}
 \caption{Simulation parameters for evaluation of single and multi-socket GPU 
 systems.}
 \label{tab:setup}
@@ -176,59 +179,121 @@ systems.}
 \begin{table}[t]
 \begin{small}
 \centering
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
  \toprule
- \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & 
+ \textbf{Benchmark} & \textbf{Time-weighted} & 
 \textbf{Memory} \\
-& & \textbf{Average CTAs} & \textbf{(MB)} \\
+& \textbf{Average CTAs} & \textbf{(MB)} \\
  \toprule
-ML-GoogLeNet-cudnn-Lev2 & 1 & 6272 & 1205 \\
-ML-AlexNet-cudnn-Lev2 & 1 & 1250 & 832 \\
-ML-OverFeat-cudann-Lev3 & 1 & 1800 & 388 \\
-ML-AlexNet-cudnn-Lev4 & 1 & 1014 & 32 \\
-ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
-Rodinia-Backprop & 2 & 4096 & 160 \\
-Rodinia-Euler3D & 346 & 1008 & 25 \\
-Rodinia-BFS & 24 & 1954 & 38 \\
-Rodinia-Gaussian & 510 & 2599 & 78 \\
-Rodinia-Hotspot & 1 & 7396 & 64 \\
-Rodinia-Kmeans & 3 & 3249 & 221 \\
-Rodnia-Pathfinder & 20 & 4630 & 1570 \\
-Rodinia-Srad & 4 & 16384 & 98 \\
-HPC-SNAP & 118 & 200 & 744 \\
-HPC-Nekbone-Large & 300 & 5583 & 294 \\
-HPC-MiniAMR & 33 & 76033 & 2752 \\
-HPC-MiniContact-Mesh1 & 500 & 250 & 21 \\
-HPC-MiniContact-Mesh2 & 127 & 15423 & 257 \\
-HPC-Lulesh-Unstruct-Mesh1 & 2000 & 435 & 19 \\
-HPC-Lulesh-Unstruct-Mesh2 & 200 & 4940 & 208 \\
-HPC-AMG & 88 & 241549 & 3744 \\
-HPC-RSBench & 1 & 7813 & 19 \\
-HPC-MCB & 1 & 5001 & 162 \\
-HPC-NAMD2.9 & 1 & 3888 & 88 \\
-HPC-RabbitCT & 1 & 131072 & 524 \\
-HPC-Lulesh & 105 & 12202 & 578 \\
-HPC-CoMD & 350 & 3588 & 319 \\
-HPC-CoMD-Wa & 350 & 13691 & 393 \\
-HPC-CoMD-Ta & 350 & 5724 & 394 \\
-HPC-HPGMG-UVM & 359 & 10436 & 1975 \\
-HPC-HPGMG & 317 & 10506 & 1571 \\
+ML-GoogLeNet-cudnn-Lev2 & 6272 & 1205 \\
+ML-AlexNet-cudnn-Lev2 & 1250 & 832 \\
+ML-OverFeat-cudann-Lev3 & 1800 & 388 \\
+ML-AlexNet-cudnn-Lev4 & 1014 & 32 \\
+ML-AlexNet-ConvNet2 & 6075 & 97 \\
+Rodinia-Backprop & 4096 & 160 \\
+Rodinia-Euler3D & 1008 & 25 \\
+Rodinia-BFS  & 1954 & 38 \\
+Rodinia-Gaussian  & 2599 & 78 \\
+Rodinia-Hotspot  & 7396 & 64 \\
+Rodinia-Kmeans  & 3249 & 221 \\
+Rodnia-Pathfinder  & 4630 & 1570 \\
+Rodinia-Srad  & 16384 & 98 \\
+HPC-SNAP  & 200 & 744 \\
+HPC-Nekbone-Large & 5583 & 294 \\
+HPC-MiniAMR & 76033 & 2752 \\
+HPC-MiniContact-Mesh1  & 250 & 21 \\
+HPC-MiniContact-Mesh2  & 15423 & 257 \\
+HPC-Lulesh-Unstruct-Mesh1  & 435 & 19 \\
+HPC-Lulesh-Unstruct-Mesh2  & 4940 & 208 \\
+HPC-AMG & 241549 & 3744 \\
+HPC-RSBench  & 7813 & 19 \\
+HPC-MCB  & 5001 & 162 \\
+HPC-NAMD2.9  & 3888 & 88 \\
+HPC-RabbitCT  & 131072 & 524 \\
+HPC-Lulesh  & 12202 & 578 \\
+HPC-CoMD  & 3588 & 319 \\
+HPC-CoMD-Wa  & 13691 & 393 \\
+HPC-CoMD-Ta  & 5724 & 394 \\
+HPC-HPGMG-UVM  & 10436 & 1975 \\
+HPC-HPGMG  & 10506 & 1571 \\
 %HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
-Lonestar-SP & 11 & 75 & 8 \\
-Lonestar-MST-Graph & 87 & 770 & 86 \\
-Lonestar-MST-Mesh & 71 & 895 & 75 \\
+Lonestar-SP & 75 & 8 \\
+Lonestar-MST-Graph & 770 & 86 \\
+Lonestar-MST-Mesh & 895 & 75 \\
 %HPC-Nekbone-medium & 510 & 3093 & 170 \\
-Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
-Lonestar-DMR & 3 & 82 & 248 \\
-Lonestar-SSSP-Wlc & 1300 & 163 & 21 \\
-Lonestar-SSSP & 102 & 1046 & 38 \\
-Other-Stream-Triad & 5 & 699051 & 3146 \\
-Other-Optix-Raytracing & 1 & 3072 & 87 \\
-Other-Bitcoin-Crypto & 1 & 60 & 5898 \\
+Lonestar-SSSP-Wln & 60 & 21 \\
+Lonestar-DMR  & 82 & 248 \\
+Lonestar-SSSP-Wlc  & 163 & 21 \\
+Lonestar-SSSP  & 1046 & 38 \\
+Other-Stream-Triad  & 699051 & 3146 \\
+Other-Optix-Raytracing  & 3072 & 87 \\
+Other-Bitcoin-Crypto  & 60 & 5898 \\
 \toprule
 \end{tabular}
+\vspace{-.1in}
 \caption{Application footprint and average number of CTAs (thread blocks) 
 available during time-weighted execution.}
 \label{tab:numctas}
 \end{small}
 \end{table}
+
+
+% \begin{table}[t]
+% \begin{small}
+% \centering
+% \begin{tabular}{lccc}
+%  \toprule
+%  \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & 
+% \textbf{Memory} \\
+% & & \textbf{Average CTAs} & \textbf{(MB)} \\
+%  \toprule
+% ML-GoogLeNet-cudnn-Lev2 & 1 & 6272 & 1205 \\
+% ML-AlexNet-cudnn-Lev2 & 1 & 1250 & 832 \\
+% ML-OverFeat-cudann-Lev3 & 1 & 1800 & 388 \\
+% ML-AlexNet-cudnn-Lev4 & 1 & 1014 & 32 \\
+% ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
+% Rodinia-Backprop & 2 & 4096 & 160 \\
+% Rodinia-Euler3D & 346 & 1008 & 25 \\
+% Rodinia-BFS & 24 & 1954 & 38 \\
+% Rodinia-Gaussian & 510 & 2599 & 78 \\
+% Rodinia-Hotspot & 1 & 7396 & 64 \\
+% Rodinia-Kmeans & 3 & 3249 & 221 \\
+% Rodnia-Pathfinder & 20 & 4630 & 1570 \\
+% Rodinia-Srad & 4 & 16384 & 98 \\
+% HPC-SNAP & 118 & 200 & 744 \\
+% HPC-Nekbone-Large & 300 & 5583 & 294 \\
+% HPC-MiniAMR & 33 & 76033 & 2752 \\
+% HPC-MiniContact-Mesh1 & 500 & 250 & 21 \\
+% HPC-MiniContact-Mesh2 & 127 & 15423 & 257 \\
+% HPC-Lulesh-Unstruct-Mesh1 & 2000 & 435 & 19 \\
+% HPC-Lulesh-Unstruct-Mesh2 & 200 & 4940 & 208 \\
+% HPC-AMG & 88 & 241549 & 3744 \\
+% HPC-RSBench & 1 & 7813 & 19 \\
+% HPC-MCB & 1 & 5001 & 162 \\
+% HPC-NAMD2.9 & 1 & 3888 & 88 \\
+% HPC-RabbitCT & 1 & 131072 & 524 \\
+% HPC-Lulesh & 105 & 12202 & 578 \\
+% HPC-CoMD & 350 & 3588 & 319 \\
+% HPC-CoMD-Wa & 350 & 13691 & 393 \\
+% HPC-CoMD-Ta & 350 & 5724 & 394 \\
+% HPC-HPGMG-UVM & 359 & 10436 & 1975 \\
+% HPC-HPGMG & 317 & 10506 & 1571 \\
+% HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
+% Lonestar-SP & 11 & 75 & 8 \\
+% Lonestar-MST-Graph & 87 & 770 & 86 \\
+% Lonestar-MST-Mesh & 71 & 895 & 75 \\
+% HPC-Nekbone-medium & 510 & 3093 & 170 \\
+% Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
+% Lonestar-DMR & 3 & 82 & 248 \\
+% Lonestar-SSSP-Wlc & 1300 & 163 & 21 \\
+% Lonestar-SSSP & 102 & 1046 & 38 \\
+% Other-Stream-Triad & 5 & 699051 & 3146 \\
+% Other-Optix-Raytracing & 1 & 3072 & 87 \\
+% Other-Bitcoin-Crypto & 1 & 60 & 5898 \\
+% \toprule
+% \end{tabular}
+% \caption{Application footprint and average number of CTAs (thread blocks) 
+% available during time-weighted execution.}
+% \label{tab:numctas}
+% \end{small}
+% \end{table}
