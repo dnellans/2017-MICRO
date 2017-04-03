@@ -1,14 +1,15 @@
 \section {Discussion}
+\label{sec:discussion}
 
-\label{discussion}
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_final_speedup_WB_nvlink_first.pdf}
     \caption{Performance of a 4-socket NUMA-aware GPU compared to a single GPU and a hypothetical 4x large single GPU with proportionally scaled resources.}
     \label{fig:combined}
+    \vspace{-.2in}
 \end{figure*}
 
-In Sections~\ref{sec:interconnect} and~\ref{caching} we explored the performance 
+Sections~\ref{sec:interconnect} and~\ref{caching} we explored the performance 
 implications of dynamically managing GPU interconnect bandwidth and allowing 
 individual GPUs to dymnamically allocate on-chip cache capacity to decrease 
 dependance on memory system resources when oversubscribed.  Both of these 
@@ -38,6 +39,7 @@ optimizations.
     \includegraphics[width=1.0\textwidth]{figures/plot_scalability_mgpu_WB.pdf}
     \caption{Performance scalability of a NUMA-aware GPU compared to theoretical maximim applications performance moving from 1 to 8 GPU sockets.}
     \label{fig:scalability}
+    \vspace{-.2in}
 \end{figure*}
 
 \textbf{Scalability:} When considering moving from a single socket GPU to
