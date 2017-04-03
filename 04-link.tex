@@ -16,6 +16,8 @@
 \section{Asymmetric Links for TMS-GPUs}
 \label{sec:interconnect}
 
+
+
 Figure~\ref{fig:symmetric_assymetric}(a) shows a generic multi-socket system
 with symmetric bandwidth assignments at each inter-socket communication link.
 Static link capacity assignment at design time is very common and has multiple
@@ -45,6 +47,8 @@ figure, GPU0 and GPU2 fully saturate their ingress links, while GPU1 and GPU3
 fully saturate their egress links. At the same time GPU0 and GPU2 pair,
 and GPU1 and GPU3 pair barely use their egress or ingress links accordingly.
 
+In the rest of the workloads we observe other inter-socket traffic patterns that would prefer a disproportional bandwidth distribution. Typical scenario is writing to the same memory section by all CTAs at the end of a kernel (parallel reductions, data gathering). For CTAs running on one of the sockets, GPU0 for example, those memory instructions are local and does not produce any traffic through the inter-socket interconnection network. Contrarly, CTAs dispatched to other GPUs issue remote memory writes, saturating their egress links while ingress links remain underutilized. Such a communication pattern utilizes only 50\% of available bandwidth. Increasing the number of ingress links for GPU0 (by turning around direction of egress ones), and switching the direction of ingress channels for all the other GPUs, we potentially imporve the performance by enhancing the usage of NVLink. 
+
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
@@ -63,7 +67,7 @@ essentially higher effective bandwidth and performance for a given set of I/O
 resources. This mechanism is somewhat similar to DRAM interface for example,
 where the same set of wires is used for both read and write directions
 interchangeably, and link direction is reversed based on a dynamic state of the
-system~\textbf{need some citation here}. 
+system~\cite{}. 
 
 For basic link configuration we assume and model point-to-point
 links with multiple lanes each, similarly to NVLink
@@ -71,10 +75,10 @@ sub-links~\cite{pascal-tesla-wp}.  In such link, 8 lanes with 8GB/s capacity
 per lane results in an aggregate bandwidth of 64GB/s in each direction. We
 propose an adaptive asymmetric scheme that works as following. For each link
 in the system, at kernel launch we start with symmetric link assignments with 8
-lanes per direction. Then, we propose to periodically sample the saturation
+lanes per direction. Then, we periodically sample the saturation
 status of each link. If the lanes in one direction are not saturated, while the
 lanes in the opposite direction are 99\% saturated, we reverse the direction of
-one of the unsaturated lanes. Periodically repeating and sampling the lanes
+one of the unsaturated lanes. Repeating the previous step and sampling the lanes
 status, we stop either when equilibrium is reached, or alternatively all the 
 lanes but one have been reversed (we always keep a minimum bandwidth of 8GB/s 
 in each direction).  
@@ -112,11 +116,13 @@ while dynamic lane switching achieves up to 80\% performance improvement
 that the sampling frequency plays a critical role and a too large sample time 
 doesn't capture application dynamics resulting in smaller improvements. We 
 find 5K cycles to be a reasonable sampling period able to achieve good 
-results and never degrade performance. 
+results without degrading performance.
+
+For many benchmarks, like \texttt{Rodinia-Euler-3D}, \texttt{HPC-AMG}, and \texttt{HPC-Lulesh}, doubling the NVLink bandwidth provides 2$\times$ speedup, while our proposed dynamic link assignment mechanism is not able to significantly improve the performance. Indeed, those are the workloads that saturate both link directions, so there is no opportunity to provide additional bandwidth by turning links around. For the rest of the workloads on the left side, performance improvement is directly proportional to the actual link utilization of unsaturated lanes. For example, consider a case where a GPU fully saturates its egress links and incoming traffic achieves only 75\% of ingress bandwidth (using 6 out of 8 lanes). Then, adaptive policy is able to increase the outgoing bandwidth for a maximal 25\% by turning around those 2 unused ingress lanes. If such a traffic communication pattern is sustained throughout 50\% of execution time, the maximal performance improvement that our dynamic link assignment can achieve is 12.5\%.
 
 Another important parameter is switching period needed to turn around a 
 single lane direction. Our results point that higher \texttt{SwitchTime} 
-values, like 200 and 500 cycles, only degrade the average performance by less 
+values, like 200 and 500 cycles, degrade the average performance by less 
 than 2\% compared to 100 cycle switching period. We observe the maximum 
 slowdown of 25\% in case of \texttt{HPC-CoMD-Ta} and \texttt{HPC-CoMD-Wa} 
 when switch time reaches 500 cycles. At the same time, faster lane switch (10 
