@@ -57,7 +57,7 @@ sub-kernels, in attempt to mimic the way pages interleave across memories.
 In Figure~\ref{fig:motivation} we show the relative performance of a 4-Socket 
 TMS-GPU with respect to a single-GPU for two possible CTA scheduling and 
 memory placement strategies explained above. For a detailed explanation of 
-methodology and benchmark suites see Section~\ref{methodology}. With the 
+methodology and benchmark suites see Section~\ref{sec:methodology}. With the 
 \emph{green bars} we show relative performance of the natural extension to 
 the traditional single GPU scheduling and memory interleaving to multi-GPU, 
 which consists in memory page interleave and sub-kernel CTA interleave. With 
@@ -71,7 +71,7 @@ placement (minimizing remote data access and ensuring good load balancing)
 can not be completely decoupled and pathological case can always be found. It 
 is important to stress that we are not claiming the Locality-Optimized 
 solution as a contribution of this paper (very similar considerations and 
-findings can be found in~\cite{Cabezas2015, Arunkumar2017}). Instead, we are 
+findings can be found in~\cite{Cabezas2015,Arunkumar2017}). Instead, we are 
 setting up a basic TMS-GPU architecture in which we can apply and present our 
 proposed NUMA-aware optimizations.
 
@@ -140,7 +140,7 @@ systems.}
 To evaluate the performance of multi-socket GPUs we use a proprietary, 
 cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
 applications. For our baseline, we model a single GPU that approximates the 
-latest NVIDIA Pascal architecture~\cite{inside-pascal}. Each of the 
+latest NVIDIA Pascal architecture~\cite{pascal-tesla-wp}. Each of the 
 Streaming Multiprocessors (SM) is modeled as an in-order processor with 
 multiple levels of cache hierarchy containing private, per-SM, L1 caches and 
 multi-banked, shared, L2 cache. Each GPU is backed by its local high 

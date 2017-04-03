@@ -22,7 +22,7 @@ not supported by strong hardware coherence protocols~\cite{XXX}.  They also diff
 from CPU protocols in that caches designed for a single uniform memory access GPU
 may be both processor side (where some form of coherence is typically necessary)
 or they may be memory side (where coherence is not necessary).  As described in
-Table~\ref{methodology} and shown in Figure~\ref{fig:cacheorg}, a GPU today is
+Table~\ref{tab:setup} and shown in Figure~\ref{fig:cacheorg}, a GPU today is
 typically composed of relatively large SW managed coherent L1 caches that are 
 physically proximal to the SM's, while a relatively small, distributed, non-coherent 
 L2 cache resides memory side close to the memory controllers.  This
@@ -49,7 +49,7 @@ depend on fine grained memory interleaving is a bad decision because these memor
 side caches are not able to cache remote memory, and thus cannot reduce NUMA
 interconnect traffic.  Previous work has proposed that GPU L2 cache capacity
 should be split between memory-side caches and a new processor-side L1.5 cache
-that is an extension of the GPU L1 caches~\ref{Arunkumar2017} for caching remote
+that is an extension of the GPU L1 caches~\cite{Arunkumar2017} for caching remote
 data only.  By balancing this capacity between local and remote caches they limit the 
 need for invalidating the entire L2 cache capacity when extending the GPU coherence 
 into the L1.5 cache while still minimizing crossbar bandwidth. An example of this 
@@ -57,7 +57,7 @@ organization is shown in Figure~\ref{fig:cacheorg}-b.
 
 In NUMA-GPUs the differential in local versus remote NUMA bandwidth is so great
 that its not clear what the appropriate split between L1.5 and L2 capacity should be
-if using a similar organization.  To understand this trade-off Figure~\ref{fig:staticcache}
+if using a similar organization.  To understand this trade-off FIGURE REF REMOVED REWRITE ME
 shows the performance improvement when moving from a local only (memory side cache)
 to remote-only (processor side caching non-local data) cache.  Unlike the conclusions
 of the previous work, we find that for our multi-socket NUMA-GPU, allocating
@@ -86,7 +86,7 @@ cache policy should outperform any static policy. Second, while we show that man
 applications will be able to completely utilize large NUMA-GPUs, this may not always
 be the case.  GPUs within the data center are being virtualized and there is on-going
 work to support concurrent execution of multiple kernels and/or processes within a
-single GPU~\ref{}. If a large NUMA-GPU is subpartitioned, it is intuitive that system
+single GPU~\cite{XXX}. If a large NUMA-GPU is subpartitioned, it is intuitive that system
 software attempt to partition it along the NUMA boundaries so that a single small
 application need not endure NUMA effects.  To effectively capture locality in such
 a situation, NUMA-aware GPUs need to be able to flexibly move from 100\% local to
