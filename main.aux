@@ -1,0 +1,143 @@
+\relax 
+\citation{intersect360,cudnn,Lavin15b,SimonyanZ14a}
+\citation{CUDA7,OPENCL}
+\citation{mooredead2016}
+\citation{NVIDIAP2P}
+\citation{NVIDIAMPI}
+\citation{dgx,SierraHPC,AMDINFINITYFABRIC}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}}
+\newlabel{introduction}{{1}{1}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces The evolution of GPUs from discrete pluggable PCIe devices to high pin-count multi-socket accelerators utilizing switched interconnects.\relax }}{1}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:systemdiagram}{{1}{1}}
+\citation{lee2013transparent,Cabezas2015}
+\citation{UVM}
+\citation{NVLINK}
+\citation{SierraHPC}
+\citation{HBM}
+\citation{verbree2010cost}
+\citation{dgx}
+\citation{NVLINK,INTELQPI,AMDHT}
+\citation{CUDA,OPENCL}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Motivation and Background}{2}}
+\newlabel{sec:background}{{2}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Percentage of benchmarks that have more CTAs on average than available SMs.\relax }}{2}}
+\newlabel{fig:ctas}{{2}{2}}
+\citation{dgx}
+\citation{Cabezas2015}
+\citation{UVM}
+\citation{NVLINK}
+\citation{Arunkumar2017}
+\citation{Cabezas2015,Arunkumar2017}
+\@writefile{toc}{\contentsline {section}{\numberline {3}A NUMA-Aware GPU Runtime}{3}}
+\citation{Cabezas2015,Arunkumar2017}
+\citation{pascal-tesla-wp}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Relative performance of a 4-socket NUMA GPU using to a single GPU and a hypothetical 4$\times $ larger (all resources scaled) single GPU showing upper bound of performance this application can achieve via GPU hardware scaling. For the Locality-Optimized design, applications shown in grey achieve already 99\% of theoretical scaling (\emph  {red dash}) without micro-architectural modification.\relax }}{4}}
+\newlabel{fig:motivation}{{3}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Performance Through Locality}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Simulation Methodology}{4}}
+\newlabel{sec:methodology}{{3.2}{4}}
+\citation{coral}
+\citation{lonestar}
+\citation{Che2009}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Simulation parameters for evaluation of single and multi-socket GPU systems.\relax }}{5}}
+\newlabel{tab:setup}{{1}{5}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Asymmetry-Aware Interconnects}{5}}
+\newlabel{sec:interconnect}{{4}{5}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Application footprint and average number of CTAs (thread blocks) available during time-weighted execution.\relax }}{5}}
+\newlabel{tab:numctas}{{2}{5}}
+\citation{}
+\citation{pascal-tesla-wp}
+\citation{XXX}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Multi-socket GPU systems with symmetric and assymeteric capacity assignments.\relax }}{6}}
+\newlabel{fig:symmetric_assymetric}{{4}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Normalized NVLink bandwidth profile for \texttt  {HPC-HPGMG-UVM} showing example of asymmetric link utilization between GPUs and within a GPU depending on kernel and application phasing.\relax }}{6}}
+\newlabel{fig:link-motivation}{{5}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Results}{6}}
+\citation{XXX}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Relative speedup of the dynamic NVlink adaptivity with respect to the baseline architecture by varying sample time and assuming switch time of 100 cycles. In red, relative speedup achievable by doubling the bandwidth.\relax }}{7}}
+\newlabel{fig:sampletime}{{6}{7}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}NUMA-Aware Cache Management}{7}}
+\newlabel{caching}{{5}{7}}
+\citation{Arunkumar2017}
+\citation{XXX}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Potential L2 cache organizations to balance capacity between remote and local NUMA memory systems.\relax }}{8}}
+\newlabel{fig:cacheorg}{{7}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Cache Partitioning Options}{8}}
+\citation{Arunkumar2017}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU compared to memory-side L2 and previously proposed static partitioning.\relax }}{9}}
+\newlabel{fig:dynamiccaching}{{8}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results}{9}}
+\citation{XXX}
+\citation{XXX}
+\citation{XXX}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Performance overhead of extending current GPU software based coherence into the GPU L2 caches.\relax }}{10}}
+\newlabel{fig:invalidations}{{9}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Extending the Coherency to L2 Caches}{10}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{10}}
+\newlabel{discussion}{{6}{10}}
+\citation{pascal-tesla-wp,dgx,intersect360,titan_supercomputer}
+\citation{coral,cudnn,Lavin15b,SimonyanZ14a}
+\citation{Intel:Xeon,IBM:Power,IBM:z196,AMD:Opteron}
+\citation{NVIDIAP2P}
+\citation{NVIDIAMPI}
+\citation{Cabezas2015,lee2013transparent,ben2015memory}
+\citation{dgx,INTELQPI,AMDINFINITYFABRIC}
+\citation{tri-state}
+\citation{fsb}
+\citation{ics2007,Herdrich2016CacheQF,pact06,qureshi-micro,jaleel-pact}
+\citation{pact06}
+\citation{qureshi-micro}
+\citation{jaleel-pact}
+\citation{Herdrich2016CacheQF}
+\citation{li-priority-based}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Performance of a 4-socket NUMA-aware GPU compared to a single GPU and a hypothetical 4x large single GPU with proportionally scaled resources.\relax }}{11}}
+\newlabel{fig:combined}{{10}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Related Work}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusions}{11}}
+\newlabel{conclusions}{{8}{11}}
+\bibstyle{IEEEtran}
+\bibdata{main}
+\bibcite{intersect360}{1}
+\bibcite{cudnn}{2}
+\bibcite{Lavin15b}{3}
+\bibcite{SimonyanZ14a}{4}
+\bibcite{CUDA7}{5}
+\bibcite{OPENCL}{6}
+\bibcite{mooredead2016}{7}
+\bibcite{NVIDIAP2P}{8}
+\bibcite{NVIDIAMPI}{9}
+\bibcite{dgx}{10}
+\bibcite{SierraHPC}{11}
+\bibcite{AMDINFINITYFABRIC}{12}
+\bibcite{lee2013transparent}{13}
+\bibcite{Cabezas2015}{14}
+\bibcite{UVM}{15}
+\bibcite{NVLINK}{16}
+\bibcite{HBM}{17}
+\bibcite{verbree2010cost}{18}
+\bibcite{INTELQPI}{19}
+\bibcite{AMDHT}{20}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Performance scalability of a NUMA-aware GPU compared to theoretical maximim applications performance moving from 1 to 8 GPU sockets.\relax }}{12}}
+\newlabel{fig:scalability}{{11}{12}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}References}{12}}
+\bibcite{CUDA}{21}
+\bibcite{Arunkumar2017}{22}
+\bibcite{pascal-tesla-wp}{23}
+\bibcite{coral}{24}
+\bibcite{lonestar}{25}
+\bibcite{Che2009}{26}
+\bibcite{titan_supercomputer}{27}
+\bibcite{Intel:Xeon}{28}
+\bibcite{IBM:Power}{29}
+\bibcite{IBM:z196}{30}
+\bibcite{AMD:Opteron}{31}
+\bibcite{ben2015memory}{32}
+\bibcite{tri-state}{33}
+\bibcite{fsb}{34}
+\bibcite{ics2007}{35}
+\bibcite{Herdrich2016CacheQF}{36}
+\bibcite{pact06}{37}
+\bibcite{qureshi-micro}{38}
+\bibcite{jaleel-pact}{39}
+\bibcite{li-priority-based}{40}

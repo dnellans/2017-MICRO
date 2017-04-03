@@ -1,0 +1,78 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: main.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: main.bib
+Repeated entry---line 19367 of file main.bib
+ : @inproceedings{Che2009
+ :                       ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 20059 of file main.bib
+ : @misc{nvlink
+ :             ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for ""
+Warning--I didn't find a database entry for "XXX"
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--missing nationality in tri-state
+Name 2 in "N. Rafique and W.T. Lim, and M. Thottethodi" has a comma at the end for entry pact06
+while executing---line 2403 of file IEEEtran.bst
+Name 1 in "A. Jaleel, W. Hasenplaugh, M. Qureshi, J. Sebot, S. Steely, Jr, and J. Emer" has a comma at the end for entry jaleel-pact
+while executing---line 2403 of file IEEEtran.bst
+Too many commas in name 1 of "A. Jaleel, W. Hasenplaugh, M. Qureshi, J. Sebot, S. Steely, Jr, and J. Emer" for entry jaleel-pact
+while executing---line 2403 of file IEEEtran.bst
+Too many commas in name 1 of "A. Jaleel, W. Hasenplaugh, M. Qureshi, J. Sebot, S. Steely, Jr, and J. Emer" for entry jaleel-pact
+while executing---line 2403 of file IEEEtran.bst
+Too many commas in name 1 of "A. Jaleel, W. Hasenplaugh, M. Qureshi, J. Sebot, S. Steely, Jr, and J. Emer" for entry jaleel-pact
+while executing---line 2403 of file IEEEtran.bst
+
+Done.
+You've used 40 entries,
+            4087 wiz_defined-function locations,
+            1082 strings with 15558 characters,
+and the built_in function-call counts, 17859 in all, are:
+= -- 1385
+> -- 371
+< -- 17
++ -- 189
+- -- 90
+* -- 719
+:= -- 3043
+add.period$ -- 82
+call.type$ -- 40
+change.case$ -- 61
+chr.to.int$ -- 42
+cite$ -- 41
+duplicate$ -- 1500
+empty$ -- 1727
+format.name$ -- 99
+if$ -- 4047
+int.to.chr$ -- 0
+int.to.str$ -- 40
+missing$ -- 335
+newline$ -- 149
+num.names$ -- 34
+pop$ -- 904
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 1395
+stack$ -- 0
+substring$ -- 148
+swap$ -- 904
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 40
+warning$ -- 1
+while$ -- 38
+width$ -- 42
+write$ -- 365
+(There were 7 error messages)

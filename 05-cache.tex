@@ -15,6 +15,14 @@ or try and decrease the amount of traffic that crosses the low bandwidth
 communication channels.  To decrease off-chip memory traffic, architects typically
 turn to caches to capture locality whenever possible.
 
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/cache_configurations_static_dynamic.pdf}
+    \caption{Potential L2 cache organizations to balance capacity between remote and
+    local NUMA memory systems.}
+    \label{fig:cacheorg}
+\end{figure*}
+
 GPU cache hierarchies differ from traditional CPU hierarchies where in they are
 not supported by strong hardware coherence protocols~\cite{XXX}.  They also differ
 from CPU protocols in that caches designed for a single uniform memory access GPU
@@ -29,14 +37,6 @@ for significant coalescing of requests to the same cache line, so having large
 L1 caches reduces the need for global crossbar bandwidth.  By then placing the L2
 caches memory-side, they do not need to participate in the coherence protocol.  Because of the fine grained interleaving of physical memory addresses
 across memory channels, the L2 caches are inherently load balanced.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/cache_configurations_static_dynamic.pdf}
-    \caption{Potential L2 cache organizations to balance capacity between remote and
-    local NUMA memory systems.}
-    \label{fig:cacheorg}
-\end{figure*}
 
 \subsection{Cache Partitioning Options}
 In NUMA-designs interleaving memory references across the low bandwidth NUMA
@@ -87,6 +87,14 @@ than a cache miss to a NUMA-remote memory address.  Thus, it should be beneficia
 to dynamically skew cache allocation policy to preference caching of remote memory over local
 data when it is determined the system is bottle necked on NUMA bandwidth.
 
+
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
+    \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU compared to memory-side L2 and previously proposed static partitioning.}
+    \label{fig:dynamiccaching}
+\end{figure*}
+
 We propose that rather than allowing both the L1 and L2 caches to be contended by local
 and remote memory accesses,  both levels of the GPU cache hierarchy become NUMA-aware
 and dynamically adjust their cache resources to preference caching of remote NUMA
@@ -110,15 +118,6 @@ a performance bottleneck. In case where both NVLink and local memory channels
 are saturated, we gradually equalize the number of ways assigned for remote 
 and local cache lines (Step \circled{4}). Finally, if none of the links have 
 been saturated, the policy takes no action (Step \circled{5}).
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
-    \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket GPU compared to memory-side L2 and previously proposed static partitioning.}
-    \label{fig:dynamiccaching}
-\end{figure*}
-
-Right side of Figure~\ref{fig:cacheorg} provides a brief summary.  
 
 
 \subsection{Results}
