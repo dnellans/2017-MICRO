@@ -1,34 +1,24 @@
 \section{Conclusions}
 \label{conclusions}
-Two paragraphs of best paper awards goes here.
-
-% Introducing globally visible shared memory in future CPU--GPU systems
-% improves programmer productivity and significantly reduces the barrier
-% to entry of using such systems for many applications. 
-% Hardware cache coherence can provide such shared memory and
-% extend the benefits of on-chip caching to all system memory.
-% \ignore{Hardware cache coherence in future CPU/GPU systems would allow the integration
-% of the separate CPU and GPU programming paradigms under a single
-% uniform model, leveraging the benefits of on-chip caching for all
-% memory within the system.}  However, extending hardware cache coherence 
-% throughout the GPU places enormous
-% scalability demands on the coherence implementation.  Moreover, integrating
-% discrete processors, possibly designed by distinct vendors,
-% into a single coherence protocol is a prohibitive engineering and
-% verification challenge.  
-% 
-% We demonstrate that CPU--GPU hardware cache coherence is not needed to achieve the
-% simultaneous goals of unified shared memory and high GPU performance.  
-% We show that \textit{selective caching} with request coalescing,
-% a CPU-side GPU client cache and variable-sized transfer units
-% can perform within 93\% of a
-% cache-coherent GPU for applications that do not perform fine
-% grained CPU--GPU data sharing and synchronization. We also show that promiscuous
-% read-only caching benefits memory latency-sensitive applications by using
-% OS page-protection mechanisms rather than relying on hardware cache coherence.  Selective caching
-% does not needlessly force hardware cache coherence into the GPU memory system,
-% allowing decoupled designs that can maximize CPU and GPU performance, while
-% still maintaining the CPU's traditional view of\ignore{ a hardware coherent} the
-% memory system.
+With transistors growth slowing and multi-GPU programming requiring 
+re-architecting of GPU applications, the future of scalable single GPU 
+performance is in question.  We propose that much like CPU designs have done in 
+the past, the natural progression for continuous performance scalability of 
+traditional GPU workloads is to move from a single to multi-socket NUMA design.  
+In this work we show 
+that applying NUMA scheduling and memory placement policies inherited 
+from the CPU world is not sufficient to achieve good performance scalability.  
+We show that future GPU designs will need to become NUMA-aware both in their 
+interconnect management and within their caching subsystems to overcome the 
+inherent performance penalty that NUMA memory systems introduce.  By leveraging 
+software policies that preserve data locality and hardware policies that can 
+dynamically adapt to application phases, our NUMA-aware multi-socket GPU is able to 
+outperform current single GPUs designs by XXX\%, XXX\%, and XXX\% and 
+achieves XXX\%, XXX\%, and XXX\% of theoretical application scalability in 2, 4, 
+and 8 socket designs respectively.  This scalable performance indicates that the 
+challenges of designing a multi-socket NUMA GPU can be overcome through a combination
+of runtime and architectural optimization, making 
+NUMA-aware GPUs a promising technology for scaling GPU performance beyond a 
+single socket.
 
 
