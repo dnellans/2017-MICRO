@@ -1,102 +1,109 @@
-\section{Enabling Basic TMS-GPU}
+\section{A NUMA-Aware GPU Runtime}
 
-Designing TMS-GPUs that 
-perform well across wide range of workloads is not trivial despite the 
-improvements that technologies like NVLink~\cite{NVLINK} and Unified Virtual 
-Addressing~\cite{UVM} bring to the table. 
+Current GPU software and hardware is co-designed together to optimize 
+throughput of processors based on the assumption of uniform memory properties 
+within the GPU. Fine grained interleaving of memory addresses across memory 
+channels on the GPU provides implicit load balancing across memory but destroys 
+memory locality.  As a result, threadblock (CTA) scheduling policies need not 
+be sophisticated to capture locality, which which has been destroyed by the 
+memory system layout.  For future NUMA GPUs to work well, both software and 
+hardware must be changed to achieve both functionality and performance.  Before 
+focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
+runtime system we employ to enable multi-socket GPU execution.
 
+Prior work has demonstrated it is possible to design a framework and a runtime 
+system that transparently decomposes GPU kernels in sub-kernels and executes 
+them on multiple PCIe attached GPUs in parallel. For example, on Nvidia GPUs 
+this can be implemented by intercepting and remapping each kernel call, GPU 
+memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
+driver. Special care needs to ensure that per-GPU memory fences are promoted to 
+system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
+identifiers are properly managed to reflect the barriered completion state of 
+all sub-kernels before the original kernel call is completed. In 
+~\cite{Cabezas2015} these two problems were solved by introducing  code 
+annotations and an additional source-to-source compiler which was also 
+responsible for statically partitioning data placement and computation.
 
-% While the most basic multi-socket GPU 
-% implementation may extend current GPU thread block scheduling and memory 
-% management techniques across sockets, this results in sub-optimal 
-% performance.  As shown in Figure~\ref{fig:motivation}, even applying NUMA 
-% optimization techniques in the multi-socket GPU runtime such as first touch 
-% page placement and Block CTA partitioning leaves significant performance on 
-% the table compared to an hypothetical 4x larger (all resources scaled) GPU on many 
-% benchmarks.
+In our work, we follow a similar strategy but without using an source to source
+compiler. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
+Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
+runtime rather than static memory placement.  Similarly, technologies like
+cache line granularity interconnects like NVIDIA's NVLINK~\cite{NVLINK} allow
+transparent access to remote memory without the need to modify application
+source code to access local or remote memory addresses.  Due to these
+advancements, we assume that through dynamic compilation of PTX to SASS at
+executions the GPU runtime will be able to statically identify and promote 
+system wide memory fences as well as manage sub-kernel CTA identifiers.
 
-\subsection{Basic TMS-GPU Architecture}
-As demonstrated by Cabezas et al.~\cite{Cabezas2015} it is possible to design 
-a framework and a runtime system that transparently decomposes GPU kernels in 
-sub-kernels and executes them on multiple GPUs in parallel. For example, on 
-Nvidia GPUs this can be implemented by intercepting and remapping each kernel 
-call, GPU memory allocation, memory copy, and GPU-wide synchronization issued 
-by the CUDA driver. Special care needs to be put (i) to the GPU local memory 
-fences which needs to be promoted to system level and (ii) to the sub-kernels 
-CTA identifiers which needs to be properly corrected to reflect those in the 
-original kernel call. In ~\cite{Cabezas2015} these two problems were solved 
-by introducing  code annotations and an additional source-to-source compiler 
-which was also responsible for statically assigning data and computation on 
-each GPU. In our work, we follow a similar strategy but without using any 
-additional compiler as we leverage a simulated environment with properly 
-modeled the architectural requirements for system wide memory fences, and 
-sub-kernel to kernel CTA identifiers mapping. 
+Current GPUs perform fine grained memory interleaving at a sub-page granularity
+across memory channels.  In a NUMA GPU this policy would destroy locality and
+result in 75\% of all accesses to be to remote memory in a 4 GPU system, an
+undesireable effect in NUMA systems.  Similarly, a round-robin page level 
+interleaving
+could be utilized, similar to the Linux INTERLEAVE page allocation strategy,
+but despite the inherent memory load balancing, this still results in 75\% of
+memory accesses occurring over low bandwidth NUMA links. Instead we leverage
+UVM page migration functionality to migrate pages on-demand from system memory 
+to local GPU memory as soon as the first access (also called first-touch 
+allocation) 
+is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
 
-We assume and model a system with UVM page migration on demand~\cite{P100} that
-allows transparent on-demand page migration from system memory to GPU memory as
-soon as the first access (also called first-touch allocation) is performed.
-Alternative approach for memory placement is memory interleaving at the
-granularity of single cache line to reduce memory camping effects and to
-maximize bandwidth. However interleaving at such fine granularity across
-multiple GPUs reduces data locality, and results in growing number of remote
-memory accesses. Another possible approach is a more cross-grain solution
-interleaving memory across GPUs at the granularity of pages. 
+On a single-GPU fine grain dynamic assignment of CTAs to SMs is performed to 
+achieve good load balancing.  Extending this policy to a multi-socket GPU 
+system is not possible due to the relatively high latency of passing sub-kernel 
+launches from software to hardware.  To overcome this penalty the GPU runtime 
+much launch a block of CTAs to each GPU-socket at course granularity.  To 
+encourage load balancing, each sub-kernel could be comprised of an interleaving 
+of CTAs using modulo arithmetic.  Alternatively a single kernel can be 
+decomposed into N sub-kernels, where N is the total number of GPU sockets in 
+the system, assigning equal amount of contiguous CTAs to each GPU.  This design 
+choice potentially exposes workload unbalance across sub-kernels, but it has 
+been shown to preserve data locality present in applications where contiguous 
+CTAs also access contiguous memory regions~\cite{Cabezas2015,Arunkumar2017}.
 
-While on a single GPU fine grain dynamic assignment of CTAs to SMs is performed
-to achieve good load balancing, extending it to a Multi-GPU system is
-sub-optimal due to the relatively high penalty of a single sub-kernel launch.
-Therefore, similarly to~\cite{Cabezas2015}, we decompose a single kernel into N
-sub-kernels, where N is the total number of GPUs in the system, and we assign
-equal amount of contiguous CTAs to each GPU.  This design choice can potentially
-expose workload unbalance across sub-kernels, but it preserves data locality
-present in many applications where contiguous CTAs access contiguous memory. A
-possible alternative solution can focus on interleaving CTAs across
-sub-kernels, in attempt to mimic the way pages interleave across memories. 
+\subsection{Performance Through Locality} 
 
-\subsection{Basic TMS-GPU Performance} 
-In Figure~\ref{fig:motivation} we show the relative performance of a 4-Socket 
-TMS-GPU with respect to a single-GPU for two possible CTA scheduling and 
-memory placement strategies explained above. For a detailed explanation of 
-methodology and benchmark suites see Section~\ref{sec:methodology}. With the 
-\emph{green bars} we show relative performance of the natural extension to 
-the traditional single GPU scheduling and memory interleaving to multi-GPU, 
-which consists in memory page interleave and sub-kernel CTA interleave. With 
-the \emph{light blue bars} instead we show the relative performance of the 
-locality optimized GPU scheduling and memory placement consisting of 
-contiguous block CTA scheduling and first touch page migration. We can 
-clearly see that the Locality-Optimized solution almost always outperforms 
-the traditional GPU scheduling and memory interleaving, in average performing 
-2$\times$ better. In general, the problems of data placement and task 
-placement (minimizing remote data access and ensuring good load balancing) 
-can not be completely decoupled and pathological case can always be found. It 
-is important to stress that we are not claiming the Locality-Optimized 
-solution as a contribution of this paper (very similar considerations and 
-findings can be found in~\cite{Cabezas2015,Arunkumar2017}). Instead, we are 
-setting up a basic TMS-GPU architecture in which we can apply and present our 
-proposed NUMA-aware optimizations.
+Figure~\ref{fig:motivation} we show the relative performance of a 4-socket NUMA 
+GPU with respect to a single GPU under the two possible CTA scheduling and 
+memory placement strategies explained above.  The green bars show the 
+relative performance of traditional single GPU scheduling and memory 
+interleaving policies when adapted to a NUMA GPU. The light blue bars
+show the relative performance of using locality optimized GPU scheduling and 
+memory placement, consisting of contiguous block CTA scheduling and first touch 
+page migration. We can clearly see that the \textit{Locality-Optimized} 
+solution almost always outperforms the traditional GPU scheduling and memory 
+interleaving.  Without these runtime locality optimizations, a 4-socket NUMA 
+GPU is not able to even match the performance of a single GPU despite the large 
+increase in hardware resources.  Thus, using variants of prior 
+proposals~\cite{Cabezas2015,Arunkumar2017}, we now only consider this locality 
+optimized GPU runtime for the remainder of the paper.
 
-Moreover in Figure~\ref{fig:motivation} we show with a \emph{red dash} the 
-performance achievable by a hypothetical (unbuildable) 4$\times$ larger GPU. 
-This \emph{red dash} represent a good approximation of the maximum 
-theoretical performance we could expect from a perfect TMS-GPU. We sorted the 
-applications by the gap between relative performance of the 
-Locality-Optimized and Hypothetical 4x larger GPUs. We can see that on the 
-right side of the graph some applications (that have very good locality) 
-already achieve or surpass the maximum theoretical performance. In particular 
-for the two far-most benchmarks on the right, the locality optimized 
-solutions outperform the hypothetical 4x larger GPU due a higher cache 
-data-locality originated by the contiguous block scheduling of CTAs. For the 
-applications on the left side of the Figure there is quite large gap between 
-locality optimized and hypothetical. These are the applications in which 
-either, locality does not exist or the Locality-Optimized solution is not 
-effective, resulting in large amount of remote data transfers. In the rest of 
-this paper we present techniques aimed to reduce this gap. To simplify the 
-discussion we will exclude the benchmarks that already achieve 99\% of the 
-theoretical performance when explaining these techniques. We will re-include 
-them in the final plots to demonstrate that there was not performance 
-regression due to our proposed optimizations. 
+Despite the performance improvements that can come via locality optimized 
+software runtimes, many applications are not scaling well on our proposed NUMA 
+GPU system. To illustrate this, Figure~\ref{fig:motivation} shows the workload 
+throughput achievable by a hypothetical (unbuildable) 4$\times$ larger GPU with 
+a red dash. This red dash represent an approximation of the 
+maximum theoretical performance we could expect from a perfectly architected 
+(both HW and SW) NUMA GPU system. Figure~\ref{fig:motivation} sorts the 
+applications by the gap between relative performance of the Locality-Optimized 
+NUMA GPU and hypothetical 4$\times$ larger GPU. We observe that on the right 
+side of the graph some workloads (shown in the grey box) can achieve or surpass 
+the maximum theoretical performance. In particular for the two far-most 
+benchmarks on the right, the locality optimized solutions can outperform the 
+hypothetical 4x larger GPU due higher cache hitrates because contiguous block 
+scheduling is more cache friendly than traditional GPU scheduling.
 
-
+However, for the applications on the left side there is a large gap between the 
+Locality-Optimized NUMA design and theoretical performance. These are workloads 
+in which either locality does not exist or the Locality-Optimized GPU runtime is 
+not effective, resulting in large amount of remote data accesses still 
+occurring.  Because our goal is to provide scalable performance for single-GPU 
+optimized applications, in the rest of the paper we aim to close this 
+performance gap through microarchitectural innovation. To simplify later 
+discussion, we choose to exclude benchmarks that achieve $\geq$99\% of the 
+theoretical performance with SW-only locality optimizations, however we include 
+all benchmarks in our final results to show the overall performance scalability 
+achievable with NUMA-aware multi-socket GPUs.
  
 \subsection{Simulation Methodology}
 \label{sec:methodology}
@@ -117,7 +124,8 @@ We study our proposal using 41 workloads taken from a broad range of
 production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
 applications from Lonestar~\cite{lonestar}, compute applications from 
 Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
-This set of workloads covers a wide spectrum of GPU applications used in machine 
+This set of workloads covers a wide spectrum of GPU applications used in 
+machine 
 learning, fluid dynamic, image manipulation, graph traversal, scientific 
 computing, etc. We run our simulations until the completion of the entire 
 applications or the number of kernels shown on Table~\ref{tab:numctas}.
@@ -165,13 +173,13 @@ systems.}
 \end{table} 
 
 
-
 \begin{table}[t]
 \begin{small}
 \centering
 \begin{tabular}{lccc}
  \toprule
- \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & \textbf{Memory} \\
+ \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & 
+\textbf{Memory} \\
 & & \textbf{Average CTAs} & \textbf{(MB)} \\
  \toprule
 ML-GoogLeNet-cudnn-Lev2 & 1 & 6272 & 1205 \\

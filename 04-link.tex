@@ -1,7 +1,5 @@
-\section{Asymmetric Links for TMS-GPUs}
+\section{Asymmetry-Aware Interconnects}
 \label{sec:interconnect}
-
-
 
 Figure~\ref{fig:symmetric_assymetric}(a) shows a generic multi-socket system
 with symmetric bandwidth assignments at each inter-socket communication link.
@@ -11,21 +9,22 @@ drivers or ingress receivers) along with only one type of control logic need to
 be implemented at each on-chip interface. Moreover, multi-socket switches
 result in simpler designs that support a statically provisioned worst-case
 bandwidth scenario. On the other hand, multi-socket link bandwidth has a very
-important impact on overall system performance. For the applications which saturate links between sockets, doubling NVLink capacity potentially achieves a 2$\times$ speedup.
-%As shown in Figure~\ref{fig:switchtime}, where doubling NVLink capacity from 128GB/s to 256GB/s reached 1.5x average speedup reaching a 2x speedup for many applications. 
-As I/O bandwidth is a very limited and expensive resource, this
+important impact on overall system performance. For the applications which 
+saturate links between sockets, doubling NVLink capacity potentially achieves a 
+2$\times$ speedup. As I/O bandwidth is a very limited and expensive resource, this
 result motivates us to look for alternatives that keep wire and I/O resources
 at very high utilization. 
 
 We note that the typically employed symmetric link
 capacity assignments may result in lower overall utilization of the link wires
-in many cases. Moreover, in case of TMS-GPU systems, we do observe that there
+in many cases. Moreover, in case of multi-socket NUMA GPU systems, we do observe that there
 are applications in which some GPUs have a very different utilization of its
 egress and ingress channels in different phases of execution.
 Figure~\ref{fig:link-motivation} shows dynamic link utilization for a snapshot
 of \texttt{HPC-HPGMG-UVM} application running on our baseline 4 GPUs TMS-GPU
 system. Vertical dotted black lines represent the beginning kernel calls that
-are split across 4 sockets as explained in Section~\ref{sec:background}. We can see
+are split across 4 sockets as explained in Section~\ref{sec:background}. We can 
+see
 that few initial small kernels have a negligible interconnect
 utilization on all links. However, for the the upcoming larger kernels at the
 figure, GPU0 and GPU2 fully saturate their ingress links, while GPU1 and GPU3
@@ -35,11 +34,23 @@ and GPU1 and GPU3 pair barely use their egress or ingress links accordingly.
 \begin{figure}[t]
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/tms_links.pdf}
-    \caption{Multi-socket GPU systems with symmetric and assymeteric capacity assignments.}
+    \caption{Multi-socket GPU systems with symmetric and assymeteric capacity 
+assignments.}
     \label{fig:symmetric_assymetric}
 \end{figure}
 
-In the rest of the workloads we observe other inter-socket traffic patterns that would prefer a disproportional bandwidth distribution. A common scenario is writing to the same memory section by all CTAs at the end of a kernel (parallel reductions, data gathering). For CTAs running on one of the sockets, GPU0 for example, those memory instructions are local and does not produce any traffic through the inter-socket interconnection network. Contrarly, CTAs dispatched to other GPUs issue remote memory writes, saturating their egress links while ingress links remain underutilized. Such a communication pattern utilizes only 50\% of available bandwidth. Increasing the number of ingress links for GPU0 (by turning around direction of egress ones), and switching the direction of ingress channels for all the other GPUs, we potentially imporve the performance by enhancing the usage of NVLink. 
+In the rest of the workloads we observe other inter-socket traffic patterns 
+that would prefer a disproportional bandwidth distribution. A common scenario 
+is writing to the same memory section by all CTAs at the end of a kernel 
+(parallel reductions, data gathering). For CTAs running on one of the sockets, 
+GPU0 for example, those memory instructions are local and does not produce 
+any traffic through the inter-socket interconnection network. Contrarly, 
+CTAs dispatched to other GPUs issue remote memory writes, saturating their 
+egress links while ingress links remain underutilized. Such a communication 
+pattern utilizes only 50\% of available bandwidth. Increasing the number of 
+ingress links for GPU0 (by turning around direction of egress ones), and 
+switching the direction of ingress channels for all the other GPUs, we 
+potentially imporve the performance by enhancing the usage of NVLink. 
 
 Motivated by these findings, we propose to dynamically control multi-socket
 link bandwidth assignments in each direction on a per-GPU basis resulting in
@@ -80,9 +91,12 @@ direction.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{Normalized NVLink bandwidth profile for \texttt{HPC-HPGMG-UVM} showing example of asymmetric 
-    link utilization between GPUs and within a GPU depending on kernel and application phasing.}
+    
+\includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
+    \caption{Normalized NVLink bandwidth profile for \texttt{HPC-HPGMG-UVM} 
+showing example of asymmetric 
+    link utilization between GPUs and within a GPU depending on kernel and 
+application phasing.}
     \label{fig:link-motivation}
 \end{figure}
 
@@ -90,8 +104,10 @@ direction.
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
     \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
-	the baseline architecture by varying sample time and assuming switch time of
-	100 cycles. In red, relative speedup achievable by doubling the bandwidth.}
+	the baseline architecture by varying sample time and assuming switch 
+time of
+	100 cycles. In red, relative speedup achievable by doubling the 
+bandwidth.}
     \label{fig:sampletime}
 \end{figure*}
 
@@ -116,7 +132,21 @@ doesn't capture application dynamics resulting in smaller improvements. We
 find 5K cycles to be a reasonable sampling period able to achieve good 
 results without degrading performance.
 
-For benchmarks like \texttt{Rodinia-Euler-3D}, \texttt{HPC-AMG}, and \texttt{HPC-Lulesh}, doubling the NVLink bandwidth provides 2$\times$ speedup, while our proposed dynamic link assignment mechanism is not able to significantly improve the performance. Those are the workloads that saturate both link directions, so there is no opportunity to provide additional bandwidth by turning links around. For the rest of the applications on the left side, performance improvement is directly proportional to the actual link utilization of unsaturated lanes. For example, consider a case where a GPU fully saturates its egress links and incoming traffic achieves only 75\% of ingress bandwidth (using 6 out of 8 lanes). Then, adaptive policy is able to increase the outgoing bandwidth for a maximal 25\% by turning around those 2 unused ingress lanes. If such a traffic communication pattern is sustained throughout 50\% of the total execution time, the maximal performance improvement that our dynamic link assignment can achieve is 12.5\%.
+For benchmarks like \texttt{Rodinia-Euler-3D}, \texttt{HPC-AMG}, and 
+\texttt{HPC-Lulesh}, doubling the NVLink bandwidth provides 2$\times$ 
+speedup, while our proposed dynamic link assignment mechanism is not 
+able to significantly improve the performance. Those are the workloads 
+that saturate both link directions, so there is no opportunity to 
+provide additional bandwidth by turning links around. For the rest of 
+the applications on the left side, performance improvement is directly 
+proportional to the actual link utilization of unsaturated lanes. For 
+example, consider a case where a GPU fully saturates its egress links 
+and incoming traffic achieves only 75\% of ingress bandwidth (using 6 
+out of 8 lanes). Then, adaptive policy is able to increase the outgoing 
+bandwidth for a maximal 25\% by turning around those 2 unused ingress 
+lanes. If such a traffic communication pattern is sustained throughout 
+50\% of the total execution time, the maximal performance improvement 
+that our dynamic link assignment can achieve is 12.5\%.
 
 Another important parameter is switching period needed to turn around a 
 single lane direction. Our results point that higher \texttt{SwitchTime} 
@@ -129,48 +159,10 @@ now, we define our adaptive link assignment policy which samples saturation
 status on every 5K cycles and eventually turn link direction with 100 cycles 
 penalty. 
 
-%In Figure~\ref{fig:switchtime} we used 5K cycles sample time to
-%explore values of ``switch\_time'' from 10 cycles to 500 cycles.
-%We found that a faster switch does not produce better results than 100 cycles
-%but that in few applications a long (500 cycles) switch time results 25\% 
-%less performance with respect to 100 cycles (``HPC-CoMD-Ta'' and 
-%``HPC-CoMD-Wa'').
-
-% Graph 0: We need a stacked-bar graph that shows what’s the percentage of total 
-% exe time spent in configs where: both directions are saturated (no room for 
-% improvement), only one direction is saturated (here we can improve), none is 
-% saturated (we don’t care for this). Do we want to show this as aggregate number 
-% of per-GPU?
-% We explain the algorithm how and when we increment and decrement the number of 
-% sub-channels per direction. Two important parameters: link switch time and 
-% sample time.
-
-% Graph 1: baseline is 1x NVLink, upper bound is 2x NVLink, link switch time is 
-% 100 cycles, we show the speedup for different sample time values (1K, 2K, 5K, 
-% 10K, 100K cycles). Finner measurements are better.
-
-% Graph 2a: baseline is 1x NVLink, upper bound is 2x NVLink, sample\_time is 1K. 
-% We swipe through link\_switch\_time (10, 100, 200, 500 cycles). Here, link 
-% switch time is important, we want it to be low.
-
-% Graph 2b: the same, but sample\_time is 100K. Here, we do not care about link 
-% switch time. The point where it starts to matter is 5K (or 2K) cycles and below. 
-% From now on, we assume 100 cycles for link switch time and 5K (or 2K) cycles for 
-% sampling period.
+% DO NOT REMOVE, we can use this to compute POWER later 
+%from http://teams.nvidia.com/sites/Corporate/ntech/SiteAssets/downloads/2014/NTECH2014_SlideDecks20(presented)/7.1_Osborn.pptx 
+%Power: 8 lanes (TX + RX) at 25GT/s ~= 1.5W 
+%Area: 8 Lane PHY (8 TX + 8 RX + PLL) ~= 3.3mm^2 %Physical Data: .5pJ/b transferred
 
 
-% DO NOT REMOVE, we can use this to compute POWER later
-%from http://teams.nvidia.com/sites/Corporate/ntech/SiteAssets/downloads/2014/NTECH2014_SlideDecks%20(presented)/7.1_Osborn.pptx
-%Power: 8 lanes (TX + RX) at 25GT/s ~= 1.5W
-%Area: 8 Lane PHY (8 TX + 8 RX + PLL) ~= 3.3mm^2
-%Physical Data: .5pJ/b transferred
 
-
-%\begin{figure*}[tp]
-%   \centering
-%   \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_switch_time_sample_time5000.pdf}
-%   \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
-%	the baseline architecture varying switch time for a fixed sample time
-%of 5k cycles. In red, relative speedup achievable by doubling the bandwidth.}
-%    \label{fig:switchtime}
-%\end{figure*}
