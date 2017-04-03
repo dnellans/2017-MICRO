@@ -96,6 +96,36 @@ theoretical performance when explaining these techniques. We will re-include
 them in the final plots to demonstrate that there was not performance 
 regression due to our proposed optimizations. 
 
+
+ 
+\subsection{Simulation Methodology}
+\label{sec:methodology}
+
+To evaluate the performance of multi-socket GPUs we use a proprietary, 
+cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
+applications. For our baseline, we model a single GPU that approximates the 
+latest NVIDIA Pascal architecture~\cite{pascal-tesla-wp}. Each of the 
+Streaming Multiprocessors (SM) is modeled as an in-order processor with 
+multiple levels of cache hierarchy containing private, per-SM, L1 caches and 
+multi-banked, shared, L2 cache. Each GPU is backed by its local high 
+bandwidth DRAM memory. Our multi-socket GPU system contains four of these 
+GPUs interconnected through a full bandwidth GPU switch as shown on 
+Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview 
+of the simulation parameters.
+
+We study our proposal using 41 workloads taken from a broad range of 
+production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
+applications from Lonestar~\cite{lonestar}, compute applications from 
+Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
+This set of workloads covers a wide spectrum of GPU applications used in machine 
+learning, fluid dynamic, image manipulation, graph traversal, scientific 
+computing, etc. We run our simulations until the completion of the entire 
+applications or the number of kernels shown on Table~\ref{tab:numctas}.
+Table~\ref{tab:numctas} shown after the conclusions is provided to show
+more complete data about each workload including average number of CTAs for each
+application (weighed by the time spent on each kernel) and the memory 
+footprint in MB.
+
 \begin{table}[tp]
 \begin{small}
 \centering
@@ -133,34 +163,6 @@ systems.}
 \label{tab:setup}
 \end{small}
 \end{table} 
- 
-\subsection{Simulation Methodology}
-\label{sec:methodology}
-
-To evaluate the performance of multi-socket GPUs we use a proprietary, 
-cycle-level, trace-driven simulator for GPU systems running single GPU CUDA 
-applications. For our baseline, we model a single GPU that approximates the 
-latest NVIDIA Pascal architecture~\cite{pascal-tesla-wp}. Each of the 
-Streaming Multiprocessors (SM) is modeled as an in-order processor with 
-multiple levels of cache hierarchy containing private, per-SM, L1 caches and 
-multi-banked, shared, L2 cache. Each GPU is backed by its local high 
-bandwidth DRAM memory. Our multi-socket GPU system contains four of these 
-GPUs interconnected through a full bandwidth GPU switch as shown on 
-Figure~\ref{fig:systemdiagram}. Table~\ref{tab:setup} stands as an overview 
-of the simulation parameters.
-
-We study our proposal using 41 workloads taken from a broad range of 
-production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
-applications from Lonestar~\cite{lonestar}, compute applications from 
-Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
-This set of workloads covers a wide spectrum of GPU applications used in machine 
-learning, fluid dynamic, image manipulation, graph traversal, scientific 
-computing, etc. We run our simulations until the completion of the entire 
-applications or the number of kernels shown on Table~\ref{tab:numctas}.
-Table~\ref{tab:numctas} shown after the conclusions is provided to show
-more complete data about each workload including average number of CTAs for each
-application (weighed by the time spent on each kernel) and the memory 
-footprint in MB.
 
 
 
