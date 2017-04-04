@@ -5,10 +5,10 @@ Over the last decade single GPU performance has scaled thanks to a
 significant growth in per-GPU transistor count and DRAM bandwidth. For example, 
 in 2010 NVIDIA's Fermi GPU integrated 1.95B transistors on a 
 529mm\textsuperscript{2} die, with 180GB/s of DRAM bandwidth.  In 2016 NVIDIA's 
-Pascal GPU contained 12B transistors on a 610 mm\textsuperscript{2} die, while 
-relying on 720GB/s of main memory bandwidth. Unfortunately transistor density is 
-slowing significantly and vendors are not providing roadmaps beyond 7nm. 
-Moreover, GPU die sizes which have been also increasing generationally, are 
+Pascal GPU contained 12B transistors within a 610 mm\textsuperscript{2} die, while 
+relying on 720GB/s of memory bandwidth. Unfortunately, transistor density is 
+slowing significantly and many integrated circuit manufacturers are not providing roadmaps beyond 7nm. 
+Moreover, GPU die sizes (which have been also increasing generationally), are 
 expected to slow down due to limitations in lithography and manufacturing cost.
 
 \begin{figure}[t] 
@@ -20,45 +20,43 @@ available SMs.}
     \vspace{-.2in}
 \end{figure}
 
-Without either larger or denser dies, manufacturers must turn towards 
+Without either larger or denser dies, GPU architects must turn to 
 alternative solutions to significantly increase GPU performance.  Recently 3D 
-die-stacking has seen significant interest due to its successes in the high 
-bandwidth DRAM design space~\cite{HBM}. Unfortunately 3D die-stacking still has 
-a significant number of engineering challenges related to power delivery, 
+die-stacking has seen significant interest due to its successes with high 
+bandwidth DRAM~\cite{HBM}. Unfortunately 3D die-stacking still has 
+a significant engineering challenges related to power delivery, 
 energy density, and cooling~\cite{verbree2010cost} when employed in power 
-hungry, maximal die-sized chips such as GPUs. Thus we believe GPU manufacturers 
+hungry, maximal die-sized chips such as GPUs. Thus we propose GPU manufacturers 
 are likely to re-examine a tried and trued solution from CPU world, 
 \textit{multi-socket GPUs}, to scaling GPU performance while maintaining the 
 current ratio of floating point operations per second (FLOPS) and DRAM 
 bandwidth.
 
-Multi-socket GPUs are enabled by the evolution of GPUs from PCIe attached 
-peripheral to the primary computing component at system design time.  As a 
-result, these GPU optimized systems employ custom PCB designs that accommodate 
+Multi-socket GPUs are enabled by the evolution of GPUs from external
+peripherals to central computing components, considered at system design time.  
+GPU optimized systems now employ custom PCB designs that accommodate 
 high pin count socketed GPUs~\cite{dgx} with inter-GPU interconnects resembling 
-QPI or Hypertransport~\cite{NVLINK,INTELQPI,AMDHT}.  However, despite the rapid 
-improvement in hardware capabilities, these GPU optimized systems have 
-thus far exposed the GPUs in the system as individually addressable GPUs. These
-multi-GPU systems can provide high aggregate throughput, for multiple concurrent
-GPU accelerated programs, but to accelerate a single GPU program they
+QPI or HyperTransport~\cite{NVLINK,INTELQPI,AMDHT}.  Despite the rapid 
+improvement in hardware capabilities, these systems have 
+continued to expose the GPUs provided as individually addressable units. These
+multi-GPU systems can provide high aggregate throughput when running multiple concurrent
+GPU kernels, but to accelerate a single GPU workload they
 require layering additional software runtimes on top of native GPU programming 
-interfaces such as CUDA or openCL~\cite{CUDA,OPENCL}. By requiring significant
-application re-design many applications are never ported to take advantage
+interfaces such as CUDA or openCL~\cite{CUDA,OPENCL}. Unfortunately, by requiring
+application re-design, many workloads are never ported to take advantage
 of multiple GPUs.
 
-While extending single GPU application performance significantly is a laudable
-goal, we must first understand if applications will be able to leverage future
+Extending single GPU workload performance significantly is a laudable
+goal, but we must first understand if these applications will be able to leverage
 larger GPUs.  Today, NVIDIA's largest GPUs contain 54 SMs with growth to 64 SMs
-likely as the product line matures. Across a benchmark set of 41 applications,
-later described in Section~\ref{sec:methodology} and Table~\ref{tab:numctas},
-Figure~\ref{fig:ctas} shows that many single GPU optimized workloads contain enough data 
-parallelism 
-to fill future GPUs that may be 2, 4, or 8$\times$ larger than today's biggest
-GPUs.  While single GPU optimized applications are unlikely to scale to tens
-of thousands of GPUs across an entire data center, for the majority of GPU
-programs written today we believe there will be significant demand for GPUs that
-can scale application performance by as much as a factor of 8$\times$ 
-while requiring no additional software engineering.
+likely as product lines mature. Across a benchmark set of 41 applications,
+(later described in Section~\ref{sec:methodology})
+Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
+contain sufficient data parallelism GPUs that will be 2 or even 8$\times$ bigger 
+than today's largest GPUs.  While these applications are unlikely to ever scale to tens
+of thousands of GPUs across an entire data center, we believe that programmer
+transparent scaling of workloads by as much 8$\times$ will
+be attractive to many GPU developers.
 
 To understand the performance scalability of a multi-socket NUMA GPU we examine 
 the performance that a future 4-socket GPU can achieve while executing 

@@ -1,15 +1,6 @@
 \section{Asymmetry-Aware Links}
 \label{sec:interconnect}
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1.0\columnwidth]{figures/link_assignment.pdf}
-    \caption{Multi-socket GPU systems with symmetric and assymeteric link
-    bandwidth assignments.}
-    \label{fig:symmetric_assymetric}
-    \vspace{-.2in}
-\end{figure}
-
 Figure~\ref{fig:symmetric_assymetric}(a) shows a generic multi-socket system
 with symmetric bandwidth assignments at each inter-socket communication link.
 Each link is comprising multiple equal number of uni-directional high-speed
@@ -40,6 +31,15 @@ negligible interconnect utilization on all links. However, for the upcoming
 larger kernels at the figure, GPU0 and GPU2 fully saturate their ingress links,
 while GPU1 and GPU3 fully saturate their egress links. At the same time GPU0 
 and GPU2 pair, and GPU1 and GPU3 pair barely use their egress or ingress links.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\columnwidth]{figures/link_assignment.pdf}
+    \caption{Multi-socket GPU systems with symmetric and assymeteric link
+    bandwidth assignments.}
+    \label{fig:symmetric_assymetric}
+    \vspace{-.2in}
+\end{figure}
 
 In many other workloads we also observe inter-socket traffic patterns that
 would be better of with an asymmetric link bandwidth allocation. A common
