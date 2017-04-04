@@ -86,13 +86,13 @@ optimized GPU runtime for the remainder of this work.
 Despite the improvements achieved via software locality optimization, many applications do 
 not scaling well on a 4-socket NUMA GPU. To illustrate this, Figure~\ref{fig:motivation} 
 also shows the application performance achievable by a hypothetical (and unbuildable)
-4$\times$ larger GPU with proportionally scaled resources. This theoretical GPU
+4$\times$ larger GPU with proportionally scaled resources. This hypothetical GPU
 represents the maximum performance we could expect from a perfectly architected 
 (both HW and SW) NUMA GPU system. 
 
 Sorted by the differential in hypothetical to achieved performance, some 
 workloads (shown in the grey box) already achieve near
-maximum theoretical performance. For the two right-most 
+maximum performance. For the two right-most 
 benchmarks, the SW locality optimized NUMA GPU can even outperform the 
 hypothetical 4x larger GPU due higher cache hit rates caused by cache friendly
 contiguous block scheduling. For many applications there is still a large differential between the 
