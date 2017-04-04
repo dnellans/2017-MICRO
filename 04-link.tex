@@ -60,11 +60,11 @@ dynamically asymmetric link capacity assignments, as shown in
 Figure~\ref{fig:symmetric_assymetric}(b). Such dynamic and asymmetric link
 capacity distribution is expected to yield higher wire utilization and
 essentially higher effective bandwidth and performance for a given set of I/O
-resources. This mechanism is somewhat similar to modern high bandwidth DRAM
+resources. This mechanism is somewhat similar to modern high bandwidth GDDR
 interfaces for example,
 where the same set of wires is used for both read and write directions
 interchangeably, and link direction is reversed based on a dynamic state of the
-system~\cite{jedec13-hbm}. 
+system~\cite{hynixgddr51Gb}. 
 
 For basic link configuration we assume and model point-to-point links with
 multiple lanes each, similarly to NVLink sub-links~\cite{pascal-tesla-wp}. In
@@ -115,9 +115,9 @@ drain all the pending packets in a given direction, and the time it takes to
 physically reconfigure the lane to start transmitting in the opposite
 direction.  Figure~\ref{fig:sampletime} shows the performance improvement, with
 respect to our baseline architecture by exploring different values of the
-\texttt{SampleTime} indicated by greenn bars and assuming a \texttt{SwitchTime}
-of 100 cycles which is a typical switching time for a high-speed serial
-link~\cite{XXX}. The red bars in Figure~\ref{fig:sampletime} provide an
+\texttt{SampleTime} indicated by green bars and assuming a \texttt{SwitchTime}
+of 100 cycles (we provide a detailed discussion on \texttt{SwitchTime}
+further below) .The red bars in Figure~\ref{fig:sampletime} provide an
 upper-bound performance speedups when doubling the available interconnect
 bandwidth to 256GB/s. For the benchmarks on the right side, where the baseline
 4 GPU multi-socket system performs close to 4$\times$ larger single GPU,
@@ -157,7 +157,12 @@ values, like 200 and 500 cycles, degrade the average performance by less than
 2\% compared to 100 cycle switching period. We observe the maximum slowdown of
 25\% in case of \texttt{HPC-CoMD-Ta} and \texttt{HPC-CoMD-Wa} when switch time
 reaches 500 cycles. At the same time, faster lane switch (10 cycles) does not
-improve the performance compared to 100 cycles. Thus from now, we define our
+improve the performance compared to 100 cycles. We note that the link
+turnaround times of modern high-speed on-board links such as
+GDDR5~\cite{hynixgddr51Gb} for example
+are about 8ns including both link and internal DRAM turn-around latency (which is less than 10 cycles
+assuming 1GHZ frequency), as a result for the rest of
+this paper, we define our
 adaptive link assignment policy which samples saturation status on every 5K
 cycles and eventually turn link direction with 100 cycles penalty.
 
