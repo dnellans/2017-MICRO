@@ -4,7 +4,7 @@ Current GPU software and hardware is co-designed together to optimize
 throughput of processors based on the assumption of uniform memory properties 
 within the GPU. Fine grained interleaving of memory addresses across memory 
 channels on the GPU provides implicit load balancing across memory but destroys 
-memory locality.  As a result, threadblock (CTA) scheduling policies need not 
+memory locality.  As a result, thread block (CTA) scheduling policies need not 
 be sophisticated to capture locality, which has been destroyed by the 
 memory system layout.  For future NUMA GPUs to work well, both software and 
 hardware must be changed to achieve both functionality and performance.  Before 
@@ -49,7 +49,7 @@ On a single GPU fine grain dynamic assignment of CTAs to SMs is performed to
 achieve good load balancing.  Extending this policy to a multi-socket GPU 
 system is not possible due to the relatively high latency of passing sub-kernel 
 launches from software to hardware.  To overcome this penalty the GPU runtime 
-much launch a block of CTAs to each GPU-socket at course granularity.  To 
+must launch a block of CTAs to each GPU-socket at course granularity.  To 
 encourage load balancing, each sub-kernel could be comprised of an interleaving 
 of CTAs using modulo arithmetic.  Alternatively a single kernel can be 
 decomposed into N sub-kernels, where N is the total number of GPU sockets in 
@@ -69,7 +69,7 @@ show the relative performance of using locality optimized GPU scheduling and
 memory placement, consisting of contiguous block CTA scheduling and first touch 
 page migration. We can clearly see that the \textit{Locality-Optimized} 
 solution almost always outperforms the traditional GPU scheduling and memory 
-interleaving.  Without these runtime locality optimizations, a 4-socket NUMA 
+interleaving.  Without these runtime locality optimizations, in average a 4-socket NUMA 
 GPU is not able to even match the performance of a single GPU despite the large 
 increase in hardware resources.  Thus, using variants of prior 
 proposals~\cite{Cabezas2015,Arunkumar2017}, we now only consider this locality 
@@ -132,7 +132,7 @@ kernel invocations.  We run each benchmark to completion for the determine
 region of interest. Table~\ref{tab:numctas} provides both the memory footprint
 of these workloads as well as the average number of active CTAs in the workload
 (weighted by the time spent on each kernel) to provide a representation of 
-how many parallel threadblocks (CTAs) are generally available
+how many parallel thread blocks (CTAs) are generally available
 during workload execution.
 
 \begin{table}[tp]
