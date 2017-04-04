@@ -20,86 +20,72 @@ single logical, multi-socket accelerators utilizing switched interconnects.}
 \vspace{-.2in}
 \end{figure}
 
-Nevertheless, with GPU dies nearing the reticle limitation for maximum die size 
-and the transistor density growth rate slowing down~\cite{mooredead2016}, 
-developers looking to scale the performance of their single GPU programs are 
-in 
-a precarious position. Multi-GPU programming models support explicit 
-programming 
-of two or more GPUs, but it is challenging to leveraging special mechanisms 
-such 
-as Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of MPI and 
-CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. While these programming 
-extensions enable advanced programmers to utilize more than one GPU for high 
-throughput computation, they require re-writing of traditional single GPU 
-application which may slow their adoption rate.
+Nevertheless, with GPUs nearing the reticle limitation for maximum die size and 
+the transistor density growth rate slowing down~\cite{mooredead2016}, developers 
+looking to scale the performance of their single GPU programs are in a 
+precarious position. Multi-GPU programming models support explicit programming 
+of two or more GPUs, but it is challenging to leveraging mechanisms such as 
+Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of MPI and 
+CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. These programming extensions 
+enable programmers to employ more than one GPU for high throughput computation, 
+but they require re-writing of traditional single GPU applications which has 
+slowed their adoption rate.
 
-Recently GPUs have started transitioning from using the PCIe peripheral 
+Recently GPUs have started to transition from using the PCIe peripheral 
 interface to having single protocol interconnections between both the GPUs and 
 CPUs~\cite{dgx,SierraHPC,AMDINFINITYFABRIC}, as shown in 
-Figure~\ref{fig:systemdiagram}. As a result the physical interface of GPUs is 
+Figure~\ref{fig:systemdiagram}. As a result, the physical interface of GPUs is 
 transitioning away from a discrete pluggable PCIe card into a high pin-count 
-socketed processor similar to CPU designs. The socketed interface is required 
-not only for power delivery but because the GPU and CPU interconnects require 
-printed circuit board (PCB) level integration to provide the needed 
-interconnect bandwidth that can be an order of magnitude higher than PCIe 
-bandwidths. The evolution of GPUs from externally connected devices to high 
-connectivity multi-socket designs is a natural progression as interconnect 
-bandwidth becomes a performance critical system component.
+socketed processor similar to CPU designs. This socketed interface is required 
+not only for power delivery but because
+printed circuit board (PCB) level integration is needed to provide
+interconnect bandwidth that is up to an order of magnitude higher than PCIe
+connections. The evolution of GPUs from single pluggable devices to closely
+coupled multi-socket designs is a natural progression as GPU--GPU and CPU--GPU
+link bandwidth becomes a performance critical system component.
 
 The onset of multi-socket GPUs provides a pivot point for GPU and system 
-vendors. On one hand, they can continue to expose multi-socket GPUs as 
-individual GPUs and force programmers to use multiple programming paradigms to 
-leverage multiple GPUs. On the other, vendors may choose to expose multi-socket 
+vendors. On one hand, vendors can continue to expose multi-socket GPUs as 
+individual GPUs and force developers to use multiple programming paradigms to 
+leverage multiple GPUs. On the other, vendors could expose multi-socket 
 designs as a single non-uniform memory access (NUMA) GPU resource.  By 
 extending the single GPU programming model to multi-socket GPUs,  applications 
 can scale beyond the bounds of Moore's law, while simultaneously retaining the 
-single GPU programming model that GPU developers have become accustomed.
+programming interface that GPU developers have become accustomed.
 
-Prior work has examined aggregating multiple GPUs together under a single
-programming model~\cite{lee2013transparent,Cabezas2015}, however much of this 
-work
-was done in an era where GPUs had limited memory addressability
-and relied on high latency, low bandwidth PCIe interconnects.
-As a result, prior work focused primarily on improving the multi-GPU programming
-paradigm rather than achieving highly scalable performance.
-However today, in the the era of unified virtual addressing~\cite{UVM},
-cache line addressable high bandwidth interconnects~\cite{NVLINK}, and dedicated 
-CPU--GPU
-socketed PCB designs~\cite{SierraHPC}, scalable multi-GPU performance
-may be achievable.
-
-Building upon prior work, we propose a multi-socket NUMA-aware GPU architecture 
-and runtime that aggregates multiple-GPUs into a single large GPU and achieves 
-good performance scalability across a wide range of benchmarks.  First we apply 
-several known NUMA techniques from the CPU community to enable a locality aware 
-multi-GPU runtime but show these optimizations are not enough to achieve 
-performance scalability in a multi-socket NUMA GPU.  We then propose 
-interconnect and cache improvements for GPUs to make their architecture 
-~\textit{NUMA-aware} and show that with these improvements multi-socket GPUs can 
-achieve good performance scalability when executing programs optimized for a 
-legacy single-die GPU. In this work, we make the following contributions:
+Several groups have previously examined aggregating multiple GPUs together under 
+a single programming model~\cite{lee2013transparent,Cabezas2015}; however this 
+work was done in an era where GPUs had limited memory addressability and relied 
+on high latency, low bandwidth PCIe interconnects. As a result, prior work 
+focused primarily on improving the multi-GPU programming experience rather than 
+achieving highly scalable performance. Building upon this work, we propose a 
+multi-socket \textit{NUMA-aware} GPU architecture and runtime that aggregates 
+multiple GPUs into a single programmer transparent logical GPU. We show that in 
+the the era of unified virtual addressing~\cite{UVM}, cache line addressable 
+high bandwidth interconnects~\cite{NVLINK}, and dedicated GPU and CPU socket PCB 
+designs~\cite{SierraHPC}, scalable multi-GPU performance may be achievable under 
+existing single GPU programming models. In this work, we make the following 
+contributions:
 
 \begin{itemize}
 
-\item We show that traditional NUMA memory placement and 
-scheduling policies are not sufficient for multi-socket GPUs to achieve good 
-performance scalability and then demonstrate that intersocket bandwidth will be 
-the primary performance limiter in NUMA GPUs.
+\item We show that traditional software NUMA memory placement and 
+scheduling policies are not sufficient for multi-socket GPUs to achieve 
+performance scalability.  We then demonstrate that intersocket bandwidth will be 
+the primary performance limiter in future NUMA GPUs.
 
 \item By exploiting program phase behavior we show that intersocket links (and 
-thus bandwidth) should be dynamically varied at runtime to maximize link 
-utilization. Moreover, we show that dynamic policy must be determined on a per 
-GPU basis, as a global policies will fail to capture per GPU phase behavior.
+thus BW) should be dynamically varied at runtime to maximize link 
+utilization. Moreover, we show that link policy must be determined on a per 
+GPU basis, as global policies fail to capture per GPU phase behavior.
 
-\item We show that both L1 and L2 caches within the GPU must be made NUMA-aware 
-and dynamically vary caching policy to minimize multi-socket NUMA effects.  We 
-show that the benefit of extending cache coherence across multiple GPU sockets 
-far outweighs the overhead of a course grained coherence implementation.
+\item We show that both the GPU L1 and L2 caches should be made NUMA-aware 
+and dynamically adapt their caching policy to minimize NUMA effects. We demonstrate
+that in NUMA GPUs, extending existing GPU cache coherence protocols
+across multiple sockets scales is a good design choice, despite the overheads.
 
-\item Using a NUMA-aware runtime and GPU microarchitecture we demonstrate that
-future  multi-socket GPUs may allow traditional GPU programs to scale efficiently to as 
-many as 8 GPU sockets, providing significant headroom before programmers must 
-re-architect applications to obtain performance scalability.
+\item We show that multi-socket NUMA-aware GPUs can allow traditional 
+GPU programs to scale efficiently to as many as 8 GPU sockets, providing significant 
+headroom before developers must re-architect applications to obtain additional performance.
 
 \end{itemize}
