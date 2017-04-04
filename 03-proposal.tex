@@ -13,13 +13,12 @@ runtime system we employ to enable multi-socket GPU execution.
 
 Prior work has demonstrated it is possible to design a framework and a runtime 
 system that transparently decomposes GPU kernels in sub-kernels and executes 
-them on multiple PCIe attached GPUs in parallel. For example, on Nvidia GPUs 
+them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on Nvidia GPUs 
 this can be implemented by intercepting and remapping each kernel call, GPU 
 memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
 driver. Special care needs to ensure that per-GPU memory fences are promoted to 
 system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
-identifiers are properly managed to reflect the barriered completion state of 
-all sub-kernels before the original kernel call is completed. In 
+identifiers are properly managed to reflect those of the original kernel. In 
 ~\cite{Cabezas2015} these two problems were solved by introducing  code 
 annotations and an additional source-to-source compiler which was also 
 responsible for statically partitioning data placement and computation.
