@@ -6,7 +6,7 @@ within the GPU. Fine grained interleaving of memory addresses across memory
 channels on the GPU provides implicit load balancing across memory but destroys 
 memory locality.  As a result, thread block (CTA) scheduling policies need not 
 be sophisticated to capture locality, which has been destroyed by the 
-memory system layout.  For future NUMA GPUs to work well, both software and 
+memory system layout.  For future NUMA GPUs to work well, both system software and 
 hardware must be changed to achieve both functionality and performance.  Before 
 focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
 runtime system we employ to enable multi-socket GPU execution.
