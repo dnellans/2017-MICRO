@@ -1,0 +1,300 @@
+\section{A NUMA-Aware GPU Runtime}
+
+Current GPU software and hardware is co-designed together to optimize 
+throughput of processors based on the assumption of uniform memory properties 
+within the GPU. Fine grained interleaving of memory addresses across memory 
+channels on the GPU provides implicit load balancing across memory but destroys 
+memory locality.  As a result, thread block (CTA) scheduling policies need not 
+be sophisticated to capture locality, which has been destroyed by the 
+memory system layout.  For future NUMA GPUs to work well, both software and 
+hardware must be changed to achieve both functionality and performance.  Before 
+focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
+runtime system we employ to enable multi-socket GPU execution.
+
+Prior work has demonstrated it is possible to design a framework and a runtime 
+system that transparently decomposes GPU kernels in sub-kernels and executes 
+them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on NVIDIA GPUs 
+this can be implemented by intercepting and remapping each kernel call, GPU 
+memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
+driver. Special care needs to ensure that per-GPU memory fences are promoted to 
+system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
+identifiers are properly managed to reflect those of the original kernel. In 
+~\cite{Cabezas2015} these two problems were solved by introducing  code 
+annotations and an additional source-to-source compiler which was also 
+responsible for statically partitioning data placement and computation.
+
+In our work, we follow a similar strategy but without using an source-to-source
+translation. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
+Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
+runtime rather than static memory placement.  Similarly, technologies with
+cache line granularity interconnects like NVIDIA's NVLink~\cite{NVLINK} allow
+transparent access to remote memory without the need to modify application
+source code to access local or remote memory addresses.  Due to these
+advancements, we assume that through dynamic compilation of PTX to SASS at
+executions the GPU runtime will be able to statically identify and promote 
+system wide memory fences as well as manage sub-kernel CTA identifiers.
+
+Current GPUs perform fine grained memory interleaving at a sub-page granularity 
+across memory channels.  In a NUMA GPU this policy would destroy locality and 
+result in 75\% of all accesses to be to remote memory in a 4 GPU system, an 
+undesirable effect in NUMA systems.  Similarly, a round-robin page level 
+interleaving could be utilized, similar to the Linux INTERLEAVE page allocation 
+strategy, but despite the inherent memory load balancing, this still results in 
+75\% of memory accesses occurring over low bandwidth NUMA links. Instead we 
+leverage UVM page migration functionality to migrate pages on-demand from system 
+memory to local GPU memory as soon as the first access (also called first-touch 
+allocation) is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
+
+On a single GPU fine grain dynamic assignment of CTAs to SMs is performed to 
+achieve good load balancing.  Extending this policy to a multi-socket GPU 
+system is not possible due to the relatively high latency of passing sub-kernel 
+launches from software to hardware.  To overcome this penalty the GPU runtime 
+must launch a block of CTAs to each GPU-socket at course granularity.  To 
+encourage load balancing, each sub-kernel could be comprised of an interleaving 
+of CTAs using modulo arithmetic.  Alternatively a single kernel can be 
+decomposed into N sub-kernels, where N is the total number of GPU sockets in 
+the system, assigning equal amount of contiguous CTAs to each GPU.  This design 
+choice potentially exposes workload unbalance across sub-kernels, but it has 
+been shown to preserve data locality present in applications where contiguous 
+CTAs also access contiguous memory regions~\cite{Cabezas2015,Arunkumar2017}.
+
+\subsection{Performance Through Locality} 
+
+Figure~\ref{fig:motivation} shows the relative performance of a 4-socket NUMA 
+GPU with respect to a single GPU under the two possible CTA scheduling and 
+memory placement strategies explained above.  The green bars show the 
+relative performance of traditional single GPU scheduling and memory 
+interleaving policies when adapted to a NUMA GPU. The light blue bars
+show the relative performance of using locality optimized GPU scheduling and 
+memory placement, consisting of contiguous block CTA scheduling and first touch 
+page migration. We can clearly see that the \textit{Locality-Optimized} 
+solution almost always outperforms the traditional GPU scheduling and memory 
+interleaving.  Without these runtime locality optimizations, in average a 4-socket NUMA 
+GPU is not able to even match the performance of a single GPU despite the large 
+increase in hardware resources.  Thus, using variants of prior 
+proposals~\cite{Cabezas2015,Arunkumar2017}, we now only consider this locality 
+optimized GPU runtime for the remainder of the paper.
+
+Despite the performance improvements that can come via locality optimized 
+software runtimes, many applications are not scaling well on our proposed NUMA 
+GPU system. To illustrate this, Figure~\ref{fig:motivation} shows the workload 
+throughput achievable by a hypothetical (unbuildable) 4$\times$ larger GPU with 
+a red dash. This red dash represent an approximation of the 
+maximum theoretical performance we could expect from a perfectly architected 
+(both HW and SW) NUMA GPU system. Figure~\ref{fig:motivation} sorts the 
+applications by the gap between relative performance of the Locality-Optimized 
+NUMA GPU and hypothetical 4$\times$ larger GPU. We observe that on the right 
+side of the graph some workloads (shown in the grey box) can achieve or surpass 
+the maximum theoretical performance. In particular for the two far-most 
+benchmarks on the right, the locality optimized solutions can outperform the 
+hypothetical 4x larger GPU due higher cache hitrates because contiguous block 
+scheduling is more cache friendly than traditional GPU scheduling.
+
+However, for the applications on the left side there is a large gap between the 
+Locality-Optimized NUMA design and theoretical performance. These are workloads 
+in which either locality does not exist or the Locality-Optimized GPU runtime is 
+not effective, resulting in large amount of remote data accesses still 
+occurring.  Because our goal is to provide scalable performance for single GPU 
+optimized applications, in the rest of the paper we aim to close this 
+performance gap through microarchitectural innovation. To simplify later 
+discussion, we choose to exclude benchmarks that achieve $\geq$99\% of the 
+theoretical performance with SW-only locality optimizations. However, we include 
+all benchmarks in our final results to show the overall performance scalability 
+achievable with NUMA-aware multi-socket GPUs.
+ 
+\subsection{Simulation Methodology}
+\label{sec:methodology}
+
+To evaluate the performance of future NUMA-aware multi-socket GPUs we use a 
+proprietary, cycle-level, trace-driven simulator for single and multi-GPU 
+systems. Our baseline GPU in both single GPU and multi-socket GPU 
+configurations, approximates the latest NVIDIA Pascal 
+architecture~\cite{pascal-tesla-wp}. Each streaming multiprocessors (SM) is 
+modeled as an in-order processor with multiple levels of cache hierarchy 
+containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
+GPU is backed by local on-package high bandwidth memory~\cite{HBM}. Our 
+multi-socket GPU systems contains two to eight of these GPUs interconnected 
+through a full bandwidth GPU switch as shown on Figure~\ref{fig:systemdiagram}. 
+Table~\ref{tab:setup} provides a more detailed overview of the simulation 
+parameters.
+
+We study the scalability of multi-socket NUMA GPUs using 41 workloads 
+taken from a range of 
+production codes based on the HPC CORAL benchmarks~\cite{coral}, graph 
+applications from Lonestar~\cite{lonestar}, HPC applications from 
+Rodinia~\cite{Che2009}, in addition to several other in-house CUDA benchmarks. 
+This set of workloads covers a wide spectrum of GPU applications used in 
+machine learning, fluid dynamic, image manipulation, graph traversal, and
+scientific computing.  Each of our benchmarks is hand selected to identify
+the region of interest deemed representative for each workload, which may
+be as small as a single kernel containing a tight inner loop or several thousand
+kernel invocations.  We run each benchmark to completion for the determine
+region of interest. Table~\ref{tab:numctas} provides both the memory footprint
+of these workloads as well as the average number of active CTAs in the workload
+(weighted by the time spent on each kernel) to provide a representation of 
+how many parallel thread blocks (CTAs) are generally available
+during workload execution.
+
+\begin{table}[tp]
+\begin{small}
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Value(s)} \\
+\toprule
+Num of GPU sockets & 4 \\
+\midrule
+Total number of SMs & 64 per GPU socket \\
+\midrule
+GPU Frequency & 1GHz \\
+\midrule
+Max number of Warps & 64 per SM \\
+\midrule
+Warp Scheduler & Greedy then Round Robin \\
+\midrule
+L1 Cache & Private, 128 KB per SM, 128B lines, 4-way, \\ 
+& GPU-side SW-based coherency \\
+\midrule
+L2 Cache & Shared, 4MB per socket, 128B lines, 16-way, \\ 
+& Memory-side non-coherent\\
+\midrule
+GPU--GPU Interconnect & 128GB/s per socket (64GB/s each direction) \\
+& 8 lanes 8B wide each per direction \\
+&128-cycle latency \\
+\midrule
+DRAM Bandwidth & 768GB/s per GPU socket\\
+\midrule
+DRAM Latency & 100ns \\
+\toprule
+\end{tabular}
+\vspace{-.1in}
+\caption{Simulation parameters for evaluation of single and multi-socket GPU 
+systems.}
+\vspace{-.2in}
+\label{tab:setup}
+\end{small}
+\end{table} 
+
+
+\begin{table}[t]
+\begin{small}
+\centering
+\begin{tabular}{lcc}
+ \toprule
+ \textbf{Benchmark} & \textbf{Time-weighted} & 
+\textbf{Memory} \\
+& \textbf{Average CTAs} & \textbf{Footprint (MB)} \\
+ \toprule
+ML-GoogLeNet-cudnn-Lev2 & 6272 & 1205 \\
+ML-AlexNet-cudnn-Lev2 & 1250 & 832 \\
+ML-OverFeat-cudann-Lev3 & 1800 & 388 \\
+ML-AlexNet-cudnn-Lev4 & 1014 & 32 \\
+ML-AlexNet-ConvNet2 & 6075 & 97 \\
+Rodinia-Backprop & 4096 & 160 \\
+Rodinia-Euler3D & 1008 & 25 \\
+Rodinia-BFS  & 1954 & 38 \\
+Rodinia-Gaussian  & 2599 & 78 \\
+Rodinia-Hotspot  & 7396 & 64 \\
+Rodinia-Kmeans  & 3249 & 221 \\
+Rodnia-Pathfinder  & 4630 & 1570 \\
+Rodinia-Srad  & 16384 & 98 \\
+HPC-SNAP  & 200 & 744 \\
+HPC-Nekbone-Large & 5583 & 294 \\
+HPC-MiniAMR & 76033 & 2752 \\
+HPC-MiniContact-Mesh1  & 250 & 21 \\
+HPC-MiniContact-Mesh2  & 15423 & 257 \\
+HPC-Lulesh-Unstruct-Mesh1  & 435 & 19 \\
+HPC-Lulesh-Unstruct-Mesh2  & 4940 & 208 \\
+HPC-AMG & 241549 & 3744 \\
+HPC-RSBench  & 7813 & 19 \\
+HPC-MCB  & 5001 & 162 \\
+HPC-NAMD2.9  & 3888 & 88 \\
+HPC-RabbitCT  & 131072 & 524 \\
+HPC-Lulesh  & 12202 & 578 \\
+HPC-CoMD  & 3588 & 319 \\
+HPC-CoMD-Wa  & 13691 & 393 \\
+HPC-CoMD-Ta  & 5724 & 394 \\
+HPC-HPGMG-UVM  & 10436 & 1975 \\
+HPC-HPGMG  & 10506 & 1571 \\
+%HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
+Lonestar-SP & 75 & 8 \\
+Lonestar-MST-Graph & 770 & 86 \\
+Lonestar-MST-Mesh & 895 & 75 \\
+%HPC-Nekbone-medium & 510 & 3093 & 170 \\
+Lonestar-SSSP-Wln & 60 & 21 \\
+Lonestar-DMR  & 82 & 248 \\
+Lonestar-SSSP-Wlc  & 163 & 21 \\
+Lonestar-SSSP  & 1046 & 38 \\
+Other-Stream-Triad  & 699051 & 3146 \\
+Other-Optix-Raytracing  & 3072 & 87 \\
+Other-Bitcoin-Crypto  & 60 & 5898 \\
+\toprule
+\end{tabular}
+\vspace{-.1in}
+\caption{Application footprint and average number of CTAs (thread blocks) 
+available during time-weighted execution.}
+\vspace{-.2in}
+\label{tab:numctas}
+\end{small}
+\end{table}
+
+
+% \begin{table}[t]
+% \begin{small}
+% \centering
+% \begin{tabular}{lccc}
+%  \toprule
+%  \textbf{Benchmark} & \textbf{Kernels} & \textbf{Time-weighted} & 
+% \textbf{Memory} \\
+% & & \textbf{Average CTAs} & \textbf{(MB)} \\
+%  \toprule
+% ML-GoogLeNet-cudnn-Lev2 & 1 & 6272 & 1205 \\
+% ML-AlexNet-cudnn-Lev2 & 1 & 1250 & 832 \\
+% ML-OverFeat-cudann-Lev3 & 1 & 1800 & 388 \\
+% ML-AlexNet-cudnn-Lev4 & 1 & 1014 & 32 \\
+% ML-AlexNet-ConvNet2 & 1 & 6075 & 97 \\
+% Rodinia-Backprop & 2 & 4096 & 160 \\
+% Rodinia-Euler3D & 346 & 1008 & 25 \\
+% Rodinia-BFS & 24 & 1954 & 38 \\
+% Rodinia-Gaussian & 510 & 2599 & 78 \\
+% Rodinia-Hotspot & 1 & 7396 & 64 \\
+% Rodinia-Kmeans & 3 & 3249 & 221 \\
+% Rodnia-Pathfinder & 20 & 4630 & 1570 \\
+% Rodinia-Srad & 4 & 16384 & 98 \\
+% HPC-SNAP & 118 & 200 & 744 \\
+% HPC-Nekbone-Large & 300 & 5583 & 294 \\
+% HPC-MiniAMR & 33 & 76033 & 2752 \\
+% HPC-MiniContact-Mesh1 & 500 & 250 & 21 \\
+% HPC-MiniContact-Mesh2 & 127 & 15423 & 257 \\
+% HPC-Lulesh-Unstruct-Mesh1 & 2000 & 435 & 19 \\
+% HPC-Lulesh-Unstruct-Mesh2 & 200 & 4940 & 208 \\
+% HPC-AMG & 88 & 241549 & 3744 \\
+% HPC-RSBench & 1 & 7813 & 19 \\
+% HPC-MCB & 1 & 5001 & 162 \\
+% HPC-NAMD2.9 & 1 & 3888 & 88 \\
+% HPC-RabbitCT & 1 & 131072 & 524 \\
+% HPC-Lulesh & 105 & 12202 & 578 \\
+% HPC-CoMD & 350 & 3588 & 319 \\
+% HPC-CoMD-Wa & 350 & 13691 & 393 \\
+% HPC-CoMD-Ta & 350 & 5724 & 394 \\
+% HPC-HPGMG-UVM & 359 & 10436 & 1975 \\
+% HPC-HPGMG & 317 & 10506 & 1571 \\
+% HPC-HPGMG-UVM-Base & 359 & 10728 & 1975 \\
+% Lonestar-SP & 11 & 75 & 8 \\
+% Lonestar-MST-Graph & 87 & 770 & 86 \\
+% Lonestar-MST-Mesh & 71 & 895 & 75 \\
+% HPC-Nekbone-medium & 510 & 3093 & 170 \\
+% Lonestar-SSSP-Wln & 1000 & 60 & 21 \\
+% Lonestar-DMR & 3 & 82 & 248 \\
+% Lonestar-SSSP-Wlc & 1300 & 163 & 21 \\
+% Lonestar-SSSP & 102 & 1046 & 38 \\
+% Other-Stream-Triad & 5 & 699051 & 3146 \\
+% Other-Optix-Raytracing & 1 & 3072 & 87 \\
+% Other-Bitcoin-Crypto & 1 & 60 & 5898 \\
+% \toprule
+% \end{tabular}
+% \caption{Application footprint and average number of CTAs (thread blocks) 
+% available during time-weighted execution.}
+% \label{tab:numctas}
+% \end{small}
+% \end{table}
