@@ -14,8 +14,8 @@ expected to slow down due to limitations in lithography and manufacturing cost.
 \begin{figure}[t] 
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/plot_ctas_per_sm.pdf}
-    \caption{Percentage of benchmarks that have more CTAs on average than 
-available SMs.}
+    \caption{Percentage of workloads that are able to fill future larger GPUs 
+    (average number of concurrent thread blocks exceeds number of SMs in the system).}
     \label{fig:ctas}
     \vspace{-.2in}
 \end{figure}
@@ -43,57 +43,50 @@ multi-GPU systems can provide high aggregate throughput when running multiple co
 GPU kernels, but to accelerate a single GPU workload they
 require layering additional software runtimes on top of native GPU programming 
 interfaces such as CUDA or openCL~\cite{CUDA,OPENCL}. Unfortunately, by requiring
-application re-design, many workloads are never ported to take advantage
+application re-design many workloads are never ported to take advantage
 of multiple GPUs.
 
 Extending single GPU workload performance significantly is a laudable
 goal, but we must first understand if these applications will be able to leverage
-larger GPUs.  Today, NVIDIA's largest GPUs contain 54 SMs with growth to 64 SMs
-likely as product lines mature. Across a benchmark set of 41 applications,
-(later described in Section~\ref{sec:methodology})
+larger GPUs.  Today NVIDIA's largest GPUs contain 54 SMs, with growth to 64 SMs
+likely as product lines mature. Across a benchmark set of 41 applications
+(later described in Section~\ref{sec:methodology}),
 Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
-contain sufficient data parallelism GPUs that will be 2 or even 8$\times$ bigger 
-than today's largest GPUs.  While these applications are unlikely to ever scale to tens
+contain sufficient data parallelism to fill GPUs that are 2--8$\times$ larger 
+than today's biggest GPUs.  While these applications are unlikely to ever scale to tens
 of thousands of GPUs across an entire data center, we believe that programmer
-transparent scaling of workloads by as much 8$\times$ will
+transparent workload scaling (up to 8$\times$) will
 be attractive to many GPU developers.
 
-To understand the performance scalability of a multi-socket NUMA GPU we examine 
-the performance that a future 4-socket GPU can achieve while executing 
-workloads optimized for a modern single GPU. Not surprisingly, when executing 
-uniform memory access (UMA) optimized GPU programs on a highly NUMA GPU, 
-performance does not scale well.  We identify that despite software 
-optimizations for locality, interconnect bandwidth in a NUMA GPU is still the 
-primary limiter on scalable performance.  To overcome this bottleneck we propose 
-two classes of improvements that leverage application phasing to reduce the 
-observed NUMA penalty.  First, in Section~\ref{sec:interconnect} we examine the 
-ability of switch connected GPUs to dynamically change their ingress and egress 
-links from symmetric bandwidth provisioning to asymmetric bandwidth 
-provisioning.  By using existing interconnects more efficiently the effective 
-NUMA bandwidth ratio of remote memory to local memory decreases, improving 
-performance.
+In this work, we examine the performance of a future 4-socket NUMA GPU to 
+understand the effects that NUMA will have when executing applications designed 
+for UMA GPUs. We will show (not surprisingly), that when executing UMA-optimized 
+GPU programs on a multi-socket NUMA GPU, performance does not scale.  We draw on 
+prior work and show that before optimizing GPU microarchitecture for 
+NUMA-awareness, several software optimizations must be in place to preserve data 
+locality.  Alone these SW improvements are not sufficient to achieve scalable 
+performance however and interconnect bandwidth is a significant hindrance on 
+performance.  To overcome this bottleneck we propose two classes of improvements 
+to reduce the observed NUMA penalty.
 
-Second, we propose that to minimize traffic on oversubscribed communication 
-links GPU caches need to become NUMA-aware.  Traditional on-chip caches are 
-optimized to maximize overall hitrate, thus minimizing off-chip bandwidth.  When 
-on-chip caches are backed by a single memory system, or even two symmetric 
-memory systems, maximizing hitrate is the best objective function for cache 
-policy.  However, in highly NUMA systems,  not all cache misses have the same 
-relative cost.  Specifically, due to the NUMA penalty of accessing remote 
-memory, overall application throughput may be maximized by preferencing cache 
-capacity (and thus improving hit rate) towards data that resides in remote NUMA 
-zones rather than faster local memory. To this end, we propose new NUMA-aware 
-GPU caches that dynamically skew cache capacity when it is detected that either 
-the remote or local memory bandwidth is oversubscribed.
-
-By architecting NUMA-aware GPUs we show that single GPU application performance 
-can be scaled up significantly before costly application re-writes may be 
-required. For existing systems like NVIDIA's 8-GPU DGX 
-Supercomputer~\cite{dgx}, applications which execute on, at most, one GPU could 
-see up to an 8$\times$ performance increase transparently, requiring no 
-application programmer effort. Before diving into microarchitectural details and 
-results, we first describe the transparent multi-socket GPU runtime that enables 
-such an architecture.
+First, in Section~\ref{sec:interconnect} we examine the 
+ability of switch connected GPUs to dynamically repartition their ingress and 
+egress links to provide asymmetric bandwidth provisioning when required.  By 
+using existing interconnects more efficiently the effective NUMA bandwidth ratio 
+of remote memory to local memory decreases, improving performance. Second, 
+to minimize traffic on oversubscribed interconnect links we propose GPU caches need 
+to become NUMA-aware in Section~\ref{sec:caches}. Traditional on-chip caches are 
+optimized to maximize 
+overall hitrate, thus minimizing off-chip bandwidth, However, in NUMA 
+systems, not all cache misses have the same relative cost and thus should not 
+be treated equally. Due to the NUMA penalty of accessing remote memory, we show 
+that performance can be maximized by preferencing cache capacity (and thus 
+improving hit rate) towards data that resides in slower remote NUMA zones, at the 
+expense of data that resides in faster local NUMA zones. To this end, we propose 
+a new NUMA-aware cache architecture that dynamically balances cache capacity based on 
+memory system utilization. Before diving into microarchitectural details and results,
+we first describe the locality optimized GPU SW runtime that enables our proposed
+NUMA-aware architecture.
 
 \begin{figure*}[tp] 
     \centering
