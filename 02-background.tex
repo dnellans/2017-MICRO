@@ -37,7 +37,7 @@ bandwidth.
 Multi-socket GPUs are enabled by the evolution of GPUs from external
 peripherals to central computing components, considered at system design time.  
 GPU optimized systems now employ custom PCB designs that accommodate 
-high pin count socketed GPUs~\cite{dgx} with inter-GPU interconnects resembling 
+high pin count socketed GPU modules~\cite{dgx} with inter-GPU interconnects resembling 
 QPI or HyperTransport~\cite{NVLINK,INTELQPI,AMDHT}.  Despite the rapid 
 improvement in hardware capabilities, these systems have 
 continued to expose the GPUs provided as individually addressable units. These
@@ -59,7 +59,7 @@ of thousands of GPUs across an entire data center, we believe that programmer
 transparent workload scaling (up to 8$\times$) will
 be attractive to many GPU developers.
 
-In this work, we examine the performance of a future 4-socket NUMA GPU to 
+In this work, we examine the performance of a future 4-module NUMA GPU to 
 understand the effects that NUMA will have when executing applications designed 
 for UMA GPUs. We will show (not surprisingly), that when executing UMA-optimized 
 GPU programs on a multi-socket NUMA GPU, performance does not scale.  We draw on 

@@ -1,32 +1,29 @@
-\section{Asymmetry-Aware Links}
+\section{Asymmetric Interconnects}
 \label{sec:interconnect}
 
-Figure~\ref{fig:symmetric_assymetric}(a) shows a generic multi-socket system
-with symmetric bandwidth assignments at each inter-socket communication link.
-Each link is comprising multiple equal number of uni-directional high-speed
+Figure~\ref{fig:symmetric_assymetric}(a) shows a switch connected GPU
+with symmetric bandwidth assignment on 8 inter-socket communication links.
+Each sub-link is comprising multiple equal number of uni-directional high-speed
 lanes in both directions collectively comprising a symmetric bi-directional
 link.  Static link capacity assignment at design time is very common and has
-multiple advantages. For example, in such case only one type of I/O circuitry
+several advantages. For example, only one type of I/O circuitry
 (egress drivers or ingress receivers) along with only one type of control logic
 need to be implemented at each on-chip link interface. Moreover, multi-socket
-switches result in simpler designs that support a statically provisioned
-bandwidth scenario. On the other hand, multi-socket link bandwidth has a very
-important impact on overall system performance. For the applications which
-saturate links between sockets, doubling NVLink capacity potentially achieves a
-2$\times$ speedup. As I/O bandwidth is a very limited and expensive resource,
-this result motivates us to look for alternatives that keep wire and I/O
-resources at very high utilization. 
+switches result in simpler designs that can easily support a statically provisioned
+bandwidth scenario. On the other hand, multi-socket link bandwidth can have
+a large impact on overall system performance.  Static partitioning of bandwidth
+when application use is dynamic can leave performance on the table.
+Because I/O bandwidth is a very limited and an expensive system resource, NUMA-aware
+interconnects must look to designs that can keep wire and I/O
+utilization high. 
 
-We make a new observation that the typically employed symmetric link capacity
-assignments may result in lower overall utilization of the link wires in many
-cases. Moreover, in case of multi-socket NUMA GPU systems, we do observe that
-there are applications in which some GPUs have a very different utilization of
-its egress and ingress channels in different phases of execution.
-Figure~\ref{fig:link-motivation} shows dynamic link utilization for a snapshot
-of \texttt{HPC-HPGMG-UVM} application running on our baseline 4 GPUs
-multi-scocket system. Vertical dotted black lines represent the beginning
-kernel calls that are split across 4 sockets as explained in
-Section~\ref{sec:background}. We can see that few initial small kernels have a
+In multi-socket NUMA GPU systems, we observe that many applications have a very 
+different utilization of egress and ingress channels on a per GPU-socket basis
+during different phases of execution. For example,
+Figure~\ref{fig:link-motivation} shows a link utilization snapshot over time for
+\texttt{HPC-HPGMG-UVM} running on our SW locality optimized 4-socket NUMA GPU. 
+Vertical dotted black lines represent
+kernel invocations that are split across the 4 GPU-sockets. We can see that few initial small kernels have a
 negligible interconnect utilization on all links. However, for the upcoming
 larger kernels at the figure, GPU0 and GPU2 fully saturate their ingress links,
 while GPU1 and GPU3 fully saturate their egress links. At the same time GPU0 
