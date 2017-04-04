@@ -1,3 +1,11 @@
+\begin{figure*}[t]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/cache_configurations_static_dynamic.pdf}
+    \caption{Potential L2 cache organizations to balance capacity between remote and
+    local NUMA memory systems.}
+    \label{fig:cacheorg}
+\end{figure*}
+
 \section{NUMA-Aware Cache Management}
 \label{caching}
 In Section~\ref{sec:interconnect} we have shown that inter-socket bandwidth is one
@@ -14,14 +22,6 @@ system designers can increase link bandwidth, which is very expensive,
 or try and decrease the amount of traffic that crosses the low bandwidth
 communication channels.  To decrease off-chip memory traffic, architects typically
 turn to caches to capture locality whenever possible.
-
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/cache_configurations_static_dynamic.pdf}
-    \caption{Potential L2 cache organizations to balance capacity between remote and
-    local NUMA memory systems.}
-    \label{fig:cacheorg}
-\end{figure*}
 
 GPU cache hierarchies differ from traditional CPU hierarchies where in they 
 are not supported by strong hardware coherence protocols~\cite{Singh2013}. 
