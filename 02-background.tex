@@ -1,11 +1,11 @@
 \section{Motivation and Background}
 \label{sec:background}
 
-Over the last decade single GPU performance has scaled well due to a 
+Over the last decade single GPU performance has scaled thanks to a 
 significant growth in per-GPU transistor count and DRAM bandwidth. For example, 
-in 2010 Nvidia's Fermi GPUs integrated 1.95B transistors on a 
-529mm\textsuperscript{2} die, with 180GB/s of DRAM bandwidth.  In 2016 Nvidia's 
-Pascal GPUs contained 12B transistors on a 610 mm\textsuperscript{2} die, while 
+in 2010 NVIDIA's Fermi GPU integrated 1.95B transistors on a 
+529mm\textsuperscript{2} die, with 180GB/s of DRAM bandwidth.  In 2016 NVIDIA's 
+Pascal GPU contained 12B transistors on a 610 mm\textsuperscript{2} die, while 
 relying on 720GB/s of main memory bandwidth. Unfortunately transistor density is 
 slowing significantly and vendors are not providing roadmaps beyond 7nm. 
 Moreover, GPU die sizes which have been also increasing generationally, are 
@@ -48,7 +48,7 @@ of multiple GPUs.
 
 While extending single GPU application performance significantly is a laudable
 goal, we must first understand if applications will be able to leverage future
-larger GPUs.  Today, Nvidia's largest GPUs contain 54 SMs with growth to 64 SMs
+larger GPUs.  Today, NVIDIA's largest GPUs contain 54 SMs with growth to 64 SMs
 likely as the product line matures. Across a benchmark set of 41 applications,
 later described in Section~\ref{sec:methodology} and Table~\ref{tab:numctas},
 Figure~\ref{fig:ctas} shows that many single GPU optimized workloads contain enough data 
@@ -90,7 +90,7 @@ the remote or local memory bandwidth is oversubscribed.
 
 By architecting NUMA-aware GPUs we show that single GPU application performance 
 can be scaled up significantly before costly application re-writes may be 
-required. For existing systems like Nvidia's 8-GPU DGX 
+required. For existing systems like NVIDIA's 8-GPU DGX 
 Supercomputer~\cite{dgx}, applications which execute on, at most, one GPU could 
 see up to an 8$\times$ performance increase transparently, requiring no 
 application programmer effort. Before diving into microarchitectural details and 

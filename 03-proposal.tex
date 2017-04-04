@@ -13,7 +13,7 @@ runtime system we employ to enable multi-socket GPU execution.
 
 Prior work has demonstrated it is possible to design a framework and a runtime 
 system that transparently decomposes GPU kernels in sub-kernels and executes 
-them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on Nvidia GPUs 
+them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on NVIDIA GPUs 
 this can be implemented by intercepting and remapping each kernel call, GPU 
 memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
 driver. Special care needs to ensure that per-GPU memory fences are promoted to 
@@ -24,10 +24,10 @@ annotations and an additional source-to-source compiler which was also
 responsible for statically partitioning data placement and computation.
 
 In our work, we follow a similar strategy but without using an source-to-source
-translation. Unlike prior work, we are able to rely on Nvidia's Unified Virtual 
+translation. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
 Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
 runtime rather than static memory placement.  Similarly, technologies with
-cache line granularity interconnects like Nvidia's NVLink~\cite{NVLINK} allow
+cache line granularity interconnects like NVIDIA's NVLink~\cite{NVLINK} allow
 transparent access to remote memory without the need to modify application
 source code to access local or remote memory addresses.  Due to these
 advancements, we assume that through dynamic compilation of PTX to SASS at
@@ -108,7 +108,7 @@ achievable with NUMA-aware multi-socket GPUs.
 To evaluate the performance of future NUMA-aware multi-socket GPUs we use a 
 proprietary, cycle-level, trace-driven simulator for single and multi-GPU 
 systems. Our baseline GPU in both single GPU and multi-socket GPU 
-configurations, approximates the latest Nvidia Pascal 
+configurations, approximates the latest NVIDIA Pascal 
 architecture~\cite{pascal-tesla-wp}. Each streaming multiprocessors (SM) is 
 modeled as an in-order processor with multiple levels of cache hierarchy 
 containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
