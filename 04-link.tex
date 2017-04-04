@@ -164,18 +164,23 @@ this paper, we define our
 adaptive link assignment policy which samples saturation status on every 5K
 cycles and eventually turn link direction with 100 cycles penalty.
 
-Our results demonstrate that the proposed dynamic and asymmetric link
-bandwidth allocation can be very attractive in multi-socket GPU realm, where
-inter-socket interconnect bandwidth is limited by the number of on-PCB wires
-and the non-scaling die-edge dimensions for breaking out of the chip boundaries
-onto the package. We can see that our mechanisms improved application
-performance by 14\% on average and with some applications seeing up to 81\%
-performance speedups (i.e. \texttt{Lonestar-SP}), however they do not come without a cost.
+Our results demonstrate that the proposed dynamic and asymmetric link bandwidth
+allocation can be very attractive in multi-socket GPU realm, where inter-socket
+interconnect bandwidth is limited by the number of on-PCB wires and the
+non-scaling die-edge dimensions for breaking out of the chip boundaries onto
+the package. We can see that our mechanisms improved application performance by
+14\% on average and with some applications seeing up to 81\% performance
+speedups (i.e. \texttt{Lonestar-SP}), however they do not come without a cost.
 The main drawback of this solution is that both types of interface circuitry
-and logic need to be implemented for each lane in GPU and Switch interfaces, moreover
-even though total switch bandwidth stays always constant, and cannot exceed the 
-maximal bandwidth of per-link lanes multiplied by the number of links, 
-the internal switch fabric might need to be redesigned to support
+and logic need to be implemented for each lane in GPU and Switch interfaces.
+We conducted a first order analysis of the potential cost of doubling the amount
+of I/O circuits and related logic based on the analysis of one of the state of
+the art GPU I/O from one of the major GPU vendors. Based on our analysis the area
+growth is expected to be less than 1\% of the total GPU area, while yielding
+14\% performance on average, resulting in a very attractive performance-area trade-off.  
+Moreover even though total switch bandwidth stays always constant, and cannot
+exceed the maximal bandwidth of per-link lanes multiplied by the number of
+links, the internal switch fabric might need to be redesigned to support
 asymmetric traffic patterns. We believe our proposed mechanism may motivate
 future research in the domain of asymmetric switch architecture, however we
 keep it out of the scope of this paper.
