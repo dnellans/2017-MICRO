@@ -76,7 +76,7 @@ and runtime that aggregates multiple-GPUs into a single large GPU and achieves
 good performance scalability across a wide range of benchmarks.  First we apply 
 several known NUMA techniques from the CPU community to enable a locality aware 
 multi-GPU runtime but show these optimizations are not enough to achieve 
-performance scalability in a multi-socket NUMA-GPU.  We then propose 
+performance scalability in a multi-socket NUMA GPU.  We then propose 
 interconnect and cache improvements for GPUs to make their architecture 
 ~\textit{NUMA-aware} and show that with these improvements multi-socket GPUs can 
 achieve good performance scalability when executing programs optimized for a 
@@ -86,10 +86,10 @@ legacy single-die GPU. In this work, we make the following contributions:
 
 \item We show that traditional NUMA memory placement and 
 scheduling policies are not sufficient for multi-socket GPUs to achieve good 
-performance scalability and then demonstrate that intersocket bandwidth will be 
-the primary performance limiter in NUMA-GPUs.
+performance scalability and then demonstrate that inter-socket bandwidth will be 
+the primary performance limiter in NUMA GPUs.
 
-\item By exploiting program phase behavior we show that intersocket links (and 
+\item By exploiting program phase behavior we show that inter-socket links (and 
 thus bandwidth) should be dynamically varied at runtime to maximize link 
 utilization. Moreover, we show that dynamic policy must be determined on a per 
 GPU basis, as a global policies will fail to capture per GPU phase behavior.
