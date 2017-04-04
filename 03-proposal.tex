@@ -1,4 +1,3 @@
-\vspace{-.1in}
 \section{A NUMA-Aware GPU Runtime}
 
 Current GPU software and hardware is co-designed together to optimize 
@@ -58,7 +57,7 @@ the system, assigning equal amount of contiguous CTAs to each GPU.  This design
 choice potentially exposes workload unbalance across sub-kernels, but it has 
 been shown to preserve data locality present in applications where contiguous 
 CTAs also access contiguous memory regions~\cite{Cabezas2015,Arunkumar2017}.
-\vspace{-.1in}
+
 \subsection{Performance Through Locality} 
 
 Figure~\ref{fig:motivation} shows the relative performance of a 4-socket NUMA 
@@ -232,8 +231,8 @@ Other-Bitcoin-Crypto  & 60 & 5898 \\
 \toprule
 \end{tabular}
 \vspace{-.1in}
-\caption{Application footprint and average number of CTAs (thread blocks) 
-available during time-weighted execution.}
+\caption{Application footprint and time weighted average number of thread blocks 
+available during execution.}
 \vspace{-.2in}
 \label{tab:numctas}
 \end{small}
