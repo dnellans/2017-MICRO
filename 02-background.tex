@@ -2,15 +2,14 @@
 \label{sec:background}
 
 Over the last decade single GPU performance has scaled well due to a 
-significant growth in per-GPU transistor count and DRAM bandwidth. For 
-example, in 2010 Nvidia's Fermi GPUs integrated 1.95B transistors on a 
-529mm\textsuperscript{2} die, with 180GB/s of DRAM bandwidth.  In 2016 
-Nvidia's Pascal GPUs contained 12B transistors on a 610 mm\textsuperscript{2} 
-die, while relying on 720GB/s of main memory bandwidth. Unfortunately 
-transistor density is slowing significantly and vendors are not providing 
-roadmaps beyond 7nm. Moreover, GPU die sizes which have been also increasing 
-from generation to generation, are expected to slow down due to limitations 
-in lithography and manufacturing cost.
+significant growth in per-GPU transistor count and DRAM bandwidth. For example, 
+in 2010 Nvidia's Fermi GPUs integrated 1.95B transistors on a 
+529mm\textsuperscript{2} die, with 180GB/s of DRAM bandwidth.  In 2016 Nvidia's 
+Pascal GPUs contained 12B transistors on a 610 mm\textsuperscript{2} die, while 
+relying on 720GB/s of main memory bandwidth. Unfortunately transistor density is 
+slowing significantly and vendors are not providing roadmaps beyond 7nm. 
+Moreover, GPU die sizes which have been also increasing generationally, are 
+expected to slow down due to limitations in lithography and manufacturing cost.
 
 \begin{figure}[t] 
     \centering
@@ -21,7 +20,7 @@ available SMs.}
     \vspace{-.2in}
 \end{figure}
 
-Without either larger or denser dies, manufacturers must turn toward 
+Without either larger or denser dies, manufacturers must turn towards 
 alternative solutions to significantly increase GPU performance.  Recently 3D 
 die-stacking has seen significant interest due to its successes in the high 
 bandwidth DRAM design space~\cite{HBM}. Unfortunately 3D die-stacking still has 
@@ -47,19 +46,19 @@ interfaces such as CUDA or openCL~\cite{CUDA,OPENCL}. By requiring significant
 application re-design many applications are never ported to take advantage
 of multiple GPUs.
 
-While extending single GPU application performance significantly is a 
-laudable goal, we must first understand if applications will be able to 
-leverage future larger GPUs.  Today NVIDIA's largest GPUs contain 54 SMs with 
-growth to 64 SMs likely as the product line matures. Across a benchmark set 
-of 41 applications, later described in Section~\ref{sec:methodology} and 
-Table~\ref{tab:numctas}, we find that many single-GPU optimized workloads 
-contain enough data parallelism to fill future GPUs that may be 2, 4, or 
-8$\times$ larger than today's biggest GPUs.  While single-GPU optimized 
-applications are unlikely to scale to tens of thousands of GPUs across an 
-entire data center, for the majority of GPU programs written today we believe 
-there will be significant demand for GPUs that can scale application 
-performance by as much as a factor of 8$\times$ while requiring no additional 
-software engineering.
+While extending single GPU application performance significantly is a laudable
+goal, we must first understand if applications will be able to leverage future
+larger GPUs.  Today NVIDIA's largest GPUs contain 54 SMs with growth to 64 SMs
+likely as the product line matures. Across a benchmark set of 41 applications,
+later described in Section~\ref{sec:methodology} and Table~\ref{tab:numctas},
+we find that many single-GPU optimized workloads contain enough data 
+parallelism 
+to fill future GPUs that may be 2, 4, or 8$\times$ larger than today's biggest
+GPUs.  While single-GPU optimized applications are unlikely to scale to tens
+of thousands of GPUs across an entire data center, for the majority of GPU
+programs written today we believe there will be significant demand for GPUs that
+can scale application performance by as much as a factor of 8$\times$ 
+while requiring no additional software engineering.
 
 To understand the performance scalability of a multi-socket NUMA GPU we examine 
 the performance that a future 4-socket GPU can achieve while executing 
@@ -78,17 +77,16 @@ performance.
 
 Second, we propose that to minimize traffic on oversubscribed communication 
 links GPU caches need to become NUMA-aware.  Traditional on-chip caches are 
-optimized to maximize overall hitrate, thus minimizing off-chip bandwidth.  
-When on-chip caches are backed by a single memory system, or even two 
-symmetric memory systems, maximizing hitrate is the best objective function 
-for cache policy.  However, in highly NUMA systems,  not all cache misses 
-have the same relative cost.  Specifically, due to the NUMA penalty of 
-accessing remote memory, overall application throughput may be maximized by 
-giving preference to cache capacity (and thus improving hit rate) toward data 
-that resides in remote NUMA zones rather than faster local memory. To this 
-end, we propose new NUMA-aware GPU caches that dynamically skew cache 
-capacity when it is detected that either the remote or local memory bandwidth 
-is oversubscribed.
+optimized to maximize overall hitrate, thus minimizing off-chip bandwidth.  When 
+on-chip caches are backed by a single memory system, or even two symmetric 
+memory systems, maximizing hitrate is the best objective function for cache 
+policy.  However, in highly NUMA systems,  not all cache misses have the same 
+relative cost.  Specifically, due to the NUMA penalty of accessing remote 
+memory, overall application throughput may be maximized by preferencing cache 
+capacity (and thus improving hit rate) towards data that resides in remote NUMA 
+zones rather than faster local memory. To this end, we propose new NUMA-aware 
+GPU caches that dynamically skew cache capacity when it is detected that either 
+the remote or local memory bandwidth is oversubscribed.
 
 By architecting NUMA-aware GPUs we show that single-GPU application performance 
 can be scaled up significantly before costly application re-writes may be 
@@ -107,7 +105,7 @@ and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing
 upper bound of performance this application can achieve via GPU hardware 
 scaling. For the Locality-Optimized design, applications shown in grey 
 achieve already 99\% of theoretical scaling (\emph{red dash}) without 
-microarchitectural modification.}
+micro-architectural modification.}
     \label{fig:motivation}
     \vspace{-.2in}
 \end{figure*}

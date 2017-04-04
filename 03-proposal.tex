@@ -4,7 +4,7 @@ Current GPU software and hardware is co-designed together to optimize
 throughput of processors based on the assumption of uniform memory properties 
 within the GPU. Fine grained interleaving of memory addresses across memory 
 channels on the GPU provides implicit load balancing across memory but destroys 
-memory locality.  As a result, thread block (CTA) scheduling policies need not 
+memory locality.  As a result, threadblock (CTA) scheduling policies need not 
 be sophisticated to capture locality, which which has been destroyed by the 
 memory system layout.  For future NUMA GPUs to work well, both software and 
 hardware must be changed to achieve both functionality and performance.  Before 
@@ -13,23 +13,24 @@ runtime system we employ to enable multi-socket GPU execution.
 
 Prior work has demonstrated it is possible to design a framework and a runtime 
 system that transparently decomposes GPU kernels in sub-kernels and executes 
-them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on Nvidia GPUs 
+them on multiple PCIe attached GPUs in parallel. For example, on Nvidia GPUs 
 this can be implemented by intercepting and remapping each kernel call, GPU 
 memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
 driver. Special care needs to ensure that per-GPU memory fences are promoted to 
 system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
-identifiers are properly adjusted to reflect those of the original kernel. In 
-~\cite{Cabezas2015} these two problems were solved by introducing code 
+identifiers are properly managed to reflect the barriered completion state of 
+all sub-kernels before the original kernel call is completed. In 
+~\cite{Cabezas2015} these two problems were solved by introducing  code 
 annotations and an additional source-to-source compiler which was also 
 responsible for statically partitioning data placement and computation.
 
 In our work, we follow a similar strategy but without using an source to source
 compiler. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
 Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
-runtime rather than static memory placement. Similarly, technologies like
+runtime rather than static memory placement.  Similarly, technologies like
 cache line granularity interconnects like NVIDIA's NVLINK~\cite{NVLINK} allow
 transparent access to remote memory without the need to modify application
-source code to access local or remote memory addresses. Due to these
+source code to access local or remote memory addresses.  Due to these
 advancements, we assume that through dynamic compilation of PTX to SASS at
 executions the GPU runtime will be able to statically identify and promote 
 system wide memory fences as well as manage sub-kernel CTA identifiers.
@@ -49,7 +50,7 @@ On a single-GPU fine grain dynamic assignment of CTAs to SMs is performed to
 achieve good load balancing.  Extending this policy to a multi-socket GPU 
 system is not possible due to the relatively high latency of passing sub-kernel 
 launches from software to hardware.  To overcome this penalty the GPU runtime 
-must launch a block of CTAs to each GPU-socket at course granularity.  To 
+much launch a block of CTAs to each GPU-socket at course granularity.  To 
 encourage load balancing, each sub-kernel could be comprised of an interleaving 
 of CTAs using modulo arithmetic.  Alternatively a single kernel can be 
 decomposed into N sub-kernels, where N is the total number of GPU sockets in 
@@ -86,7 +87,7 @@ applications by the gap between relative performance of the Locality-Optimized
 NUMA GPU and hypothetical 4$\times$ larger GPU. We observe that on the right 
 side of the graph some workloads (shown in the grey box) can achieve or surpass 
 the maximum theoretical performance. In particular for the two far-most 
-benchmarks on the right, the Locality-Optimized solutions can outperform the 
+benchmarks on the right, the locality optimized solutions can outperform the 
 hypothetical 4x larger GPU due higher cache hitrates because contiguous block 
 scheduling is more cache friendly than traditional GPU scheduling.
 
@@ -132,7 +133,7 @@ kernel invocations.  We run each benchmark to completion for the determine
 region of interest. Table~\ref{tab:numctas} provides both the memory footprint
 of these workloads as well as the average number of active CTAs in the workload
 (weighted by the time spent on each kernel) to provide a representation of 
-how many parallel thread blocks (CTAs) can are generally available
+how many parallel threadblocks (CTAs) can are generally available
 during workload execution.
 
 \begin{table}[tp]
