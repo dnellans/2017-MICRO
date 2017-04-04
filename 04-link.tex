@@ -46,10 +46,10 @@ would be better of with an asymmetric link bandwidth allocation. A common
 scenario is writing to the same memory section by all CTAs at the end of a
 kernel (i.e. parallel reductions, data gathering). For CTAs running on one of the
 sockets, GPU0 for example, these memory instructions are local and do not
-produce any traffic on the inter-socket interconnections. While CTAs dispatched
+produce any traffic on the inter-socket interconnections. The rest of the CTAs dispatched
 to other GPUs issue remote memory writes, saturating their egress links while
 ingress links remain underutilized. Such a communication pattern utilizes only
-50\% of available bandwidth. In such case, increasing the number of ingress lanes for GPU0
+50\% of available bandwidth. In that case, increasing the number of ingress lanes for GPU0
 (by turning around direction of egress lanes), and switching the direction of
 ingress lanes for all other GPUs, could substantially improve the performance
 by effectively providing 2x larger bandwidth on the same wires. 
@@ -115,7 +115,7 @@ direction.  Figure~\ref{fig:sampletime} shows the performance improvement, with
 respect to our baseline architecture by exploring different values of the
 \texttt{SampleTime} indicated by green bars and assuming a \texttt{SwitchTime}
 of 100 cycles (we provide a detailed discussion on \texttt{SwitchTime}
-further below) .The red bars in Figure~\ref{fig:sampletime} provide an
+further below). The red bars in Figure~\ref{fig:sampletime} provide an
 upper-bound performance speedups when doubling the available interconnect
 bandwidth to 256GB/s. For the benchmarks on the right side, where the baseline
 4 GPU multi-socket system performs close to 4$\times$ larger single GPU,
@@ -127,7 +127,7 @@ applications, 2$\times$ NVLink bandwidth translates to 2$\times$ speedup, while
 dynamic lane switching achieves up to 80\% performance improvement
 (\texttt{Lonestar-SP}).  We can see that doublng the interconnect bandwidth
 achieves 50\% speedup on average, while our proposed dynamic mechanism achieves
-15\% speedup on average (with 5K sample period). We show that the sampling frequency
+14\% speedup on average (with 5K sample period). We show that the sampling frequency
 plays a critical role, long sample times do not capture application dynamics
 resulting in smaller perfromance improvements. Our findings indicate that 5K
 cycles can be a good sampling period, and sample times below that achieve

@@ -55,13 +55,12 @@ interconnections results in poor performance, as shown in
 Figure~\ref{fig:motivation}. Similarly, in NUMA GPUs utilizing the 
 traditional memory side L2 caches that depend on fine grained memory 
 interleaving is a bad decision because these memory side caches are not able 
-to cache remote memory, and thus cannot reduce NUMA interconnect traffic.  
+to cache remote memory, and thus can not reduce NUMA interconnect traffic.  
 Previous work has proposed that GPU L2 cache capacity should be split between 
 memory-side caches and a new processor-side L1.5 cache that is an extension 
-of the GPU L1 caches~\cite{Arunkumar2017} for caching remote data only (we 
-denote them as Remote caches here). By balancing this capacity between local 
-and remote caches (R\$ caches) they limit the need for invalidating the entire 
-L2 cache capacity when extending the GPU coherence into the R\$ cache while still 
+of the GPU L1 caches~\cite{Arunkumar2017} for caching remote data only. By balancing this capacity between local 
+and remote caches (R\$) they limit the need for invalidating the entire 
+L2 cache capacity when extending the GPU coherence into the R\$ while still 
 minimizing crossbar bandwidth. An example of this organization is shown in 
 Figure~\ref{fig:cacheorg}(b). 
 
@@ -107,7 +106,7 @@ NUMA-remote memory address. Thus, it should be beneficial to dynamically
 skew cache allocation policy to preference caching of remote memory over 
 local data when it is determined the system is bottlenecked on NUMA bandwidth.
 
-We propose that rather than allowing both the L1 and L2 caches to be 
+We propose that rather than allowing the L1 and L2 caches to be 
 contended by local and remote memory accesses, both levels of the GPU cache 
 hierarchy become NUMA-aware and dynamically adjust their cache resources to 
 preference caching of remote NUMA data when it is determined that the NVLink 
@@ -161,15 +160,16 @@ remote data, and mem-side L2. Previous work reports this as the best static
 L2 partitioning scheme~\cite{Arunkumar2017}. Indeed, this configuration 
 improves the performance by 50\% on average, although for some benchmarks, 
 like \texttt{HPC-MiniAMR} and \texttt{HPC-HPGMG} it hurts the performance by 
-up to 10\%. Those workloads stress local memory bandwidth and have negligible 
+up to 10\%. Those two workloads stress local memory bandwidth and have negligible 
 inter-socket traffic, thus lowering the mem-side L2 capacity creates the 
-bottleneck. \emph{Light gray} bars we show the results for a configuration with 
+bottleneck. With \emph{light green} bars we show the results for a configuration with 
 coherent L1 and L2 caches where both local and remote data contend for the 
 available capacity. On average, this solution outperforms static cache 
-partitioning, although for \texttt{HPC-HPGMG} results in a decrease of 
-performance.
+partitioning.
+%although for \texttt{HPC-HPGMG} results in a decrease of 
+%performance.
 
-Finally, the \emph{dark gray} bar shows our proposed NUMA-aware cache 
+Finally, \emph{dark gray} bars show our proposed NUMA-aware cache 
 partitioning policy. All caches in the NUMA-aware multi-socket GPU system are 
 able to independently change their local behavior based on the hardware 
 counters monitoring the outgoing NVLink and local memory bandwidth. The 
@@ -187,8 +187,8 @@ remote data, despite the fact that SW based cache coherence will now
 effectively flush the entire L2 cache on all GPUs when those operations 
 occur. Moreover, workloads on the right side expose good locality, thus 
 prefer L1 and L2 caches to store (mostly) local data, something that 
-NUMA-aware policy can adapt to. We see that dynamic partitioning can improve 
-average GPU performance by 71\% compared to the memory side L2, and 21\% 
+NUMA-aware policy can adapt to. We see that dynamic partitioning improves 
+the average GPU performance by 71\% compared to the memory side L2, and 21\% 
 compared to the static cache partitioning. 
 
 Extending NUMA-aware dynamic cache mechanism to L1 caches results in an 

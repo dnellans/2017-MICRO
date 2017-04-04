@@ -5,7 +5,7 @@ throughput of processors based on the assumption of uniform memory properties
 within the GPU. Fine grained interleaving of memory addresses across memory 
 channels on the GPU provides implicit load balancing across memory but destroys 
 memory locality.  As a result, threadblock (CTA) scheduling policies need not 
-be sophisticated to capture locality, which which has been destroyed by the 
+be sophisticated to capture locality, which has been destroyed by the 
 memory system layout.  For future NUMA GPUs to work well, both software and 
 hardware must be changed to achieve both functionality and performance.  Before 
 focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
@@ -24,10 +24,10 @@ all sub-kernels before the original kernel call is completed. In
 annotations and an additional source-to-source compiler which was also 
 responsible for statically partitioning data placement and computation.
 
-In our work, we follow a similar strategy but without using an source to source
-compiler. Unlike prior work, we are able to rely on Nvidia's Unified Virtual 
+In our work, we follow a similar strategy but without using an source-to-source
+translation. Unlike prior work, we are able to rely on Nvidia's Unified Virtual 
 Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
-runtime rather than static memory placement.  Similarly, technologies like
+runtime rather than static memory placement.  Similarly, technologies with
 cache line granularity interconnects like Nvidia's NVLink~\cite{NVLINK} allow
 transparent access to remote memory without the need to modify application
 source code to access local or remote memory addresses.  Due to these
@@ -61,7 +61,7 @@ CTAs also access contiguous memory regions~\cite{Cabezas2015,Arunkumar2017}.
 
 \subsection{Performance Through Locality} 
 
-Figure~\ref{fig:motivation} we show the relative performance of a 4-socket NUMA 
+Figure~\ref{fig:motivation} shows the relative performance of a 4-socket NUMA 
 GPU with respect to a single GPU under the two possible CTA scheduling and 
 memory placement strategies explained above.  The green bars show the 
 relative performance of traditional single GPU scheduling and memory 
@@ -99,7 +99,7 @@ occurring.  Because our goal is to provide scalable performance for single-GPU
 optimized applications, in the rest of the paper we aim to close this 
 performance gap through microarchitectural innovation. To simplify later 
 discussion, we choose to exclude benchmarks that achieve $\geq$99\% of the 
-theoretical performance with SW-only locality optimizations, however we include 
+theoretical performance with SW-only locality optimizations. However, we include 
 all benchmarks in our final results to show the overall performance scalability 
 achievable with NUMA-aware multi-socket GPUs.
  
