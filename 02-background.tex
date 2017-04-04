@@ -92,10 +92,12 @@ NUMA-aware architecture.
 \begin{figure*}[tp] 
     \centering
     \includegraphics[width=1.0\linewidth]{figures/plot_different_baselines.pdf}
-    \vspace{-.1in}
     \caption{Relative performance of a 4-socket NUMA GPU using to a single GPU 
-and a hypothetical 4$\times$ larger (all resources scaled) single GPU.
-Workloads in grey achieve 99\% of possible performance improvement via software optimization.}
+and a hypothetical 4$\times$ larger (all resources scaled) single GPU showing 
+upper bound of performance this application can achieve via GPU hardware 
+scaling. For the Locality-Optimized design, applications shown in grey 
+achieve already 99\% of theoretical scaling (\emph{red dash}) without 
+micro-architectural modification.}
     \label{fig:motivation}
     \vspace{-.2in}
 \end{figure*}

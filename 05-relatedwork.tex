@@ -1,32 +1,33 @@
 \section{Related Work}
-Multi-GPUs are widely used for scaling single GPU perfromance
-via integration of multiple GPUs at the system
-level~\cite{pascal-tesla-wp,dgx,intersect360,titan_supercomputer} for a
-rapidly growing pool of applications~\cite{coral,cudnn,Lavin15b,SimonyanZ14a}.
-Similarly, multi-socket and multi-node CPU
-installations have been employed and studied in context of HPC and
-data-center applications~\cite{Intel:Xeon,IBM:Power,IBM:z196,AMD:Opteron}
+Multi-GPUs are widely used for scaling single GPU performance via integration 
+of multiple GPUs at the system 
+level~\cite{pascal-tesla-wp,dgx,intersect360,titan_supercomputer} for a 
+rapidly growing pool of 
+applications~\cite{coral,cudnn,Lavin15b,SimonyanZ14a}. Similarly, 
+multi-socket and multi-node CPU installations have been employed and studied 
+in context of HPC and data-center 
+applications~\cite{Intel:Xeon,IBM:Power,IBM:z196,AMD:Opteron}
 
 Multi-GPU programming models require explicit programming of multiple GPUs
 using SW APIs such as Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of
 MPI and CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. These extensions require
 unique programming experience and non-negligible SW effort while adapting a
-single GPU application to take advantage of a Multi-GPU system. In this paper
-we execute single GPU application on a Multi-GPU system as if it was a single
+single GPU application to a Multi-GPU system. In this paper
+we execute single GPU applications on a Multi-GPU system as if it was a single
 larger GPU via hardware innovations and extensions to the driver software to
-provide programmer- and OS-transparent execution, similarly to approaches
+provide programmer and OS transparent execution, similarly to approaches
 proposed in the past~\cite{Cabezas2015,lee2013transparent,ben2015memory}.
 
 Modern multi-socket CPU and GPU systems leverage most advanced interconnect
 technologies such as NVLink, QPI and
 Infinity~\cite{dgx,INTELQPI,AMDINFINITYFABRIC}. These modern fabrics utilize
 high speed serial signalling technologies over unidirectional lanes
-collectively comprizing full-duplex links. This way each link capacity is
+collectively comprising full-duplex links. This way each link capacity is
 statically allocated at design time and usually is symmetric in nature. In this
 paper we propose to dynamically re-allocate available link bandwidth resources
 by using same system wire resources and on-chip I/O interfaces, while
-implementing both recever and transmitter driver circuitry at each lane. This
-approach resembles previously proposed tri-state bi-directional bus
+implementing both receiver and transmitter driver circuitry at each lane. This
+approach resembles previously proposed tristate bi-directional bus
 technologies ~\cite{tri-state}, or former technologies such as Intel front-side
 bus ~\cite{fsb}. Our proposal however allows leveraging fast
 singled ended signalling, while allowing a dynamically controlled
@@ -41,10 +42,10 @@ cache management with quota-based approach. Qureshi et al~\cite{qureshi-micro}
 proposed to partition the cache space between applications. Jaleel et
 al~\cite{jaleel-pact} improved on this by proposing adaptive insertion
 policies. Recently, cache monitoring and allocation technologies were added to
-Intel Xeon procesors, targeted for QoS enforcement via dynamic repartitioning
+Intel Xeon processors, targeted for QoS enforcement via dynamic repartitioning
 of on-chip CPU cache resources~\cite{Herdrich2016CacheQF}.  Efficient cache
-partitioning in GPU was primarly explored in context of L1 caches
-~\cite{li-priority-based}. While dynamic cache paritioning has been widely used for
-QoS and L1 utlization, to the best of our knowledge it has never been used
+partitioning in GPU was primarily explored in context of L1 caches
+~\cite{li-priority-based}. While dynamic cache partitioning has been widely used for
+QoS and L1 utilization, to the best of our knowledge it has never been used
 to try to optimize performance when caches are backed with NUMA memory
 systems.
