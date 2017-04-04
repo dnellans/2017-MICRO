@@ -25,10 +25,10 @@ annotations and an additional source-to-source compiler which was also
 responsible for statically partitioning data placement and computation.
 
 In our work, we follow a similar strategy but without using an source to source
-compiler. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
+compiler. Unlike prior work, we are able to rely on Nvidia's Unified Virtual 
 Addressing~\cite{UVM} to allow dynamic placement of pages into memory at
 runtime rather than static memory placement.  Similarly, technologies like
-cache line granularity interconnects like NVIDIA's NVLINK~\cite{NVLINK} allow
+cache line granularity interconnects like Nvidia's NVLink~\cite{NVLINK} allow
 transparent access to remote memory without the need to modify application
 source code to access local or remote memory addresses.  Due to these
 advancements, we assume that through dynamic compilation of PTX to SASS at
@@ -109,7 +109,7 @@ achievable with NUMA-aware multi-socket GPUs.
 To evaluate the performance of future NUMA-aware multi-socket GPUs we use a 
 proprietary, cycle-level, trace-driven simulator for single and multi-GPU 
 systems. Our baseline GPU in both single GPU and multi-socket GPU 
-configurations, approximates the latest NVIDIA Pascal 
+configurations, approximates the latest Nvidia Pascal 
 architecture~\cite{pascal-tesla-wp}. Each streaming multiprocessors (SM) is 
 modeled as an in-order processor with multiple levels of cache hierarchy 
 containing private, per-SM, L1 caches and multi-banked, shared, L2 cache. Each 
@@ -133,7 +133,7 @@ kernel invocations.  We run each benchmark to completion for the determine
 region of interest. Table~\ref{tab:numctas} provides both the memory footprint
 of these workloads as well as the average number of active CTAs in the workload
 (weighted by the time spent on each kernel) to provide a representation of 
-how many parallel threadblocks (CTAs) can are generally available
+how many parallel threadblocks (CTAs) are generally available
 during workload execution.
 
 \begin{table}[tp]
@@ -184,7 +184,7 @@ systems.}
  \toprule
  \textbf{Benchmark} & \textbf{Time-weighted} & 
 \textbf{Memory} \\
-& \textbf{Average CTAs} & \textbf{(MB)} \\
+& \textbf{Average CTAs} & \textbf{Footprint (MB)} \\
  \toprule
 ML-GoogLeNet-cudnn-Lev2 & 6272 & 1205 \\
 ML-AlexNet-cudnn-Lev2 & 1250 & 832 \\

@@ -27,8 +27,8 @@ cache management together.  For benchmarks such as \texttt{CoMD}, these
 features contribute nearly equally to the overall improvement, but for others 
 such as \texttt{ML-AlexNet-cudnn-Lev2} or \texttt{HPC-MST-Mesh1}, 
 interconnect improvements or caching are the primary contributor 
-respectively.  On average, we observe that when combined we see XXX\% a XXX\% 
-improvement over the baseline software locality optimized 4-socket NUMA GPU 
+respectively.  On average, we observe that when combined we see 2.13$\times$ improvement over single GPU and 73\% 
+over the baseline software locality optimized 4-socket NUMA GPU 
 using memory side L2 caches.
 
 \textbf{Scalability:} Ultimately, for vendors to produce multi-socket NUMA 
@@ -37,8 +37,8 @@ see large enough performance improvements to justify their cost.  To
 understand the scalability of this approach Figure~\ref{fig:scalability} 
 shows the performance of a NUMA-aware multi-socket GPU compared to a single 
 GPU, when scaled across 2,4, and 8 sockets respectively.  On average a 2 
-socket NUMA GPU achieves XXX\% speedup, while 4 sockets and 8 sockets achieve 
-XXX\% speedup respectively.  Depending on customer expectations these 
+socket NUMA GPU achieves 53\% speedup, while 4 sockets and 8 sockets achieve 
+2.33$\times$ and 3.27$\times$ speedup respectively.  Depending on customer expectations these 
 speedups may look attractive or lackluster, particularly when per-benchmark 
 variance is included.  However, the scalability of NUMA GPU's is not solely 
 dependent on NUMA GPU microarchitecture. We observe that for some 
@@ -47,7 +47,7 @@ single GPUs, performance would not scale.  This may be due to a variety of
 reasons beyond NUMA effects, including number of CTA's available, expensive 
 global synchronizations, or other factors.  Comparing our NUMA-aware GPU 
 implementation to this hypothetical scaling that applications could achieve, 
-we see that we can achieve XXX\%, XXX\%, and XXX\% of overall application 
+we see that we can achieve 89\%, 84\%, and 75\% of overall application 
 scalability at 2, 4, and 8 socket configurations respectively.  This good 
 scaling factor indicates that the NUMA aspects of future multi-socket GPUs 
 have largely been eliminated as performance limiters in single GPU 

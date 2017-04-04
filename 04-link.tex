@@ -86,9 +86,7 @@ in each direction).
     
 \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
     \caption{Normalized NVLink bandwidth profile for \texttt{HPC-HPGMG-UVM} 
-showing example of asymmetric 
-    link utilization between GPUs and within a GPU depending on kernel and 
-application phasing.}
+showing example of asymmetric link utilization between GPUs and within a GPU depending on kernel and application phasing. Veritcal black dotted lines stand for kernel launch events.}
     \label{fig:link-motivation}
     \vspace{-.2in}
 \end{figure}
@@ -161,7 +159,7 @@ improve the performance compared to 100 cycles. We note that the link
 turnaround times of modern high-speed on-board links such as
 GDDR5~\cite{hynixgddr51Gb} for example
 are about 8ns including both link and internal DRAM turn-around latency (which is less than 10 cycles
-assuming 1GHZ frequency), as a result for the rest of
+assuming 1GHz frequency). As a result, for the rest of
 this paper, we define our
 adaptive link assignment policy which samples saturation status on every 5K
 cycles and eventually turn link direction with 100 cycles penalty.
@@ -172,7 +170,7 @@ inter-socket interconnect bandwidth is limited by the number of on-PCB wires
 and the non-scaling die-edge dimensions for breaking out of the chip boundaries
 onto the package. We can see that our mechanisms improved application
 performance by 14\% on average and with some applications seeing up to 81\%
-performance speedups (i.e. Lonestar), however they do not come without a cost.
+performance speedups (i.e. \texttt{Lonestar-SP}), however they do not come without a cost.
 The main drawback of this solution is that both types of interface circuitry
 and logic need to be implemented for each lane in GPU and Switch interfaces, moreover
 even though total switch bandwidth stays always constant, and cannot exceed the 
