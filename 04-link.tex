@@ -2,88 +2,130 @@
 \label{sec:interconnect}
 
 Figure~\ref{fig:symmetric_assymetric}(a) shows a switch connected GPU
-with symmetric bandwidth assignment on 8 inter-socket communication links.
-Each sub-link is comprising multiple equal number of uni-directional high-speed
+with symmetric static bandwidth assignment on 8 inter-socket communication links.
+Each sub-link is comprised of multiple equal number uni-directional high-speed
 lanes in both directions collectively comprising a symmetric bi-directional
-link.  Static link capacity assignment at design time is very common and has
+link.  Traditional static design time link capacity assignment is very common and has
 several advantages. For example, only one type of I/O circuitry
 (egress drivers or ingress receivers) along with only one type of control logic
 need to be implemented at each on-chip link interface. Moreover, multi-socket
 switches result in simpler designs that can easily support a statically provisioned
-bandwidth scenario. On the other hand, multi-socket link bandwidth can have
-a large impact on overall system performance.  Static partitioning of bandwidth
-when application use is dynamic can leave performance on the table.
-Because I/O bandwidth is a very limited and an expensive system resource, NUMA-aware
-interconnects must look to designs that can keep wire and I/O
+bandwidth scenarios. On the other hand, multi-socket link bandwidth utilization can have
+a large impact on overall system performance.  Static partitioning of bandwidth,
+when application needs are dynamic, can leave performance on the table.
+Because I/O bandwidth is a limited and expensive system resource, NUMA-aware
+interconnects designs must look for innovations that can keep wire and I/O
 utilization high. 
 
-In multi-socket NUMA GPU systems, we observe that many applications have a very 
-different utilization of egress and ingress channels on a per GPU-socket basis
-during different phases of execution. For example,
+In multi-socket NUMA GPU systems, we observe that many applications have 
+different utilization of egress and ingress channels on both a per GPU-socket basis
+and during different phases of execution. For example,
 Figure~\ref{fig:link-motivation} shows a link utilization snapshot over time for
-\texttt{HPC-HPGMG-UVM} running on our SW locality optimized 4-socket NUMA GPU. 
+\texttt{HPC-HPGMG-UVM} running on a SW locality optimized 4-socket NUMA GPU. 
 Vertical dotted black lines represent
-kernel invocations that are split across the 4 GPU-sockets. We can see that few initial small kernels have a
-negligible interconnect utilization on all links. However, for the upcoming
-larger kernels at the figure, GPU0 and GPU2 fully saturate their ingress links,
+kernel invocations that are split across the 4 GPU-sockets. We can see that 
+several small kernels have
+negligible interconnect utilization. However, for the later
+larger kernels, GPU0 and GPU2 fully saturate their ingress links,
 while GPU1 and GPU3 fully saturate their egress links. At the same time GPU0 
-and GPU2 pair, and GPU1 and GPU3 pair barely use their egress or ingress links.
+and GPU2, and GPU1 and GPU3 are underutilizing their egress and ingress links respectively.
 
 \begin{figure}[t]
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/link_assignment.pdf}
-    \caption{Multi-socket GPU systems with symmetric and assymeteric link
-    bandwidth assignments.}
+    \caption{Example of dynamic link assignment to improve interconnect efficiency.}
     \label{fig:symmetric_assymetric}
     \vspace{-.2in}
 \end{figure}
 
-In many other workloads we also observe inter-socket traffic patterns that
-would be better of with an asymmetric link bandwidth allocation. A common
-scenario is writing to the same memory section by all CTAs at the end of a
+In many workloads we observe one common
+scenario is all CTAs writing to the same memory range at the end of a
 kernel (i.e. parallel reductions, data gathering). For CTAs running on one of the
-sockets, GPU0 for example, these memory instructions are local and do not
-produce any traffic on the inter-socket interconnections. The rest of the CTAs dispatched
-to other GPUs issue remote memory writes, saturating their egress links while
-ingress links remain underutilized. Such a communication pattern utilizes only
-50\% of available bandwidth. In that case, increasing the number of ingress lanes for GPU0
-(by turning around direction of egress lanes), and switching the direction of
-ingress lanes for all other GPUs, could substantially improve the performance
-by effectively providing 2x larger bandwidth on the same wires. 
+sockets, GPU0 for example, these memory references are local and do not
+produce any traffic on the inter-socket interconnections. However CTAs dispatched
+to other GPUs must issue remote memory writes, saturating their egress links while
+ingress links remain underutilized, but causing ingress traffic on GPU0. 
+Such communication patterns typically utilizes only
+50\% of available interconnect bandwidth. In these cases, dynamically increasing the 
+number of ingress lanes for GPU0
+(by turning around direction of egress lanes) and switching the direction of
+ingress lanes for GPUs 1--3, can substantially improve the achievable interconnect
+bandwidth.Motivated by these findings, we propose to dynamically control multi-socket
+link bandwidth assignments on a per-GPU basis resulting in
+dynamic asymmetric link capacity assignments as shown in
+Figure~\ref{fig:symmetric_assymetric}(b).  
 
-Motivated by these findings, we propose to dynamically control multi-socket
-link bandwidth assignments in each direction on a per-GPU basis resulting in
-dynamically asymmetric link capacity assignments, as shown in
-Figure~\ref{fig:symmetric_assymetric}(b). Such dynamic and asymmetric link
-capacity distribution is expected to yield higher wire utilization and
-essentially higher effective bandwidth and performance for a given set of I/O
-resources. This mechanism is somewhat similar to modern high bandwidth GDDR
-interfaces for example,
-where the same set of wires is used for both read and write directions
-interchangeably, and link direction is reversed based on a dynamic state of the
-system~\cite{hynixgddr51Gb}. 
+To evaluate this proposal we model point-to-point links containing multiple 
+lanes, similarly to NVLink sub-links~\cite{pascal-tesla-wp}. In these links, 8 
+lanes with 8GB/s capacity per lane yield an aggregate bandwidth of 64GB/s in 
+each direction. We propose replacing uni-directional lanes with bi-directional 
+lanes to which we apply an adaptive link bandwidth allocation mechanism that 
+works as following. For each link in the system, at kernel launch the links are 
+always re-trained to contain symmetric link bandwidth with 4 lanes per 
+direction. During kernel execution the link load balancer periodically samples 
+the saturation status of each link. If the lanes in one direction are not 
+saturated, while the lanes in the opposite direction are 99\% saturated, the 
+link load balancer re-trains and reverses the direction of one of the 
+unsaturated lanes after quiescing all packets on that lane. 
 
-For basic link configuration we assume and model point-to-point links with
-multiple lanes each, similarly to NVLink sub-links~\cite{pascal-tesla-wp}. In
-such link, 8 lanes with 8GB/s capacity per lane yield an aggregate bandwidth of
-64GB/s in each direction. We propose to replace uni-directional lanes with
-bi-directional lanes, and then we develop and apply an adaptive asymmetric link
-bandwidth allocation mechanism that works as following. For each link in the
-system, at kernel launch we start with symmetric link bandwidth assignments
-with 8 lanes per direction. Then, we periodically sample the saturation status
-of each link. If the lanes in one direction are not saturated, while the lanes
-in the opposite direction are 99\% saturated, we reverse the direction of one
-of the unsaturated lanes. Repeating the previous step and sampling the lanes
-status, we stop either when equilibrium is reached, or alternatively all the
-lanes but one have been reversed (we always keep a minimum bandwidth of 8GB/s
-in each direction).  
+This sample and 
+reconfigure process stops only when directional utilization is not 
+oversubscribed or all but one lane is configured in a single direction.  If 
+both ingress and egress links are found to be saturated and in an asymmetric 
+configuration, links are then retrained back towards a symmetric configuration 
+to encourage global bandwidth equalization. While this process may sound 
+complex, the circuitry for dynamically turning high speed single ended links 
+around in a short number of cycles already is in use by modern high bandwidth 
+memory interfaces such as GDDR; where the same set of wires is used for both memory reads 
+and writes~\cite{hynixgddr51Gb}.
+
+\subsection{Link Results and Discussion} 
+
+There are two important parameters that will affect the performance of
+our proposed mechanism (i)
+\texttt{SampleTime}: The frequency at which the scheme samples for a possible
+reconfiguration and (ii) \texttt{SwitchTime}: The cost of turning the
+direction of an individual lane. Figure~\ref{fig:sampletime} shows the 
+performance improvement, with
+respect to our SW locality optimize GPU by exploring different values of the
+\texttt{SampleTime} indicated by green bars and assuming a \texttt{SwitchTime}
+of 100 cycles. The red bars in Figure~\ref{fig:sampletime} provide an
+upper-bound of performance speedups when doubling the available interconnect
+bandwidth to 256GB/s. For workloads on the right of the figure, doubling the link
+bandwidth has little effect, thus dynamic link policy will also show little
+improvement due to low GPU--GPU interconnect bandwidth needs.
+On the left side, we can see that for some
+applications, where improved interconnect bandwidth has a large effect,
+dynamic lane switching can improve application performance by as much as 80\%.
+For some benchmarks like \texttt{Rodinia-Euler-3D}, \texttt{HPC-AMG}, and 
+\texttt{HPC-Lulesh}, doubling the NVLink bandwidth provides 2$\times$ 
+speedup, while our proposed dynamic link assignment mechanism is not 
+able to significantly improve performance. Those are the workloads 
+that saturate both link directions, so there is no opportunity to 
+provide additional bandwidth by turning links around.
+
+Using a moderate 5K cycle sample time, dynamic link policy can improve performance
+by 14\% on average over static bandwidth partitioning.  If the link load
+balancer samples too infrequently application dynamics can be missed
+and performance improvement is reduced. However if the link is turned around
+too frequently, bandwidth is lost due to the overhead of turning the link.
+While we have assumed a pessimistic link turn time of 100 cycles, we performed
+sensitivity studies that show even if link turn time were increased to 500
+cycles, our dynamic policy loses less than 2\% of performance. 
+At the same time, using a faster lane switch (10 cycles) does not
+significantly improve the performance over a 100 cycle link turn time.
+We note that the link
+turnaround times of modern high-speed on-board links such as
+GDDR5~\cite{hynixgddr51Gb} are about 8ns including both link and internal 
+DRAM turn-around latency (which is less than 10 cycles at 1GHz).
 
 \begin{figure}[t]
     \centering
     
 \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{Normalized NVLink bandwidth profile for \texttt{HPC-HPGMG-UVM} 
-showing example of asymmetric link utilization between GPUs and within a GPU depending on kernel and application phasing. Veritcal black dotted lines stand for kernel launch events.}
+    \caption{Normalized link bandwidth profile for \texttt{HPC-HPGMG-UVM} 
+showing example of asymmetric link utilization between GPUs and within a GPU depending on 
+kernel and application phasing. Vertical black dotted lines indicate kernel launch events.}
     \label{fig:link-motivation}
     \vspace{-.2in}
 \end{figure}
@@ -91,97 +133,28 @@ showing example of asymmetric link utilization between GPUs and within a GPU dep
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
-    \caption{Relative speedup of the dynamic NVlink adaptivity with respect to
+    \caption{Relative speedup of the dynamic link adaptivity with respect to
 	the baseline architecture by varying sample time and assuming switch 
 time of
-	100 cycles. In red, relative speedup achievable by doubling the 
+	100 cycles. In red, speedup achievable by doubling link 
 bandwidth.}
     \label{fig:sampletime}
     \vspace{-.2in}
 \end{figure*}
 
-\subsection{Link Results and Discussion} 
-
-There are two important parameters that characterize the proposed mechanism (i)
-\texttt{SampleTime}: the frequency at which the scheme samples for a possible
-reconfiguration and (ii) \texttt{SwitchTime}: the cost of switching the
-direction of a lane. Switching period is comprised of the time it takes to
-drain all the pending packets in a given direction, and the time it takes to
-physically reconfigure the lane to start transmitting in the opposite
-direction.  Figure~\ref{fig:sampletime} shows the performance improvement, with
-respect to our baseline architecture by exploring different values of the
-\texttt{SampleTime} indicated by green bars and assuming a \texttt{SwitchTime}
-of 100 cycles (we provide a detailed discussion on \texttt{SwitchTime}
-further below). The red bars in Figure~\ref{fig:sampletime} provide an
-upper-bound performance speedups when doubling the available interconnect
-bandwidth to 256GB/s. For the benchmarks on the right side, where the baseline
-4 GPU multi-socket system performs close to 4$\times$ larger single GPU,
-increasing the inter-socket bandwidth does not improve performance
-significantly.  Contiguous CTA scheduling and first-touch memory placement
-preserves good data locality in these cases, so that both ingress and egress
-links are underutilized. On the left side, we can see that for some
-applications, 2$\times$ NVLink bandwidth translates to 2$\times$ speedup, while
-dynamic lane switching achieves up to 80\% performance improvement
-(\texttt{Lonestar-SP}).  We can see that doublng the interconnect bandwidth
-achieves 50\% speedup on average, while our proposed dynamic mechanism achieves
-14\% speedup on average (with 5K sample period). We show that the sampling frequency
-plays a critical role, long sample times do not capture application dynamics
-resulting in smaller perfromance improvements. Our findings indicate that 5K
-cycles can be a good sampling period, and sample times below that achieve
-deminishing results.
-
-In addition we observe that for benchmarks like \texttt{Rodinia-Euler-3D}, \texttt{HPC-AMG}, and 
-\texttt{HPC-Lulesh}, doubling the NVLink bandwidth provides 2$\times$ 
-speedup, while our proposed dynamic link assignment mechanism is not 
-able to significantly improve performance. Those are the workloads 
-that saturate both link directions, so there is no opportunity to 
-provide additional bandwidth by turning links around. For the rest of 
-the applications on the left side, performance improvement is directly 
-proportional to the actual link utilization of unsaturated lanes. For 
-example, consider a case where a GPU fully saturates its egress links 
-and incoming traffic achieves only 75\% of ingress bandwidth (using 6 
-out of 8 lanes). Then, adaptive policy is able to increase the outgoing 
-bandwidth for a maximal 25\% by turning around those 2 unused ingress 
-lanes. If such a traffic communication pattern is sustained throughout 
-50\% of the total execution time, the maximal performance improvement 
-that our dynamic link assignment can achieve is 12.5\%.
-
-Another important design parameter is switching period needed to turn around a
-single lane direction. Our results point that higher \texttt{SwitchTime}
-values, like 200 and 500 cycles, degrade the average performance by less than
-2\% compared to 100 cycle switching period. We observe the maximum slowdown of
-25\% in case of \texttt{HPC-CoMD-Ta} and \texttt{HPC-CoMD-Wa} when switch time
-reaches 500 cycles. At the same time, faster lane switch (10 cycles) does not
-improve the performance compared to 100 cycles. We note that the link
-turnaround times of modern high-speed on-board links such as
-GDDR5~\cite{hynixgddr51Gb} for example
-are about 8ns including both link and internal DRAM turn-around latency (which is less than 10 cycles
-assuming 1GHz frequency). As a result, for the rest of
-this paper, we define our
-adaptive link assignment policy which samples saturation status on every 5K
-cycles and eventually turn link direction with 100 cycles penalty.
-
-Our results demonstrate that the proposed dynamic and asymmetric link bandwidth
-allocation can be very attractive in multi-socket GPU realm, where inter-socket
-interconnect bandwidth is limited by the number of on-PCB wires and the
-non-scaling die-edge dimensions for breaking out of the chip boundaries onto
-the package. We can see that our mechanisms improved application performance by
-14\% on average and with some applications seeing up to 81\% performance
-speedups (i.e. \texttt{Lonestar-SP}), however they do not come without a cost.
-The main drawback of this solution is that both types of interface circuitry
-and logic need to be implemented for each lane in GPU and Switch interfaces.
-We conducted a first order analysis of the potential cost of doubling the amount
-of I/O circuits and related logic based on the analysis of one of the state of
-the art GPU I/O from one of the major GPU vendors. Based on our analysis the area
-growth is expected to be less than 1\% of the total GPU area, while yielding
-14\% performance on average, resulting in a very attractive performance-area trade-off.  
-Moreover even though total switch bandwidth stays always constant, and cannot
-exceed the maximal bandwidth of per-link lanes multiplied by the number of
-links, the internal switch fabric might need to be redesigned to support
-asymmetric traffic patterns. We believe our proposed mechanism may motivate
-future research in the domain of asymmetric switch architecture, however we
-keep it out of the scope of this paper.
-
+Our results demonstrate that asymmetric link bandwidth
+allocation can be very attractive when inter-socket interconnect bandwidth is constrained 
+by the number of on-PCB wires (and thus total link bandwidth).
+The primary drawback of this solution is that both types of interface circuitry (TX and RX)
+and logic need to be implemented for each lane in both the GPU and switch interfaces.
+We conducted an analysis of the potential cost of doubling the amount
+of I/O circuitry and logic based on a proprietary state of
+the art GPU I/O implementation. Our results show that doubling this interface area
+increases total GPU area by less than 1\% while yielding a 14\% performance improvement.  
+One additional caveat worth noting is that for asymmetric interconnect links optimize
+variance among individual links while total switch bandwidth remains constant.
+This means that potential improvement is subject to per-link imbalance and cannot improve
+situations where there is large global bandwidth imbalance occurring.
  
 
 % DO NOT REMOVE, we can use this to compute POWER later 
