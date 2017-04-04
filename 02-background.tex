@@ -51,10 +51,10 @@ goal, we must first understand if applications will be able to leverage future
 larger GPUs.  Today, Nvidia's largest GPUs contain 54 SMs with growth to 64 SMs
 likely as the product line matures. Across a benchmark set of 41 applications,
 later described in Section~\ref{sec:methodology} and Table~\ref{tab:numctas},
-Figure~\ref{fig:ctas} shows that many single-GPU optimized workloads contain enough data 
+Figure~\ref{fig:ctas} shows that many single GPU optimized workloads contain enough data 
 parallelism 
 to fill future GPUs that may be 2, 4, or 8$\times$ larger than today's biggest
-GPUs.  While single-GPU optimized applications are unlikely to scale to tens
+GPUs.  While single GPU optimized applications are unlikely to scale to tens
 of thousands of GPUs across an entire data center, for the majority of GPU
 programs written today we believe there will be significant demand for GPUs that
 can scale application performance by as much as a factor of 8$\times$ 
@@ -88,7 +88,7 @@ zones rather than faster local memory. To this end, we propose new NUMA-aware
 GPU caches that dynamically skew cache capacity when it is detected that either 
 the remote or local memory bandwidth is oversubscribed.
 
-By architecting NUMA-aware GPUs we show that single-GPU application performance 
+By architecting NUMA-aware GPUs we show that single GPU application performance 
 can be scaled up significantly before costly application re-writes may be 
 required. For existing systems like Nvidia's 8-GPU DGX 
 Supercomputer~\cite{dgx}, applications which execute on, at most, one GPU could 

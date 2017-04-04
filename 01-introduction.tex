@@ -4,27 +4,25 @@
 In the last 10 years GPUs computing has transformed the high performance 
 computing, machine learning, and data analytics fields that were previously 
 dominated by CPU-based 
-installations~\cite{intersect360,cudnn,Lavin15b,SimonyanZ14a}. Modern systems 
-now rely on a combination of GPUs and CPUs to leverage high throughput data 
-parallel GPUs along side latency critical execution occurring on CPUs. In part, 
-GPU-accelerated computing has been successful in these domains because of 
-native 
+installations~\cite{intersect360,cudnn,Lavin15b,SimonyanZ14a}. Many systems now 
+rely on a combination of GPUs and CPUs to leverage high throughput data parallel 
+GPUs with latency critical execution occurring on the CPUs. In part, 
+GPU-accelerated computing has been successful in these domains because of native 
 support for data parallel programming languages~\cite{CUDA7,OPENCL} that reduce 
 programmer burden when trying to scale programs across ever growing data sets.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=1.0\columnwidth]{figures/inter_gpu_connections.pdf}
-\caption{The evolution of GPUs from discrete pluggable PCIe devices to high 
-pin-count 
-multi-socket accelerators utilizing switched interconnects.}
+\caption{The evolution of GPUs from multiple discrete PCIe devices to 
+single logical, multi-socket accelerators utilizing switched interconnects.}
 \label{fig:systemdiagram}
 \vspace{-.2in}
 \end{figure}
 
-Nevertheless, with GPU dies nearing the reticle limitation of maximal die size 
-and transistor density growth rate slowing down~\cite{mooredead2016}, 
-programmers looking to scale the performance of their single-GPU programs are 
+Nevertheless, with GPU dies nearing the reticle limitation for maximum die size 
+and the transistor density growth rate slowing down~\cite{mooredead2016}, 
+developers looking to scale the performance of their single GPU programs are 
 in 
 a precarious position. Multi-GPU programming models support explicit 
 programming 
@@ -33,7 +31,7 @@ such
 as Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of MPI and 
 CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. While these programming 
 extensions enable advanced programmers to utilize more than one GPU for high 
-throughput computation, they require re-writing of traditional single-GPU 
+throughput computation, they require re-writing of traditional single GPU 
 application which may slow their adoption rate.
 
 Recently GPUs have started transitioning from using the PCIe peripheral 
@@ -56,7 +54,7 @@ leverage multiple GPUs. On the other, vendors may choose to expose multi-socket
 designs as a single non-uniform memory access (NUMA) GPU resource.  By 
 extending the single GPU programming model to multi-socket GPUs,  applications 
 can scale beyond the bounds of Moore's law, while simultaneously retaining the 
-single-GPU programming model that GPU developers have become accustomed.
+single GPU programming model that GPU developers have become accustomed.
 
 Prior work has examined aggregating multiple GPUs together under a single
 programming model~\cite{lee2013transparent,Cabezas2015}, however much of this 

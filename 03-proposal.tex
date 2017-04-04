@@ -46,7 +46,7 @@ leverage UVM page migration functionality to migrate pages on-demand from system
 memory to local GPU memory as soon as the first access (also called first-touch 
 allocation) is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
 
-On a single-GPU fine grain dynamic assignment of CTAs to SMs is performed to 
+On a single GPU fine grain dynamic assignment of CTAs to SMs is performed to 
 achieve good load balancing.  Extending this policy to a multi-socket GPU 
 system is not possible due to the relatively high latency of passing sub-kernel 
 launches from software to hardware.  To overcome this penalty the GPU runtime 
@@ -95,7 +95,7 @@ However, for the applications on the left side there is a large gap between the
 Locality-Optimized NUMA design and theoretical performance. These are workloads 
 in which either locality does not exist or the Locality-Optimized GPU runtime is 
 not effective, resulting in large amount of remote data accesses still 
-occurring.  Because our goal is to provide scalable performance for single-GPU 
+occurring.  Because our goal is to provide scalable performance for single GPU 
 optimized applications, in the rest of the paper we aim to close this 
 performance gap through microarchitectural innovation. To simplify later 
 discussion, we choose to exclude benchmarks that achieve $\geq$99\% of the 
