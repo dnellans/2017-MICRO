@@ -1,7 +1,7 @@
 RM     := /bin/rm -rf
 
 all: 
-	pdflatex main ; bibtex main; pdflatex main; pdflatex main
+	pdflatex main ; bibtex main; pdflatex main; pdflatex main; pdflatex main
 	#pdflatex main ; bibtex main; pdflatex main; pdflatex main; dvips  -G0 -o paper.ps -e 0 main; ps2pdf paper.ps &
 
 nobib: 
