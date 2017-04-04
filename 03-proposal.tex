@@ -37,7 +37,7 @@ system wide memory fences as well as manage sub-kernel CTA identifiers.
 Current GPUs perform fine grained memory interleaving at a sub-page granularity 
 across memory channels.  In a NUMA GPU this policy would destroy locality and 
 result in 75\% of all accesses to be to remote memory in a 4 GPU system, an 
-undesireable effect in NUMA systems.  Similarly, a round-robin page level 
+undesirable effect in NUMA systems.  Similarly, a round-robin page level 
 interleaving could be utilized, similar to the Linux INTERLEAVE page allocation 
 strategy, but despite the inherent memory load balancing, this still results in 
 75\% of memory accesses occurring over low bandwidth NUMA links. Instead we 
