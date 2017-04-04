@@ -1,20 +1,20 @@
 \begin{abstract}
 GPUs achieve high throughput and power efficiency by employing many small single 
 instruction multiple thread (SIMT) cores.  To minimize scheduling logic and 
-performance variance they leverage strong data parallelism exposed via the 
-programming model attached to a uniform memory access system (UMA). With Moore's 
-law slowing, for GPUs to continue scaling performance (which largely depends on 
-SIMT core count) they are likely embrace multi-socket designs where more 
-transistors are more readily available. However when moving to multi-socket 
-designs, maintaining the illusion of a uniform memory system becomes 
-increasingly difficult.  In this work we investigate future multi-socket NUMA 
-GPU designs and show that significant changes are needed to the GPU interconnect 
-and caching systems to achieve performance scalability. We show that application 
-phase effects can be exploited, allowing GPU sockets to dynamically optimize 
-their individual interconnect and cache policies to minimize the impact of 
-non-uniform memory access (NUMA) effects. Our NUMA-aware GPU is able to 
-outperform a single GPU by 1.53$\times$, 2.33$\times$, and 3.27$\times$ and achieves 
-89\%, 84\%, and 75\% of theoretical application scalability in 2, 4, and 8 
-socket designs respectively.  Implementable today, NUMA-aware multi-socket GPUs 
-may be a promising candidate for scaling GPU performance beyond a single die.
+performance variance they utilize a uniform memory system and leverage strong 
+data parallelism exposed via the programming model. With Moore's law slowing, 
+for GPUs to continue scaling performance (which largely depends on SIMT core 
+count) they are likely to embrace multi-socket designs where transistors are 
+more readily available. However when moving to such designs, maintaining the 
+illusion of a uniform memory system is increasingly difficult.  In this work we 
+investigate multi-socket non-uniform memory access (NUMA) GPU designs and show 
+that significant changes are needed to both the GPU interconnect and caching 
+systems to achieve performance scalability. We show that application phase 
+effects can be exploited allowing GPU sockets to dynamically optimize their 
+individual interconnect and cache policies, minimizing the impact of NUMA 
+effects. Our NUMA-aware GPU outperforms a single GPU by 1.5$\times$, 
+2.3$\times$, and 3.2$\times$ while achieving 89\%, 84\%, and 75\% of theoretical 
+application scalability in 2, 4, and 8 socket designs respectively.  
+Implementable today, NUMA-aware multi-socket GPUs may be a promising candidate 
+for scaling GPU performance beyond a single socket.
 \end{abstract}
