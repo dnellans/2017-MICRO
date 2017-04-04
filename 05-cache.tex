@@ -9,7 +9,7 @@
 \section{NUMA-Aware Cache Management}
 \label{caching}
 In Section~\ref{sec:interconnect} we have shown that inter-socket bandwidth is one
-of the most important factors in achieving scalable NUMA-GPU performance. By
+of the most important factors in achieving scalable NUMA GPU performance. By
 dynamically retraining the link to support asymmetric bandwidth configurations,
 rather than a static uniform balance, we are able to improve the average performance
 of applications by 15\%.  This improvement comes not from increasing the
@@ -40,7 +40,6 @@ memory-side, they do not need to participate in the coherence protocol.
 Because of the fine grained interleaving of physical memory addresses across 
 memory channels, the L2 caches are inherently load balanced.
 
-
 \begin{figure*}[t]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
@@ -53,7 +52,7 @@ memory channels, the L2 caches are inherently load balanced.
 \subsection{Cache Partitioning Options}
 In NUMA-designs interleaving memory references across the low bandwidth NUMA 
 interconnections results in poor performance, as shown in 
-Figure~\ref{fig:motivation}. Similarly, in NUMA-GPUs utilizing the 
+Figure~\ref{fig:motivation}. Similarly, in NUMA GPUs utilizing the 
 traditional memory side L2 caches that depend on fine grained memory 
 interleaving is a bad decision because these memory side caches are not able 
 to cache remote memory, and thus cannot reduce NUMA interconnect traffic.  
@@ -72,14 +71,14 @@ flexibility. Much like application phasing was shown to affect NUMA bandwidth
 needs, the ability to dynamically share cache capacity between local and 
 remote memory has the potential to improve performance under several 
 situations. First, when application phasing results in some sockets within 
-the NUMA-GPU to access data locally, while others are accessing remote data, 
+the NUMA GPU to access data locally, while others are accessing remote data, 
 as shown in Figure~\ref{fig:link-motivation}, allowing the entire L2 to cache 
 both local and remote data should outperform any static policy. Second, while 
 we show that many applications will be able to completely utilize large 
-NUMA-GPUs, this may not always be the case. GPUs within the data center are 
+NUMA GPUs, this may not always be the case. GPUs within the data center are 
 being virtualized and there is on-going work to support concurrent execution 
 of multiple processes within a single GPU~\cite{park2015chimera, 
-lin2016enabling}. If a large NUMA-GPU is sub-partitioned, it is intuitive 
+lin2016enabling}. If a large NUMA GPU is sub-partitioned, it is intuitive 
 that system software attempt to partition it along the NUMA boundaries so 
 that a single small application need not endure NUMA effects. To effectively 
 capture locality in such a situation, NUMA-aware GPUs need to be able to 
@@ -107,8 +106,6 @@ smaller cost (in both terms of latency and bandwidth) than a cache miss to a
 NUMA-remote memory address. Thus, it should be beneficial to dynamically 
 skew cache allocation policy to preference caching of remote memory over 
 local data when it is determined the system is bottlenecked on NUMA bandwidth.
-
-
 
 We propose that rather than allowing both the L1 and L2 caches to be 
 contended by local and remote memory accesses, both levels of the GPU cache 
@@ -194,8 +191,6 @@ NUMA-aware policy can adapt to. We see that dynamic partitioning can improve
 average GPU performance by 71\% compared to the memory side L2, and 21\% 
 compared to the static cache partitioning. 
 
-
-
 Extending NUMA-aware dynamic cache mechanism to L1 caches results in an 
 interesting observation. In situations where both L1 and L2 caches end up as 
 remote-only (finding that NVLink is saturated while local memory bandwidth is 
@@ -211,24 +206,14 @@ mitigate this problem, we tunned our NUMA-aware policy for L1 caches, by not
 allowing them to allocate all available ways to either local or remote data, 
 but keep at least one way for any of both. 
 
-
-% \begin{figure}[t]
-%     \centering
-%     \includegraphics[width=1.0\columnwidth]{figures/plot_static_cache_WB.pdf}
-%     \caption{Performance comparison of static cache partitioning in a 4-socket GPU.}
-%     \label{fig:staticcaching}
-% \end{figure}
-
-
 \subsection{Extending the Coherency to L2 Caches}
-
 When extending the software controlled GPU coherence protocol into the GPU L2 
 caches, L1 coherence operations (flushes) must also be extended into the GPU 
 L2 caches.  To understand the impact of these coherence operations on our 
 dynamic cache performance we evaluated a hypothetical cache which does not 
 need to perform these coherence operations.  This experiment approximates a 
 speed of light coherence implementation in which caches are still coherent 
-but there is no cost for maintaining that coherence. In a 4-socket NUMA-GPU 
+but there is no cost for maintaining that coherence. In a 4-socket NUMA GPU 
 with 64 SMs per GPU we observe that the coherence overhead of current 
 software based GPU coherence is only XXX\%. We conclude that despite some 
 coherence overheads, the benefit of dynamic NUMA-aware coherent L2 caches on 
