@@ -43,7 +43,7 @@ strategy, but despite the inherent memory load balancing, this still results in
 75\% of memory accesses occurring over low bandwidth NUMA links. Instead we 
 leverage UVM page migration functionality to migrate pages on-demand from system 
 memory to local GPU memory as soon as the first access (also called first-touch 
-allocation) is performed as described by Arunkumar et. al~\cite{Arunkumar2017}.
+allocation) is performed as described by Arunkumar et.~al~\cite{Arunkumar2017}.
 
 On a single GPU fine grain dynamic assignment of CTAs to SMs is performed to 
 achieve good load balancing.  Extending this policy to a multi-socket GPU 
