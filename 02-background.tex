@@ -82,7 +82,7 @@ overall hitrate, thus minimizing off-chip bandwidth, However, in NUMA
 systems, not all cache misses have the same relative cost and thus should not 
 be treated equally. Due to the NUMA penalty of accessing remote memory, we show 
 that performance can be maximized by preferencing cache capacity (and thus 
-improving hit rate) towards data that resides in slower remote NUMA zones, at the 
+improving hitrate) towards data that resides in slower remote NUMA zones, at the 
 expense of data that resides in faster local NUMA zones. To this end, we propose 
 a new NUMA-aware cache architecture that dynamically balances cache capacity based on 
 memory system utilization. Before diving into microarchitectural details and results,
