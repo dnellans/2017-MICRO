@@ -36,8 +36,8 @@ GPUs they must achieve high enough parallel efficiency to justify their design. 
 understand the scalability of our approach Figure~\ref{fig:scalability} 
 shows the performance of a NUMA-aware multi-socket GPU compared to a single 
 GPU, when scaled across 2, 4, and 8 sockets respectively.  On average a 2 
-socket NUMA GPU achieves 1.53$\times$ speedup, while 4 sockets and 8 sockets achieve 
-2.31$\times$ and 3.21$\times$ speedups respectively.  Depending on perspective 
+socket NUMA GPU achieves 1.5$\times$ speedup, while 4 sockets and 8 sockets achieve 
+2.3$\times$ and 3.2$\times$ speedups respectively.  Depending on perspective 
 these 
 speedups may look attractive or lackluster; particularly when per-benchmark 
 variance is included.  However, the scalability of NUMA GPUs is not solely 
@@ -47,10 +47,10 @@ single GPUs, performance would scale similarly.  This may be due to a variety of
 reasons beyond NUMA effects, including number of CTAs available, frequency of 
 global synchronization, and other factors.  Comparing our NUMA-aware GPU 
 implementation to the scaling that applications could achieve on a hypothetical
-large single GPU, we see that NUMA-GPUs can achieve 89\%, 84\%, and 76\% of parallel
-efficiency in 2, 4, and 8 socket configurations respectively.  This high 
-efficiency factor indicates that our design is able to largely eliminate
-the NUMA penalty of future multi-socket GPU designs.
+large single GPU, we see that NUMA-GPUs can achieve 89\%, 84\%, and 76\% the
+efficiency of a hypothetical single large GPU in 2, 4, and 8 socket configurations respectively.  
+This high efficiency factor indicates that our design is able to largely eliminate
+the NUMA penalty in future multi-socket GPU designs.
 
 \textbf{Multi-Tenancy on Large GPUs:} In this work we have shown that many 
 workloads today have the ability to saturate (with sufficient parallel work) 
