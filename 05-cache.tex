@@ -43,7 +43,7 @@ interconnections results in poor performance, as shown in
 Figure~\ref{fig:motivation}. Similarly, in NUMA GPUs utilizing
 traditional memory side L2 caches (that depend on fine grained memory 
 interleaving for load balancing) is a bad decision. Because memory side caches only
-able to cache accesses that originate in their local memory slide, they cannot
+able to cache accesses that originate in their local memory-side, they cannot
 cache memory from other NUMA zones and thus can not reduce NUMA interconnect traffic.  
 Previous work has proposed that GPU L2 cache capacity should be split between 
 memory-side caches and a new processor-side L1.5 cache that is an extension 
