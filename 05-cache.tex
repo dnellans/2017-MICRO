@@ -152,11 +152,12 @@ currently saturated, the policy takes no action (Step \circled{5}).
 \subsection{Results}
 
 Figure~\ref{fig:dynamiccaching} compares the performance of 4 different cache
-configurations in our 4-socket NUMA GPU. Our baseline is a 4-socket GPU with memory side, 
-local-only L2 caches. With \emph{red bars}, we show speedup gained by equally 
-splitting the L2 cache budget, between the gpu-side R\$ which caches only 
-remote data, and mem-side L2. Previous work reports this as the best static 
-L2 partitioning scheme~\cite{Arunkumar2017}. Indeed, this configuration 
+configurations in our 4-socket NUMA GPU. Our baseline is a traditional
+GPU with memory side local-only L2 caches. To compare against prior work~\cite{Arunkumar2017} we
+provide a 50--50 static partitioning where the L2 cache budget is split between the 
+GPU-side coherent remote cache which contains only 
+remote data, and memL2. Previous work reports this as the best static 
+L2 partitioning scheme. Indeed, this configuration 
 improves the performance by 54\% on average, although for some benchmarks, 
 like \texttt{HPC-MiniAMR} and \texttt{HPC-HPGMG} it hurts the performance by 
 up to 10\%. Those two workloads stress local memory bandwidth and have negligible 
