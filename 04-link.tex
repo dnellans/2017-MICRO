@@ -124,8 +124,8 @@ DRAM turn-around latency (which is less than 10 cycles at 1GHz).
     
 \includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
     \caption{Normalized link bandwidth profile for \texttt{HPC-HPGMG-UVM} 
-showing example of asymmetric link utilization between GPUs and within a GPU depending on 
-kernel and application phasing. Vertical black dotted lines indicate kernel launch events.}
+showing asymmetric link utilization between GPUs and within a GPU. Vertical black 
+dotted lines indicate kernel launch events.}
     \label{fig:link-motivation}
     \vspace{-.2in}
 \end{figure}
@@ -150,7 +150,8 @@ and logic need to be implemented for each lane in both the GPU and switch interf
 We conducted an analysis of the potential cost of doubling the amount
 of I/O circuitry and logic based on a proprietary state of
 the art GPU I/O implementation. Our results show that doubling this interface area
-increases total GPU area by less than 1\% while yielding a 14\% performance improvement.  
+increases total GPU area by less than 1\% while yielding a 12\% improvement in average
+interconnect bandwidth which results in a 14\% application performance improvement.  
 One additional caveat worth noting is that the proposed asymmetric link
 mechanism optimizes link bandwidth in a given direction for each individual
 link, while the total switch bandwidth remains constant.

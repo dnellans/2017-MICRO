@@ -31,22 +31,21 @@ enable programmers to employ more than one GPU for high throughput computation,
 but they require re-writing of traditional single GPU applications which has 
 slowed their adoption rate.
 
-Recently GPUs have started to transition from using the PCIe peripheral 
-interface to having single protocol interconnections between both the GPUs and 
-CPUs~\cite{dgx,SierraHPC,AMDINFINITYFABRIC}, as shown in 
-Figure~\ref{fig:systemdiagram}. As a result, the physical interface of GPUs is 
-transitioning away from a discrete pluggable PCIe card into a high pin-count 
-socketed module. This socketed interface is required 
-not only for power delivery but because
-printed circuit board (PCB) level integration is needed to provide
-interconnect bandwidth that is up to an order of magnitude higher than PCIe
-connections. The evolution of GPUs from single pluggable devices to closely
-coupled multi-socket designs is a natural progression as GPU--GPU and CPU--GPU
-link bandwidth becomes a performance critical system component.
+Recently GPUs have started to expand beyond the traditional PCIe
+peripheral interface to enable a single protocol interconnection
+between both the GPUs and CPUs~\cite{dgx,SierraHPC,AMDINFINITYFABRIC},
+as shown in Figure~\ref{fig:systemdiagram}.  As a result, some GPUs
+are being delivered on high pin-count socketed modules to provide
+high-speed links for interconnect bandwidth that is up to an order of
+magnitude higher than PCIe connections.  The expansion of GPUs from
+single pluggable devices to closely coupled multi-socket designs is a
+natural progression as GPU--GPU and CPU--GPU link bandwidth becomes a
+performance critical system component.
 
 The onset of multi-socket GPUs provides a pivot point for GPU and system 
 vendors. On one hand, vendors can continue to expose multi-socket GPUs as 
-individual GPUs and force developers to use multiple programming paradigms to 
+individual GPUs and force developers of multi-GPU systems to use multiple
+programming paradigms to 
 leverage multiple GPUs. On the other, vendors could expose multi-socket 
 designs as a single non-uniform memory access (NUMA) GPU resource.  By 
 extending the single GPU programming model to multi-socket GPUs,  applications 
