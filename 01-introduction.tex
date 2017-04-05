@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{introduction}
 
-In the last 10 years GPUs computing has transformed the high performance 
+In the last decade GPUs computing has transformed the high performance 
 computing, machine learning, and data analytics fields that were previously 
 dominated by CPU-based 
 installations~\cite{intersect360,cudnn,Lavin15b,SimonyanZ14a}. Many systems now 
@@ -68,20 +68,20 @@ contributions:
 
 \begin{itemize}
 
-\item We show that traditional software NUMA memory placement and 
+\item We show that traditional NUMA memory placement and 
 scheduling policies are not sufficient for multi-socket GPUs to achieve 
-performance scalability.  We then demonstrate that intersocket bandwidth will be 
+performance scalability. We then demonstrate that inter-socket bandwidth will be 
 the primary performance limiter in future NUMA GPUs.
 
-\item By exploiting program phase behavior we show that intersocket links (and 
-thus BW) should be dynamically varied at runtime to maximize link 
+\item By exploiting program phase behavior we show that inter-socket links (and 
+thus BW) should be dynamically and adaptively reconfigured at runtime to maximize link 
 utilization. Moreover, we show that link policy must be determined on a per 
 GPU basis, as global policies fail to capture per GPU phase behavior.
 
 \item We show that both the GPU L1 and L2 caches should be made NUMA-aware 
 and dynamically adapt their caching policy to minimize NUMA effects. We demonstrate
 that in NUMA GPUs, extending existing GPU cache coherence protocols
-across multiple sockets scales is a good design choice, despite the overheads.
+across multiple sockets is a good design choice, despite the overheads.
 
 \item We show that multi-socket NUMA-aware GPUs can allow traditional 
 GPU programs to scale efficiently to as many as 8 GPU sockets, providing significant 
