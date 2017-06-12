@@ -21,7 +21,7 @@ turn to caches to capture locality.
 \end{figure*}
 
 GPU cache hierarchies differ from traditional CPU hierarchies where in they 
-are not supported by strong hardware coherence protocols~\cite{Singh2013}. 
+are not supported by strong hardware coherence protocols~\cite{Singh2013,}. 
 They also differ from CPU protocols in that caches may be both processor side 
 (where some form of 
 coherence is typically necessary) or they may be memory side (where coherence 
@@ -65,14 +65,14 @@ Second, while
 we show that most applications will be able to completely fill large 
 NUMA GPUs, this may not always be the case. GPUs within the data center are 
 being virtualized and there is on-going work to support concurrent execution 
-of multiple kernels within a single GPU~\cite{park2015chimera, 
-lin2016enabling}. If a large NUMA GPU is sub-partitioned, it is intuitive 
+of multiple \hl{processes} within a single GPU~\cite{park2015chimera, 
+lin2016enabling,PUTHOORGPGPU2016,HSATASKMODEL}. If a large NUMA GPU is sub-partitioned, it is intuitive 
 that system software attempt to partition it along the NUMA boundaries (even within
 a single GPU-socket) to improve the locality of small GPU kernels.
 To effectively  capture locality in these situation, NUMA-aware GPUs need to be able to 
 dynamically re-purpose cache capacity at runtime, rather than be statically partitioned at design time. 
 
-\textbf{Coherence:} To-date, 
+\textbf{Coherence:} To-date, \hl{discrete}
 single socket GPUs have not moved their memory-side caches to processor side 
 because the overhead of cache invalidation (due to coherence) is an 
 unnecessary performance penalty.  Within a single socket GPU with a uniform
@@ -181,16 +181,29 @@ can improve average NUMA GPU performance 76\% compared to traditional memory sid
 caches, and 22\% compared to previously proposed static cache partitioning despite
 incurring additional coherence overhead.
 
-When extending the software controlled GPU coherence protocol into the GPU L2 
+\hl{\textbf{Coherence Invalidation Overheads:} When extending the software controlled GPU coherence protocol into the GPU L2 
 caches, L1 coherence operations (flushes) must also be extended into the GPU 
-L2 caches.  To further understand the impact these coherence operations have on our 
-NUMA-aware cache performance we evaluated a hypothetical L2 cache which need not 
-perform these operations. Figure~\ref{fig:invalidations} shows the impact that coherence
+L2 caches. Using bulk software invalidation to maintain coherence is simple to
+implement in hardware but risks having significant performance penalty when evicting
+data from caches that is not required to maintain correctness.  The impact of this bulk
+invalidation is dependant on both the frequency of the invalidations as well as the scope
+(cache capacity) effected.  While GPU vendors like NVIDIA have chosen to implement software
+controlled invalidate at the L1 level, extending these invalidations to the L2 (and across
+multiple GPUs) increases both the capacity and frequency of the invalidation events that
+occur.}
+
+\hl{To understand the impact these additional coherence operations have on our 
+NUMA-aware cache performance, we evaluate a hypothetical L2 cache which ignores the cache 
+invalidation events, thus representing
+the upper limit on performance (no coherence evictions ever occur) that could be achieved, 
+even using a fine grain coherence protocol.}
+Figure~\ref{fig:invalidations} shows the impact that coherence
 operations have on application performance in our 4-socket NUMA GPU.  While significant for
 some applications, on average SW based GPU coherence overheads are only 10\% even
-when extended into all GPU-socket L2 caches; we conclude that despite
+when extended into all GPU-socket L2 caches; \hl{we conclude that despite
 the coherence overheads the benefit of NUMA-aware coherent L2 caches on 
-multi-socket GPUs is a worthy trade-off.
+multi-socket GPUs is a worthy trade-off for GPU workloads that do not yet rely
+on significant fine grain synchronization between GPUs or GPUs and CPUs.}
 
 
 

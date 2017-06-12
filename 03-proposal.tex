@@ -11,17 +11,17 @@ hardware must be changed to achieve both functionality and performance.  Before
 focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
 runtime system we employ to enable multi-socket GPU execution.
 
-Prior work has demonstrated it is possible to design a framework and a runtime 
+\hl{Prior work has demonstrated it is possible to design a framework and a runtime 
 system that transparently decomposes GPU kernels in sub-kernels and executes 
-them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015}. For example, on NVIDIA GPUs 
+them on multiple PCIe attached GPUs in parallel}~\cite{Cabezas2015,ZiabariTACO-16}\hl{.} For example, on NVIDIA GPUs 
 this can be implemented by intercepting and remapping each kernel call, GPU 
 memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
 driver. Special care needs to ensure that per-GPU memory fences are promoted to 
 system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
-identifiers are properly managed to reflect those of the original kernel. In 
-~\cite{Cabezas2015} these two problems were solved by introducing  code 
+identifiers are properly managed to reflect those of the original kernel. \hl{Cabezas et al.~solve 
+these two problems by introducing  code 
 annotations and an additional source-to-source compiler which was also 
-responsible for statically partitioning data placement and computation.
+responsible for statically partitioning data placement and computation}~\cite{Cabezas2015}\hl{.}
 
 In our work, we follow a similar strategy but without using an source-to-source
 translation. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
@@ -117,6 +117,33 @@ multi-socket GPU systems contains two to eight of these GPUs interconnected
 through a full bandwidth GPU switch as shown on Figure~\ref{fig:systemdiagram}. 
 Table~\ref{tab:setup} provides a more detailed overview of the simulation 
 parameters.
+
+\hl{In this work we implement and examine the scalability of one cache coherence 
+protocol used by large discrete GPUs.  This protocol is optimized for simplicity 
+by using write through caches (to eliminate the need track dirty lines in 
+hardware), and without explicit hardware coherence support required at any level 
+of the cache hierarchy. Memory-side L2 caches, by definition, do not require 
+coherence support and SM (or processor) side caches achieve coherence through 
+compiler inserted cache control (flush) operations.  While software based 
+coherence may seem heavy handed compared to fine grained MOESI style hardware 
+coherence, many GPU programming models (in addition to C++ 2011) are moving 
+towards scoped synchronization where explicit software aquire and release 
+operations must be used to guarantee coherence.  Without the use of these 
+operations coherence is not guaranteed, and thus maintaining traditional fine 
+grain CPU-style MOESI coherence (via either directories or broadcast) is an 
+unnecessary burdon on hardware.
+
+Coherence protocols are not one-size fits all}~\cite{NehasSelectiveGPUcache,saritaGPUscopingwork,kaeliwork}\hl{.  
+In this work we examine clusters 
+of discrete GPUs necessary to meet the HPC demands of the future.  Smaller and 
+more tightly integrated GPU--CPU designs exist today as system on chips (SoC)}~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}\hl{.  
+In these designs GPUs and CPUs typically share a single memory space and often 
+the last level cache, necessitating the GPU coherence protocol be compatible 
+with existing CPU protocols.  However, to achieve the level of GPU throughput 
+targetted in this work, integrated SoC GPU solutions are not likely to be good 
+candidates.  Discrete GPUs each dedicate chips tens of billions of transistors 
+to GPU resources, while integrated solutions can dedicate only a fraction of 
+chip area to the GPU resources.}
 
 We study the scalability of multi-socket NUMA GPUs using 41 workloads 
 taken from a range of 
