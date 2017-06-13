@@ -16,7 +16,7 @@ expected to slow down due to limitations in lithography and manufacturing cost.
 \begin{figure}[t] 
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/plot_ctas_per_sm.pdf}
-    \caption{Percentage of workloads that are able to fill future larger GPUs 
+    \caption{Percentage of workloads \hl{we analyze here} that are able to fill future larger GPUs 
     (average number of concurrent thread blocks exceeds number of SMs in the system).}
     \label{fig:ctas}
     \vspace{-.2in}
@@ -38,7 +38,7 @@ Multi-socket GPUs are enabled by the evolution of GPUs from external
 peripherals to central computing components, considered at system design time.  
 GPU optimized systems now employ custom PCB designs that accommodate 
 high pin count socketed GPU modules~\cite{dgx} with inter-GPU interconnects resembling 
-QPI or HyperTransport~\cite{NVLINK,INTELQPI,AMDHT}.  Despite the rapid 
+QPI or HyperTransport~\cite{NVLINK,INTELQPI,AMDHT}. Despite the rapid 
 improvement in hardware capabilities, these systems have 
 continued to expose the GPUs provided as individually addressable units. These
 multi-GPU systems can provide high aggregate throughput when running multiple concurrent
@@ -50,12 +50,12 @@ of multiple GPUs.
 
 Extending single GPU workload performance significantly is a laudable
 goal, but we must first understand if these applications will be able to leverage
-larger GPUs.  Today NVIDIA's largest GPUs contain 56 SMs; across a benchmark set of 41 applications
-(later described in Section~\ref{sec:methodology}),
-Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
+larger GPUs. \hl{We analyze a set of 41 applications with memory footprint able to fit in a single GPU memory}
+(later described in Section~\ref{sec:methodology}).
+Knowing that NVIDIA's largest GPUs contain 56 SMs, Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
 contain sufficient data parallelism to fill GPUs that are 2--8$\times$ larger 
-than today's biggest GPUs.  While these applications are unlikely to ever scale to tens
-of thousands of GPUs across an entire data center, we believe that programmer
+than today's biggest GPUs. While these applications \hl{with the analyzed inputs} are unlikely to ever scale to tens
+or thousands of GPUs across an entire data center, we believe that programmer
 transparent workload scaling (up to 8$\times$) will
 be attractive to many GPU developers.
 

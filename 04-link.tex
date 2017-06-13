@@ -55,6 +55,17 @@ link bandwidth assignments on a per-GPU basis resulting in
 dynamic asymmetric link capacity assignments as shown in
 Figure~\ref{fig:symmetric_assymetric}(b).  
 
+\begin{figure}[t]
+	\centering
+	
+	\includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
+	\caption{Normalized link bandwidth profile for \texttt{HPC-HPGMG-UVM} 
+		showing asymmetric link utilization between GPUs and within a GPU. Vertical black 
+		dotted lines indicate kernel launch events.}
+	\label{fig:link-motivation}
+	\vspace{-.25in}
+\end{figure}
+
 To evaluate this proposal we model point-to-point links containing multiple 
 lanes, similarly to NVLink~\cite{pascal-tesla-wp}. In these links, 8 
 lanes with 8GB/s capacity per lane yield an aggregate bandwidth of 64GB/s in 
@@ -80,6 +91,18 @@ memory interfaces such as GDDR; where the same set of wires is used for both mem
 and writes~\cite{hynixgddr51Gb}.
 
 \subsection{Results and Discussion} 
+
+\begin{figure*}[tp]
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
+	\caption{Relative speedup of the dynamic link adaptivity with respect to
+		the baseline architecture by varying sample time and assuming switch 
+		time of
+		100 cycles. In red, speedup achievable by doubling link 
+		bandwidth.}
+	\label{fig:sampletime}
+	\vspace{-.1in}
+\end{figure*}
 
 There are two important parameters that will affect the performance of
 our proposed mechanism (i)
@@ -118,29 +141,6 @@ We note that the link
 turnaround times of modern high-speed on-board links such as
 GDDR5~\cite{hynixgddr51Gb} are about 8ns including both link and internal 
 DRAM turn-around latency (which is less than 10 cycles at 1GHz).
-
-\begin{figure}[t]
-    \centering
-    
-\includegraphics[width=1.0\columnwidth]{figures/bw_profile_HPGMG_UVM_base.pdf}
-    \caption{Normalized link bandwidth profile for \texttt{HPC-HPGMG-UVM} 
-showing asymmetric link utilization between GPUs and within a GPU. Vertical black 
-dotted lines indicate kernel launch events.}
-    \label{fig:link-motivation}
-    \vspace{-.25in}
-\end{figure}
-
-\begin{figure*}[tp]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_nvlink_sample_time.pdf}
-    \caption{Relative speedup of the dynamic link adaptivity with respect to
-	the baseline architecture by varying sample time and assuming switch 
-time of
-	100 cycles. In red, speedup achievable by doubling link 
-bandwidth.}
-    \label{fig:sampletime}
-    \vspace{-.2in}
-\end{figure*}
 
 Our results demonstrate that asymmetric link bandwidth
 allocation can be very attractive when inter-socket interconnect bandwidth is constrained 

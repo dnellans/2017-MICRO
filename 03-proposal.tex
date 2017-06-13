@@ -119,10 +119,10 @@ Table~\ref{tab:setup} provides a more detailed overview of the simulation
 parameters.
 
 \hl{In this work we implement and examine the scalability of one cache coherence 
-protocol used by large discrete GPUs.  This protocol is optimized for simplicity 
-by using write through caches (to eliminate the need track dirty lines in 
-hardware), and without explicit hardware coherence support required at any level 
-of the cache hierarchy. Memory-side L2 caches, by definition, do not require 
+protocol used by large discrete GPUs. This protocol is optimized for simplicity %by using write through caches (to eliminate the need track dirty lines in hardware), 
+and without explicit hardware coherence support required at any level of the cache hierarchy.}  
+%UGI: I would remove this part saying that the protocol we examine is based on WT caches. Because we do not analyze those, we jump to WB caches immediately and do not compare them to WT at all. So I wouldn't bring this WT fact now...
+\hl{Memory-side L2 caches, by definition, do not require 
 coherence support and SM (or processor) side caches achieve coherence through 
 compiler inserted cache control (flush) operations.  While software based 
 coherence may seem heavy handed compared to fine grained MOESI style hardware 
@@ -131,9 +131,9 @@ towards scoped synchronization where explicit software aquire and release
 operations must be used to guarantee coherence.  Without the use of these 
 operations coherence is not guaranteed, and thus maintaining traditional fine 
 grain CPU-style MOESI coherence (via either directories or broadcast) is an 
-unnecessary burdon on hardware.
+unnecessary burdon on hardware.}
 
-Coherence protocols are not one-size fits all}~\cite{agarwal2016selective,sinclair2015efficient,kaeliwork}\hl{.  
+\hl{Coherence protocols are not one-size fits all}~\cite{agarwal2016selective,sinclair2015efficient,kaeliwork}\hl{.  
 In this work we examine clusters 
 of discrete GPUs necessary to meet the HPC demands of the future.  Smaller and 
 more tightly integrated GPU--CPU designs exist today as system on chips (SoC)}~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}\hl{.  
