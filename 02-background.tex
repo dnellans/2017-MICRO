@@ -16,7 +16,7 @@ expected to slow down due to limitations in lithography and manufacturing cost.
 \begin{figure}[t] 
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/plot_ctas_per_sm.pdf}
-    \caption{Percentage of workloads \hl{we analyze here} that are able to fill future larger GPUs 
+    \caption{Percentage of workloads that are able to fill future larger GPUs 
     (average number of concurrent thread blocks exceeds number of SMs in the system).}
     \label{fig:ctas}
     \vspace{-.2in}
@@ -50,14 +50,16 @@ of multiple GPUs.
 
 Extending single GPU workload performance significantly is a laudable
 goal, but we must first understand if these applications will be able to leverage
-larger GPUs. \hl{We analyze a set of 41 applications with memory footprint able to fit in a single GPU memory}
-(later described in Section~\ref{sec:methodology}).
-Knowing that NVIDIA's largest GPUs contain 56 SMs, Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
+larger GPUs. Today the largest GPU's in the market contain ~50 SM's (NVIDIA's Pascal containing
+56); across a benchmark set of 41 applications (later described in Section~\ref{sec:methodology})
+Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
 contain sufficient data parallelism to fill GPUs that are 2--8$\times$ larger 
-than today's biggest GPUs. While these applications \hl{with the analyzed inputs} are unlikely to ever scale to tens
-or thousands of GPUs across an entire data center, we believe that programmer
-transparent workload scaling (up to 8$\times$) will
-be attractive to many GPU developers.
+than today's biggest GPUs.  \hl{For those that do not, we find that the absolute number
+of CTA's generated is intentionally limited by the programmer or the problem dataset can not
+be easily scaled up (e.g. scaling the dataset requires new algorithmic changes).
+While most of these applications will are unlikely to scale to thousands of GPUs across an 
+entire data center due, Figure~\ref{fig:ctas} shows that programmer transparent workload scaling (up to 8$\times$) will
+be attractive to many GPU developers for applications that already contain sufficient algorithmic and data parallelism.}
 
 In this work, we examine the performance of a future 4-module NUMA GPU to 
 understand the effects that NUMA will have when executing applications designed 
