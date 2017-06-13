@@ -55,8 +55,9 @@ larger GPUs. \hl{Today the largest GPU's in the market contain $\approx$50 SMs (
 Figure~\ref{fig:ctas} shows that most single GPU optimized workloads already
 contain sufficient data parallelism to fill GPUs that are 2--8$\times$ larger 
 than today's biggest GPUs.  \hl{For those that do not, we find that the absolute number
-of CTA's generated is intentionally limited by the programmer or the problem dataset can not
-be easily scaled up (e.g. scaling the dataset requires new algorithmic changes).
+of thread blocks (CTAs) is intentionally limited by the programmer or the problem dataset can not
+be easily scaled up (e.g. scaling the dataset requires new algorithmic changes or 
+results in above linear increase in memory footprint).
 While most of these applications are unlikely to scale to thousands of GPUs across an 
 entire data center without additional developer effort, moderate programmer transparent performance 
 scalability will be

@@ -125,16 +125,16 @@ of discrete GPUs necessary to meet the HPC demands of the future.  Smaller and
 more tightly integrated GPU--CPU designs exist today as system on chips (SoC)}~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}
 \hl{.
 In these designs GPUs and CPUs typically share a single memory space and often 
-the last level cache, necessitating the GPU coherence protocol be compatible 
+the last level cache, necessitating the GPU coherence protocol to be compatible 
 with existing CPU protocols. However, to achieve the level of GPU throughput 
-targetted in this work, integrated SoC GPU solutions are not likely to be good 
-candidates.  Discrete GPUs each dedicate chips tens of billions of transistors 
-to GPU resources, while integrated solutions can dedicate only a fraction of 
-chip area to the GPU resources.  Even discrete GPUs are starting to integrate
-more closely with some CPU coherence protocols}~\cite{agarwal2016selective,ZiabariTACO-16}\hl{,
-but for the forseeable future discrete PCIe attached GPUs (where integrated coherence
-is not possible) are likely to continue dominating the market thanks to broad compatability
-between CPU and GPU vendors.}
+targeted in this work, integrated SoC GPU solutions are not likely to be ideal
+candidates.  Discrete GPUs each dedicate tens of billions of transistors 
+to throughput computing, while integrated solutions can dedicate only a fraction of the
+chip area. Even if discrete GPUs are starting to integrate more closely with 
+some CPU coherence protocols}~\cite{agarwal2016selective,ZiabariTACO-16}\hl{,
+for the foreseeable future discrete attached GPUs (where integrated coherence
+is not possible) are likely to continue dominating the market thanks to broad 
+compatibility between CPU and GPU vendors.}
 
 \begin{table}[tp]
 \begin{small}
@@ -184,11 +184,11 @@ coherence support and SM (or processor) side caches can achieve coherence throug
 compiler inserted cache control (flush) operations.  While software based 
 coherence may seem heavy handed compared to fine grained MOESI style hardware 
 coherence, many GPU programming models (in addition to C++ 2011) are moving 
-towards scoped synchronization where explicit software aquire and release 
+towards scoped synchronization where explicit software acquire and release 
 operations must be used to guarantee coherence.  Without the use of these 
 operations coherence is not guaranteed, and thus maintaining traditional fine 
 grain CPU-style MOESI coherence (via either directories or broadcast) is an 
-unnecessary burdon on hardware.}
+unnecessary burden on hardware.}
 
 We study the scalability of multi-socket NUMA GPUs using 41 workloads 
 taken from a range of 
