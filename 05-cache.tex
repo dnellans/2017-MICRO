@@ -65,9 +65,7 @@ Second, while
 we show that most applications will be able to completely fill large 
 NUMA GPUs, this may not always be the case. GPUs within the data center are 
 being virtualized and there is on-going work to support concurrent execution 
-of multiple \hl{processes} within a 
-single GPU~\cite{park2015chimera,lin2016enabling,puthoor2016implementing,HSATASKMODEL}. 
-If a large NUMA GPU is sub-partitioned, it is intuitive 
+of multiple \hl{processes} within a single GPU~\cite{park2015chimera, lin2016enabling, puthoor2016implementing, kyriazis2012heterogeneous}. If a large NUMA GPU is sub-partitioned, it is intuitive 
 that system software attempt to partition it along the NUMA boundaries (even within
 a single GPU-socket) to improve the locality of small GPU kernels.
 To effectively  capture locality in these situation, NUMA-aware GPUs need to be able to 
