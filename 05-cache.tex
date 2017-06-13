@@ -198,12 +198,18 @@ invalidation events, thus representing
 the upper limit on performance (no coherence evictions ever occur) that could be achieved, 
 even using a fine grain coherence protocol.}
 Figure~\ref{fig:invalidations} shows the impact that coherence
-operations have on application performance in our 4-socket NUMA GPU.  While significant for
+operations have on application performance in our 4-socket NUMA GPU.  
+While significant for
 some applications, on average SW based GPU coherence overheads are only 10\% even
 when extended into all GPU-socket L2 caches; \hl{we conclude that despite
-the coherence overheads the benefit of NUMA-aware coherent L2 caches on 
+the coherence overheads, the benefit of NUMA-aware coherent L2 caches on 
 multi-socket GPUs is a worthy trade-off for GPU workloads that do not yet rely
-on significant fine grain synchronization between GPUs or GPUs and CPUs.}
+on significant fine grain synchronization between GPUs and CPUs.
+Additionally, we evaluated
+the effect of using write-through policy in the L2 caches rather than write-back (to mirror
+the L1 cache policy) but found write-back outperforms write-through by 9\%
+on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.}
+
 
 
 

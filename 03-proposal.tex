@@ -154,10 +154,10 @@ Max number of Warps & 64 per SM \\
 Warp Scheduler & Greedy then Round Robin \\
 \midrule
 L1 Cache & Private, 128 KB per SM, 128B lines, 4-way, \\ 
-& GPU-side SW-based coherency \\
+& \hl{Write-Through}, GPU-side SW-based coherency \\
 \midrule
 L2 Cache & Shared, 4MB per socket, 128B lines, 16-way, \\ 
-& Memory-side non-coherent\\
+& \hl{Write-Back}, Memory-side non-coherent\\
 \midrule
 GPU--GPU Interconnect & 128GB/s per socket (64GB/s each direction) \\
 & 8 lanes 8B wide each per direction \\
@@ -206,9 +206,6 @@ of these workloads as well as the average number of active CTAs in the workload
 (weighted by the time spent on each kernel) to provide a representation of 
 how many parallel thread blocks (CTAs) are generally available
 during workload execution.
-
-
-
 
 \begin{table}[t]
 \begin{small}
