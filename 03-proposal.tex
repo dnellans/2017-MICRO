@@ -1,3 +1,4 @@
+\vspace{-.05in}
 \section{A NUMA-Aware GPU Runtime}
 
 Current GPU software and hardware is co-designed together to optimize 
@@ -59,6 +60,7 @@ choice potentially exposes workload unbalance across sub-kernels, but it has
 been shown to preserve data locality present in applications where contiguous 
 CTAs also access contiguous memory regions~\cite{Cabezas2015,Arunkumar2017}.
 
+\vspace{-.1in}
 \subsection{Performance Through Locality} 
 
 Figure~\ref{fig:motivation} shows the relative performance of a 4-socket NUMA 
@@ -104,6 +106,7 @@ theoretical performance with SW-only locality optimizations. However, we include
 all benchmarks in our final results to show the overall performance scalability 
 achievable with NUMA-aware multi-socket GPUs.
  
+ \vspace{-.1in}
 \subsection{Simulation Methodology}
 \label{sec:methodology}
 
@@ -122,19 +125,18 @@ parameters.
 
 \hl{GPU coherence protocols are not one-size fits all}~\cite{sinclair2015efficient, Power2013, ZiabariTACO-16}\hl{.  
 This work examines clusters 
-of discrete GPUs necessary to meet the HPC demands of the future.  Smaller and 
+of large discrete GPUs but smaller
 more tightly integrated GPU--CPU designs exist today as system on chips (SoC)}~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}
 \hl{.
-In these designs GPUs and CPUs typically share a single memory space and often 
-the last level cache, necessitating the GPU coherence protocol to be compatible 
-with existing CPU protocols. However, to achieve the level of GPU throughput 
-targeted in this work, integrated SoC GPU solutions are not likely to be ideal
-candidates.  Discrete GPUs each dedicate tens of billions of transistors 
-to throughput computing, while integrated solutions can dedicate only a fraction of the
-chip area. Even if discrete GPUs are starting to integrate more closely with 
+In these designs GPUs and CPUs can share a single memory space and
+last level cache, necessitating a compatible GPU--CPU coherence protocol. 
+However closely coupled CPU-GPU solutions are not likely to be ideal
+candidates for GPU-centric HPC workloads.  Discrete GPUs each dedicate tens of billions of transistors 
+to throughput computing, while integrated solutions dedicate only a fraction of the
+chip area. While discrete GPUs are also starting to integrate more closely with 
 some CPU coherence protocols}~\cite{agarwal2016selective,ZiabariTACO-16}\hl{,
-for the foreseeable future discrete attached GPUs (where integrated coherence
-is not possible) are likely to continue dominating the market thanks to broad 
+PCIe attached discrete GPUs (where integrated coherence
+is not possible) are likely to continue dominating the market, thanks to broad 
 compatibility between CPU and GPU vendors.}
 
 \begin{table}[tp]
@@ -172,24 +174,25 @@ DRAM Latency & 100ns \\
 \vspace{-.1in}
 \caption{Simulation parameters for evaluation of single and multi-socket GPU 
 systems.}
-\vspace{-.2in}
+\vspace{-.3in}
 \label{tab:setup}
 \end{small}
 \end{table} 
 
-\hl{In this work we examine the scalability of one such cache coherence 
-protocol used by PCIe attached discrete GPUs. This protocol is optimized for simplicity
-and without explicit hardware coherence support required at any level of the cache hierarchy.  
-Memory-side L2 caches, by definition, do not require 
-coherence support and SM (or processor) side caches can achieve coherence through 
-compiler inserted cache control (flush) operations.  While software based 
+\hl{This work examines the scalability of one such cache coherence 
+protocol used by PCIe attached discrete GPUs. The protocol is optimized for simplicity
+and without need for hardware coherence support at any level of the cache hierarchy.  
+SM-side L1 private caches achieve coherence through 
+compiler inserted cache control (flush) operations and memory-side L2 caches, 
+by definition, do not require 
+coherence support. While software based 
 coherence may seem heavy handed compared to fine grained MOESI style hardware 
 coherence, many GPU programming models (in addition to C++ 2011) are moving 
 towards scoped synchronization where explicit software acquire and release 
-operations must be used to guarantee coherence.  Without the use of these 
-operations coherence is not guaranteed, and thus maintaining traditional fine 
-grain CPU-style MOESI coherence (via either directories or broadcast) is an 
-unnecessary burden on hardware.}
+operations must be used to enforce coherence.  Without the use of these 
+operations, coherence is not globally guaranteed and thus maintaining fine 
+grain CPU-style MOESI coherence (via either directories or broadcast) may be an 
+unnecessary burden.}
 
 We study the scalability of multi-socket NUMA GPUs using 41 workloads 
 taken from a range of 

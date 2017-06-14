@@ -1,3 +1,4 @@
+\vspace{-.05in}
 \section{Introduction}
 \label{introduction}
 
@@ -17,7 +18,7 @@ programmer burden when trying to scale programs across ever growing data sets.
 \caption{The evolution of GPUs from multiple discrete PCIe devices to 
 single logical, multi-socket accelerators utilizing switched interconnects.}
 \label{fig:systemdiagram}
-\vspace{-.1in}
+\vspace{-.2in}
 \end{figure}
 
 Nevertheless, with GPUs nearing the reticle limitation for maximum die size and 
@@ -67,22 +68,22 @@ existing single GPU programming models. In this work, we make the following
 contributions:
 
 \begin{itemize}
-
+\vspace{-.05in}
 \item We show that traditional NUMA memory placement and 
 scheduling policies are not sufficient for multi-socket GPUs to achieve 
 performance scalability. We then demonstrate that inter-socket bandwidth will be 
 the primary performance limiter in future NUMA GPUs.
-
+\vspace{-.05in}
 \item By exploiting program phase behavior we show that inter-socket links (and 
 thus BW) should be dynamically and adaptively reconfigured at runtime to maximize link 
 utilization. Moreover, we show that link policy must be determined on a per 
 GPU basis, as global policies fail to capture per GPU phase behavior.
-
+\vspace{-.05in}
 \item We show that both the GPU L1 and L2 caches should be made NUMA-aware 
 and dynamically adapt their caching policy to minimize NUMA effects. We demonstrate
 that in NUMA GPUs, extending existing GPU cache coherence protocols
 across multiple sockets is a good design choice, despite the overheads.
-
+\vspace{-.05in}
 \item We show that multi-socket NUMA-aware GPUs can allow traditional 
 GPU programs to scale efficiently to as many as 8 GPU sockets, providing significant 
 headroom before developers must re-architect applications to obtain additional performance.
