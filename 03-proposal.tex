@@ -68,7 +68,8 @@ relative performance of traditional single GPU scheduling and memory
 interleaving policies when adapted to a NUMA GPU. The light blue bars
 show the relative performance of using locality optimized GPU scheduling and 
 memory placement, consisting of contiguous block CTA scheduling and first touch 
-page migration. We can clearly see that the \textit{Locality-Optimized} 
+page migration \hl{(after which pages are not dynamically moved between GPUs)}. 
+We can clearly see that the \textit{Locality-Optimized} 
 solution almost always outperforms the traditional GPU scheduling and memory 
 interleaving.  Without these runtime locality optimizations, in average a 4-socket NUMA 
 GPU is not able to even match the performance of a single GPU despite the large 
@@ -154,10 +155,10 @@ Max number of Warps & 64 per SM \\
 Warp Scheduler & Greedy then Round Robin \\
 \midrule
 L1 Cache & Private, 128 KB per SM, 128B lines, 4-way, \\ 
-& \hl{Write-Through}, GPU-side SW-based coherency \\
+& \hl{Write-Through}, GPU-side SW-based coherent \\
 \midrule
-L2 Cache & Shared, 4MB per socket, 128B lines, 16-way, \\ 
-& \hl{Write-Back}, Memory-side non-coherent\\
+L2 Cache & Shared, \hl{Banked}, 4MB per socket, 128B lines,  \\ 
+& 16-way, \hl{Write-Back}, Mem-side non-coherent\\
 \midrule
 GPU--GPU Interconnect & 128GB/s per socket (64GB/s each direction) \\
 & 8 lanes 8B wide each per direction \\
