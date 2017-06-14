@@ -89,9 +89,14 @@ If both ingress and egress links are found to be saturated and in an asymmetric
 configuration, links are then reconfigured back towards a symmetric configuration 
 to encourage global bandwidth equalization. While this process may sound 
 complex, the circuitry for dynamically turning high speed single ended links 
-around in a short number of cycles already is in use by modern high bandwidth 
+around in \hl{just tens of cycles or less} already is in use by modern high bandwidth 
 memory interfaces such as GDDR; where the same set of wires is used for both memory reads 
-and writes~\cite{hynixgddr51Gb}.
+and writes~\cite{hynixgddr51Gb}. \hl{In high speed signalling implementations,
+necessary phase--delay lock loop
+resynchronization can occur while data is inflight; eliminating the need to idle
+the link during this long latency (microseconds) operation if upcoming link turn operations
+can be sufficiently projected ahead of time as assumed in this work by using fixed, periodic
+link turn points.}
 
 \subsection{Results and Discussion} 
 
