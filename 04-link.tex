@@ -1,3 +1,4 @@
+\vspace{-.1in}
 \section{Asymmetric Interconnects}
 \label{sec:interconnect}
 
@@ -35,7 +36,7 @@ and GPU2, and GPU1 and GPU3 are underutilizing their egress and ingress links re
     \includegraphics[width=1.0\columnwidth]{figures/link_assignment.pdf}
     \caption{Example of dynamic link assignment to improve interconnect efficiency.}
     \label{fig:symmetric_assymetric}
-    \vspace{-.2in}
+    \vspace{-.25in}
 \end{figure}
 
 In many workloads we observe one common
@@ -82,22 +83,22 @@ unsaturated lanes after quiescing all packets on that lane.
 This sample and 
 reconfigure process stops only when directional utilization is not 
 oversubscribed or all but one lane is configured in a single direction. 
-\hl{In order to avoid instability we set a threshold between 
+\hl{To avoid instability we set a threshold between 
 sample intervals corresponding to 5\% of the link bandwidth, below which we do 
-not perform reconfiguration, more advanced control techniques could leverage hysteresis to prevent unnecesary oscilations}.
+not perform reconfiguration.}
 If both ingress and egress links are found to be saturated and in an asymmetric 
 configuration, links are then reconfigured back towards a symmetric configuration 
 to encourage global bandwidth equalization. While this process may sound 
 complex, the circuitry for dynamically turning high speed single ended links 
-around in \hl{just tens of cycles or less} already is in use by modern high bandwidth 
+around in \hl{just tens of cycles or less} is already in use by modern high bandwidth 
 memory interfaces such as GDDR; where the same set of wires is used for both memory reads 
 and writes~\cite{hynixgddr51Gb}. \hl{In high speed signalling implementations,
 necessary phase--delay lock loop
 resynchronization can occur while data is inflight; eliminating the need to idle
 the link during this long latency (microseconds) operation if upcoming link turn operations
-can be sufficiently projected ahead of time as assumed in this work by using fixed, periodic
-link turn points.}
+can be sufficiently projected ahead of time, such as on a fixed interval.}
 
+\vspace{-.05in}
 \subsection{Results and Discussion} 
 
 \begin{figure*}[tp]
@@ -109,7 +110,7 @@ link turn points.}
 		100 cycles. In red, speedup achievable by doubling link 
 		bandwidth.}
 	\label{fig:sampletime}
-	\vspace{-.1in}
+	\vspace{-.2in}
 \end{figure*}
 
 There are two important parameters that will affect the performance of

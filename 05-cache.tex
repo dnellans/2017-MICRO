@@ -1,3 +1,4 @@
+\vspace{-0.1in}
 \section{NUMA-Aware Cache Management}
 \label{sec:caches}
 In Section~\ref{sec:interconnect} we have shown that inter-socket bandwidth is an
@@ -36,7 +37,7 @@ of requests to the same cache line, so having large L1 caches reduces the
 need for global crossbar bandwidth.  By then placing the L2 caches 
 memory-side they do not need to participate in the coherence protocol, reducing
 complexity.
-
+\vspace{-0.05in}
 \subsection{Design Considerations}
 In NUMA designs remote memory references occurring across low bandwidth NUMA 
 interconnections results in poor performance, as shown in 
@@ -64,8 +65,8 @@ a fix partitioning of cache capacity is guaranteed to be sub-optimal.
 Second, while 
 we show that most applications will be able to completely fill large 
 NUMA GPUs, this may not always be the case. GPUs within the data center are 
-being virtualized and there is \hl{continuing work to better enable concurrent execution 
-of multiple kernels and processes} within a single GPU~\cite{park2015chimera, lin2016enabling, puthoor2016implementing, HSATASKMODEL}. If a large NUMA GPU is sub-partitioned, it is intuitive 
+being virtualized and there is \hl{continuous work to improve concurrent execution 
+of multiple kernels and processes within a single GPU}~\cite{park2015chimera, lin2016enabling, puthoor2016implementing, HSATASKMODEL}. If a large NUMA GPU is sub-partitioned, it is intuitive 
 that system software attempt to partition it along the NUMA boundaries (even within
 a single GPU-socket) to improve the locality of small GPU kernels.
 To effectively  capture locality in these situation, NUMA-aware GPUs need to be able to 
@@ -99,8 +100,7 @@ local data when it is determined the system is bottle-necked on NUMA bandwidth.
 \begin{figure*}[t]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_merged_cache_WB.pdf}
-    \caption{Performance of NUMA-aware dynamic cache partitioning in a 4-socket
-	GPU compared to memory-side L2 and previously proposed static partitioning.}
+    \caption{Performance of 4-socket NUMA-aware cache partitioning, compared to memory-side L2 and static partitioning.}
     \label{fig:dynamiccaching}
         \vspace{-.2in}
 \end{figure*}
@@ -151,6 +151,7 @@ least one way in all caches to be allocated to either remote of local memory.
     \vspace{-.2in}
 \end{figure*}
 
+\vspace{-0.05in}
 \subsection{Results}
 
 Figure~\ref{fig:dynamiccaching} compares the performance of 4 different cache
