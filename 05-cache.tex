@@ -109,10 +109,11 @@ local data when it is determined the system is bottle-necked on NUMA bandwidth.
 \begin{figure}[t]
     \centering
     \includegraphics[width=1.0\columnwidth]{figures/plot_no_inval_WB.pdf}
+     \vspace{-0.3in}
     \caption{Performance overhead of extending current GPU software based coherence
     into the GPU L2 caches.}
     \label{fig:invalidations}
-    \vspace{-.2in}
+    \vspace{-.25in}
 \end{figure}
 
 
@@ -147,7 +148,7 @@ least one way in all caches to be allocated to either remote of local memory.
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_final_speedup_WB_nvlink_first.pdf}
-    \vspace{-0.05in}
+    \vspace{-0.2in}
     \caption{Final NUMA-aware GPU performance compared to a single GPU and 4$\times$ larger single GPU with scaled resources.}
     \label{fig:combined}
     \vspace{-.2in}
@@ -191,12 +192,11 @@ implement but is a performance penalty when falsely evicting
 data that is not required.  The overhead of this
 invalidation is dependant on both the frequency of the invalidations as well as aggregate cache
 capacity invalidated. Extending the L1 invalidation protocol into the large shared L2, and then across
-multiple GPUs, increases both the capacity affected and frequency of the invalidation events.
+multiple GPUs, increases both the capacity affected and frequency of the invalidation events.}
 
-To understand the impact these invalidation operations have on our 
-NUMA-aware cache design, we evaluate hypothetical L2 caches which can ignore the cache 
+\hl{To understand the impact of these invalidations, we evaluate hypothetical L2 caches which can ignore the cache 
 invalidation events; thus representing
-the upper limit on performance (no coherence evictions ever occur) that could be achieved when 
+the upper limit on performance (no coherence evictions ever occur) that could be achieved by 
 using a finer granularity HW-coherence protocol.}
 Figure~\ref{fig:invalidations}\hl{ shows the impact these invalidation
 operations have on application performance.
