@@ -81,8 +81,11 @@ unsaturated lanes after quiescing all packets on that lane.
 
 This sample and 
 reconfigure process stops only when directional utilization is not 
-oversubscribed or all but one lane is configured in a single direction. If 
-both ingress and egress links are found to be saturated and in an asymmetric 
+oversubscribed or all but one lane is configured in a single direction. 
+\hl{In order to avoid instability and hysteresis we set a threshold in between 
+sample intervals corresponding to 5\% of the link bandwidth, below which we do 
+not perform reconfiguration}.
+If both ingress and egress links are found to be saturated and in an asymmetric 
 configuration, links are then reconfigured back towards a symmetric configuration 
 to encourage global bandwidth equalization. While this process may sound 
 complex, the circuitry for dynamically turning high speed single ended links 
