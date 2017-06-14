@@ -5,7 +5,7 @@ Current GPU software and hardware is co-designed together to optimize
 throughput of processors based on the assumption of uniform memory properties 
 within the GPU. Fine grained interleaving of memory addresses across memory 
 channels on the GPU provides implicit load balancing across memory but destroys 
-memory locality.  As a result, thread block (CTA) scheduling policies need not 
+memory locality.  As a result, thread block scheduling policies need not 
 be sophisticated to capture locality, which has been destroyed by the 
 memory system layout.  For future NUMA GPUs to work well, both system software and 
 hardware must be changed to achieve both functionality and performance.  Before 

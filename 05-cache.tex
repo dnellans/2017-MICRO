@@ -186,10 +186,10 @@ incurring additional coherence overhead.
 
 \hl{When extending SW-controlled 
 coherence into the GPU L2 
-caches, L1 coherence operations (flushes) must be extended into the GPU 
+caches, L1 coherence operations must be extended into the GPU 
 L2 caches. Using bulk software invalidation to maintain coherence is simple to
 implement but is a performance penalty when falsely evicting
-data that is not required.  The overhead of this
+data that is not required. The overhead of this
 invalidation is dependant on both the frequency of the invalidations as well as aggregate cache
 capacity invalidated. Extending the L1 invalidation protocol into the large shared L2, and then across
 multiple GPUs, increases both the capacity affected and frequency of the invalidation events.}
