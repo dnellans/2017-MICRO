@@ -37,7 +37,8 @@ of requests to the same cache line, so having large L1 caches reduces the
 need for global crossbar bandwidth.  By then placing the L2 caches 
 memory-side they do not need to participate in the coherence protocol, reducing
 complexity.
-\vspace{-0.05in}
+
+\vspace{-0.1in}
 \subsection{Design Considerations}
 In NUMA designs remote memory references occurring across low bandwidth NUMA 
 interconnections results in poor performance, as shown in 
@@ -146,12 +147,13 @@ least one way in all caches to be allocated to either remote of local memory.
 \begin{figure*}[tp]
     \centering
     \includegraphics[width=1.0\textwidth]{figures/plot_final_speedup_WB_nvlink_first.pdf}
+    \vspace{-0.05in}
     \caption{Final NUMA-aware GPU performance compared to a single GPU and 4$\times$ larger single GPU with scaled resources.}
     \label{fig:combined}
     \vspace{-.2in}
 \end{figure*}
 
-\vspace{-0.05in}
+\vspace{-0.1in}
 \subsection{Results}
 
 Figure~\ref{fig:dynamiccaching} compares the performance of 4 different cache
@@ -181,33 +183,30 @@ can improve average NUMA GPU performance 76\% compared to traditional memory sid
 caches, and 22\% compared to previously proposed static cache partitioning despite
 incurring additional coherence overhead.
 
-\hl{\textbf{Coherence Invalidation Overheads:} When extending the software controlled GPU coherence protocol into the GPU L2 
-caches, L1 coherence operations (flushes) must also be extended into the GPU 
+\hl{When extending SW-controlled 
+coherence into the GPU L2 
+caches, L1 coherence operations (flushes) must be extended into the GPU 
 L2 caches. Using bulk software invalidation to maintain coherence is simple to
-implement in hardware but risks having significant performance penalty when evicting
-data from caches that is not required to maintain correctness.  The impact of this bulk
-invalidation is dependant on both the frequency of the invalidations as well as the scope
-(cache capacity) effected.  While GPU vendors like NVIDIA have chosen to implement software
-controlled invalidate at the L1 level, extending these invalidations to the L2 (and across
-multiple GPUs) increases both the capacity and frequency of the invalidation events that
-occur.}
+implement but is a performance penalty when falsely evicting
+data that is not required.  The overhead of this
+invalidation is dependant on both the frequency of the invalidations as well as aggregate cache
+capacity invalidated. Extending the L1 invalidation protocol into the large shared L2, and then across
+multiple GPUs, increases both the capacity affected and frequency of the invalidation events.
 
-\hl{To understand the impact these additional coherence operations have on our 
-NUMA-aware cache performance, we evaluate a hypothetical L2 cache which ignores the cache 
-invalidation events, thus representing
-the upper limit on performance (no coherence evictions ever occur) that could be achieved, 
-even using a fine grain coherence protocol.}
-Figure~\ref{fig:invalidations} shows the impact that coherence
-operations have on application performance in our 4-socket NUMA GPU.  
+To understand the impact these invalidation operations have on our 
+NUMA-aware cache design, we evaluate hypothetical L2 caches which can ignore the cache 
+invalidation events; thus representing
+the upper limit on performance (no coherence evictions ever occur) that could be achieved when 
+using a finer granularity HW-coherence protocol.}
+Figure~\ref{fig:invalidations}\hl{ shows the impact these invalidation
+operations have on application performance.
 While significant for
-some applications, on average SW based GPU coherence overheads are only 10\% even
-when extended into all GPU-socket L2 caches; \hl{we conclude that despite
-the coherence overheads, the benefit of NUMA-aware coherent L2 caches on 
-multi-socket GPUs is a worthy trade-off for GPU workloads that do not yet rely
-on significant fine grain synchronization between GPUs and CPUs.
-Additionally, we evaluated
-the effect of using write-through policy in the L2 caches rather than write-back (to mirror
-the L1 cache policy) but found write-back outperforms write-through by 9\%
+some applications, on average SW-based cache invalidations overheads are only 10\%, even
+when extended across all GPU-socket L2 caches.  So while fine grain HW coherence protocols
+may improve performance, the magnitude of their improvement must be weighted against their
+hardware implementation complexity.  As a sensitivity study, we also we evaluated
+the effect of using a simpler write-through cache policy in the L2 caches rather than write-back (to mirror
+the L1 cache policy), but found write-back outperforms write-through by 9\%
 on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.}
 
 
