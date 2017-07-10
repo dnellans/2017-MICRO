@@ -12,18 +12,18 @@ hardware must be changed to achieve both functionality and performance.  Before
 focusing on architectural changes to build a NUMA-aware GPU we describe the GPU 
 runtime system we employ to enable multi-socket GPU execution.
 
-\hl{Prior work has demonstrated it is possible to design a framework and a runtime 
+Prior work has demonstrated it is possible to design a framework and a runtime 
 system that transparently decomposes GPU kernels in sub-kernels and executes 
-them on multiple PCIe attached GPUs in parallel}~\cite{Cabezas2015, kim2011achieving, lee2013transparent}\hl{.} 
+them on multiple PCIe attached GPUs in parallel~\cite{Cabezas2015, kim2011achieving, lee2013transparent}. 
 For example, on NVIDIA GPUs 
 this can be implemented by intercepting and remapping each kernel call, GPU 
 memory allocation, memory copy, and GPU-wide synchronization issued by the CUDA 
 driver. Special care needs to ensure that per-GPU memory fences are promoted to 
 system level and seen by all GPUs as well as guaranteeing that sub-kernels CTA 
-identifiers are properly managed to reflect those of the original kernel. \hl{Cabezas et al.~solve 
+identifiers are properly managed to reflect those of the original kernel. Cabezas et al.~solve 
 these two problems by introducing  code 
 annotations and an additional source-to-source compiler which was also 
-responsible for statically partitioning data placement and computation}~\cite{Cabezas2015}\hl{.}
+responsible for statically partitioning data placement and computation~\cite{Cabezas2015}.
 
 In our work, we follow a similar strategy but without using an source-to-source
 translation. Unlike prior work, we are able to rely on NVIDIA's Unified Virtual 
@@ -70,7 +70,7 @@ relative performance of traditional single GPU scheduling and memory
 interleaving policies when adapted to a NUMA GPU. The light blue bars
 show the relative performance of using locality optimized GPU scheduling and 
 memory placement, consisting of contiguous block CTA scheduling and first touch 
-page migration \hl{(after which pages are not dynamically moved between GPUs)}. 
+page migration (after which pages are not dynamically moved between GPUs). 
 We can clearly see that the \textit{Locality-Optimized} 
 solution almost always outperforms the traditional GPU scheduling and memory 
 interleaving.  Without these runtime locality optimizations, in average a 4-socket NUMA 
@@ -123,21 +123,20 @@ through a full bandwidth GPU switch as shown on Figure~\ref{fig:systemdiagram}.
 Table~\ref{tab:setup} provides a more detailed overview of the simulation 
 parameters.
 
-\hl{GPU coherence protocols are not one-size fits all}~\cite{sinclair2015efficient, Power2013, ZiabariTACO-16}\hl{.  
+GPU coherence protocols are not one-size fits all~\cite{sinclair2015efficient, Power2013, ZiabariTACO-16}.  
 This work examines clusters 
 of large discrete GPUs but smaller
-more tightly integrated GPU--CPU designs exist today as system on chips (SoC)}~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}
-\hl{.
+more tightly integrated GPU--CPU designs exist today as system on chips (SoC)~\cite{AMDCARRIZO,INTELSKYLAKEINTEGRATED}.
 In these designs GPUs and CPUs can share a single memory space and
 last level cache, necessitating a compatible GPU--CPU coherence protocol. 
 However closely coupled CPU-GPU solutions are not likely to be ideal
 candidates for GPU-centric HPC workloads.  Discrete GPUs each dedicate tens of billions of transistors 
 to throughput computing, while integrated solutions dedicate only a fraction of the
 chip area. While discrete GPUs are also starting to integrate more closely with 
-some CPU coherence protocols}~\cite{agarwal2016selective,ZiabariTACO-16}\hl{,
+some CPU coherence protocols~\cite{agarwal2016selective,ZiabariTACO-16},
 PCIe attached discrete GPUs (where integrated coherence
 is not possible) are likely to continue dominating the market, thanks to broad 
-compatibility between CPU and GPU vendors.}
+compatibility between CPU and GPU vendors.
 
 \begin{table}[tp]
 \begin{small}
@@ -157,10 +156,10 @@ Max number of Warps & 64 per SM \\
 Warp Scheduler & Greedy then Round Robin \\
 \midrule
 L1 Cache & Private, 128 KB per SM, 128B lines, 4-way, \\ 
-& \hl{Write-Through}, GPU-side SW-based coherent \\
+& Write-Through, GPU-side SW-based coherent \\
 \midrule
-L2 Cache & Shared, \hl{Banked}, 4MB per socket, 128B lines,  \\ 
-& 16-way, \hl{Write-Back}, Mem-side non-coherent\\
+L2 Cache & Shared, Banked, 4MB per socket, 128B lines,  \\ 
+& 16-way, Write-Back, Mem-side non-coherent\\
 \midrule
 GPU--GPU Interconnect & 128GB/s per socket (64GB/s each direction) \\
 & 8 lanes 8B wide each per direction \\
@@ -179,7 +178,7 @@ systems.}
 \end{small}
 \end{table} 
 
-\hl{This work examines the scalability of one such cache coherence 
+This work examines the scalability of one such cache coherence 
 protocol used by PCIe attached discrete GPUs. The protocol is optimized for simplicity
 and without need for hardware coherence support at any level of the cache hierarchy.  
 SM-side L1 private caches achieve coherence through 
@@ -192,7 +191,7 @@ towards scoped synchronization where explicit software acquire and release
 operations must be used to enforce coherence.  Without the use of these 
 operations, coherence is not globally guaranteed and thus maintaining fine 
 grain CPU-style MOESI coherence (via either directories or broadcast) may be an 
-unnecessary burden.}
+unnecessary burden.
 
 We study the scalability of multi-socket NUMA GPUs using 41 workloads 
 taken from a range of 

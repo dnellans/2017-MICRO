@@ -83,20 +83,20 @@ unsaturated lanes after quiescing all packets on that lane.
 This sample and 
 reconfigure process stops only when directional utilization is not 
 oversubscribed or all but one lane is configured in a single direction. 
-\hl{To avoid instability we set a threshold between 
+To avoid instability we set a threshold between 
 sample intervals corresponding to 5\% of the link bandwidth, below which we do 
-not perform reconfiguration.}
+not perform reconfiguration.
 If both ingress and egress links are found to be saturated and in an asymmetric 
 configuration, links are then reconfigured back towards a symmetric configuration 
 to encourage global bandwidth equalization. While this process may sound 
 complex, the circuitry for dynamically turning high speed single ended links 
-around in \hl{just tens of cycles or less} is already in use by modern high bandwidth 
+around in just tens of cycles or less is already in use by modern high bandwidth 
 memory interfaces such as GDDR; where the same set of wires is used for both memory reads 
-and writes~\cite{hynixgddr51Gb}. \hl{In high speed signalling implementations,
+and writes~\cite{hynixgddr51Gb}. In high speed signalling implementations,
 necessary phase--delay lock loop
 resynchronization can occur while data is inflight; eliminating the need to idle
 the link during this long latency (microseconds) operation if upcoming link turn operations
-can be sufficiently projected ahead of time, such as on a fixed interval.}
+can be sufficiently projected ahead of time, such as on a fixed interval.
 
 \vspace{-0.1in}
 \subsection{Results and Discussion} 

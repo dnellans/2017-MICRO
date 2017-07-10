@@ -51,17 +51,17 @@ of multiple GPUs.
 
 Extending single GPU workload performance significantly is a laudable
 goal, but we must first understand if these applications will be able to leverage
-larger GPUs. \hl{Assuming that the biggest GPU in the market today amasses $\approx$50 SMs (i.e. NVIDIA's Pascal GPU contains
-56),} Figure~\ref{fig:ctas} shows that across a benchmark set of 41 applications that are later described in Section~\ref{sec:methodology},
+larger GPUs. Assuming that the biggest GPU in the market today amasses $\approx$50 SMs (i.e. NVIDIA's Pascal GPU contains
+56), Figure~\ref{fig:ctas} shows that across a benchmark set of 41 applications that are later described in Section~\ref{sec:methodology},
  most single GPU optimized workloads already
 contain sufficient data parallelism to fill GPUs that are 2--8$\times$ larger 
-than today's biggest GPUs. \hl{For those that do not, we find that the absolute number
+than today's biggest GPUs. For those that do not, we find that the absolute number
 of thread blocks (CTAs) is intentionally limited by the programmer, or that the problem dataset can not
 be easily scaled up due to memory limitations.
 While most of these applications that do scale are unlikely to scale to thousands of GPUs across an 
 entire data center without additional developer effort, moderate programmer transparent performance 
 scalability will be
-attractive for applications that already contain sufficient algorithmic and data parallelism.}
+attractive for applications that already contain sufficient algorithmic and data parallelism.
 
 In this work, we examine the performance of a future 4-module NUMA GPU to 
 understand the effects that NUMA will have when executing applications designed 

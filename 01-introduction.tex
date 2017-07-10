@@ -15,8 +15,8 @@ programmer burden when trying to scale programs across ever growing data sets.
 \begin{figure}[t]
 \centering
 \includegraphics[width=1.0\columnwidth]{figures/inter_gpu_connections.pdf}
-\caption{The evolution of GPUs from multiple discrete PCIe devices to 
-single logical, multi-socket accelerators utilizing switched interconnects.}
+\caption{The evolution of GPUs from traditional discrete PCIe devices to 
+single logical, multi-socketed accelerators utilizing a switched interconnect.}
 \label{fig:systemdiagram}
 \vspace{-.2in}
 \end{figure}
@@ -32,31 +32,30 @@ enable programmers to employ more than one GPU for high throughput computation,
 but they require re-writing of traditional single GPU applications which has 
 slowed their adoption rate.
 
-Recently GPUs have started to expand beyond the traditional PCIe
-peripheral interface to enable a single protocol interconnection
-between both the GPUs and CPUs~\cite{dgx,SierraHPC,AMDINFINITYFABRIC},
-as shown in Figure~\ref{fig:systemdiagram}.  As a result, some GPUs
-are being delivered on high pin-count socketed modules to provide
-high-speed links for interconnect bandwidth that is up to an order of
-magnitude higher than PCIe connections.  The expansion of GPUs from
-single pluggable devices to closely coupled multi-socket designs is a
-natural progression as GPU--GPU and CPU--GPU link bandwidth becomes a
-performance critical system component.
+High port-count PCIe switches are now readily available
+and the PCI-SIG roadmap is projecting PCIe 5.0 bandwidth 
+to reach 128GB/s in 2019~\cite{PCIeSwitches}. At the same time, GPUs are starting to expand 
+beyond the traditional PCIe peripheral interface to enable more efficient interconnection
+protocols between both GPUs and CPUs, such as AMD's Infinity Fabric or NVIDIA's Scalable Link Interface
+and NVLink~\cite{dgx,SierraHPC,AMDINFINITYFABRIC,NVLINK,NVIDIASLI}.
+Future high bandwidth GPU to GPU switched interconnects, possibly using
+improved communication protocols, may lead to system designs with closely coupled
+groups of GPUs that can efficiently share memory at fine granularity.
 
-The onset of multi-socket GPUs provides a pivot point for GPU and system 
-vendors. On one hand, vendors can continue to expose multi-socket GPUs as 
-individual GPUs and force developers of multi-GPU systems to use multiple
+The onset of such multi-socket GPUs would provide a pivot point for GPU and system 
+vendors. On one hand, vendors can continue to expose these GPUs as 
+individual GPUs and force developers to use multiple
 programming paradigms to 
-leverage multiple GPUs. On the other, vendors could expose multi-socket 
-designs as a single non-uniform memory access (NUMA) GPU resource.  By 
-extending the single GPU programming model to multi-socket GPUs,  applications 
+leverage these multiple GPUs. On the other, vendors could expose multi-socket 
+designs as a single non-uniform memory access (NUMA) GPU resource as shown in Figure~\ref{fig:systemdiagram}.  
+By extending the single GPU programming model to multi-socket GPUs,  applications 
 can scale beyond the bounds of Moore's law, while simultaneously retaining the 
 programming interface that GPU developers have become accustomed.
 
 Several groups have previously examined aggregating multiple GPUs together under 
 a single programming model~\cite{lee2013transparent,Cabezas2015}; however this 
 work was done in an era where GPUs had limited memory addressability and relied 
-on high latency, low bandwidth PCIe interconnects. As a result, prior work 
+on high latency, low bandwidth CPU based PCIe interconnects. As a result, prior work 
 focused primarily on improving the multi-GPU programming experience rather than 
 achieving highly scalable performance. Building upon this work, we propose a 
 multi-socket \textit{NUMA-aware} GPU architecture and runtime that aggregates 

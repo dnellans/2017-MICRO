@@ -66,14 +66,14 @@ a fix partitioning of cache capacity is guaranteed to be sub-optimal.
 Second, while 
 we show that most applications will be able to completely fill large 
 NUMA GPUs, this may not always be the case. GPUs within the data center are 
-being virtualized and there is \hl{continuous work to improve concurrent execution 
-of multiple kernels and processes within a single GPU}~\cite{park2015chimera, lin2016enabling, puthoor2016implementing, HSATASKMODEL}. If a large NUMA GPU is sub-partitioned, it is intuitive 
+being virtualized and there is continuous work to improve concurrent execution 
+of multiple kernels and processes within a single GPU~\cite{park2015chimera, lin2016enabling, puthoor2016implementing, HSATASKMODEL}. If a large NUMA GPU is sub-partitioned, it is intuitive 
 that system software attempt to partition it along the NUMA boundaries (even within
 a single GPU-socket) to improve the locality of small GPU kernels.
 To effectively  capture locality in these situation, NUMA-aware GPUs need to be able to 
 dynamically re-purpose cache capacity at runtime, rather than be statically partitioned at design time. 
 
-\textbf{Coherence:} To-date, \hl{discrete}
+\textbf{Coherence:} To-date, discrete
 single socket GPUs have not moved their memory-side caches to processor side 
 because the overhead of cache invalidation (due to coherence) is an 
 unnecessary performance penalty.  Within a single socket GPU with a uniform
@@ -184,7 +184,7 @@ can improve average NUMA GPU performance 76\% compared to traditional memory sid
 caches, and 22\% compared to previously proposed static cache partitioning despite
 incurring additional coherence overhead.
 
-\hl{When extending SW-controlled 
+When extending SW-controlled 
 coherence into the GPU L2 
 caches, L1 coherence operations must be extended into the GPU 
 L2 caches. Using bulk software invalidation to maintain coherence is simple to
@@ -192,13 +192,13 @@ implement but is a performance penalty when falsely evicting
 data that is not required. The overhead of this
 invalidation is dependant on both the frequency of the invalidations as well as aggregate cache
 capacity invalidated. Extending the L1 invalidation protocol into the large shared L2, and then across
-multiple GPUs, increases both the capacity affected and frequency of the invalidation events.}
+multiple GPUs, increases both the capacity affected and frequency of the invalidation events.
 
-\hl{To understand the impact of these invalidations, we evaluate hypothetical L2 caches which can ignore the cache 
+To understand the impact of these invalidations, we evaluate hypothetical L2 caches which can ignore the cache 
 invalidation events; thus representing
 the upper limit on performance (no coherence evictions ever occur) that could be achieved by 
-using a finer granularity HW-coherence protocol.}
-Figure~\ref{fig:invalidations}\hl{ shows the impact these invalidation
+using a finer granularity HW-coherence protocol.
+Figure~\ref{fig:invalidations} shows the impact these invalidation
 operations have on application performance.
 While significant for
 some applications, on average SW-based cache invalidations overheads are only 10\%, even
@@ -207,7 +207,7 @@ may improve performance, the magnitude of their improvement must be weighted aga
 hardware implementation complexity.  As a sensitivity study, we also we evaluated
 the effect of using a simpler write-through cache policy in the L2 caches rather than write-back (to mirror
 the L1 cache policy), but found write-back outperforms write-through by 9\%
-on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.}
+on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.
 
 
 
