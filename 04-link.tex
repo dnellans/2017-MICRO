@@ -38,8 +38,8 @@ and GPU2, and GPU1 and GPU3 are underutilizing their egress and ingress links re
     \vspace{-.25in}
 \end{figure}
 
-In many workloads we observe one common
-scenario, in which all CTAs writing to the same memory range at the end of a
+In many workloads a common
+scenario has CTAs writing to the same memory range at the end of a
 kernel (i.e. parallel reductions, data gathering). For CTAs running on one of the
 sockets, GPU0 for example, these memory references are local and do not
 produce any traffic on the inter-socket interconnections. However CTAs dispatched
@@ -48,10 +48,10 @@ ingress links remain underutilized, but causing ingress traffic on GPU0.
 Such communication patterns typically utilize only
 50\% of available interconnect bandwidth. In these cases, dynamically increasing the 
 number of ingress lanes for GPU0
-(by turning around direction of egress lanes) and switching the direction of
+(by reversing the direction of egress lanes) and switching the direction of
 ingress lanes for GPUs 1--3, can substantially improve the achievable interconnect
 bandwidth. Motivated by these findings, we propose to dynamically control multi-socket
-link bandwidth assignments on a per-GPU basis resulting in
+link bandwidth assignments on a per-GPU basis, resulting in
 dynamic asymmetric link capacity assignments as shown in
 Figure~\ref{fig:symmetric_assymetric}(b).  
 
@@ -66,8 +66,8 @@ Figure~\ref{fig:symmetric_assymetric}(b).
 	\vspace{-.25in}
 \end{figure}
 
-To evaluate this proposal we model point-to-point links containing multiple 
-lanes, similarly to NVLink~\cite{pascal-tesla-wp}. In these links, 8 
+To evaluate this proposal, we model point-to-point links containing multiple 
+lanes, similar to PCIe~\cite{PCIe3.1a} or NVLink~\cite{pascal-tesla-wp}. In these links, 8 
 lanes with 8GB/s capacity per lane yield an aggregate bandwidth of 64GB/s in 
 each direction. We propose replacing uni-directional lanes with bi-directional 
 lanes to which we apply an adaptive link bandwidth allocation mechanism that 
