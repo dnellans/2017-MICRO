@@ -133,7 +133,7 @@ Projected link utilization above 99\% is considered to be bandwidth saturated
 local memory bandwidth is not, the partitioning algorithm attempts to reduce remote 
 memory traffic by re-assigning one way from the group of local ways to the
 remote ways grouping (Step \circled{2}).
-Similarly, if the local memory BW is saturated and NVLink is not, the policy 
+Similarly, if the local memory BW is saturated and inter-GPU bandwidth is not, the policy 
 re-allocates one way from the remote group, and allocates it to the group of local ways (Step 
 \circled{3}).  To minimize the impact on cache design, all ways are consulted on look
 up, allowing lazy eviction of data when the way partitioning changes.
@@ -175,7 +175,7 @@ partitioning policy is shown in dark grey. Due to its ability to
 dynamically adapt the capacity of both L2 and L1 to optimize performance when backed
 by NUMA memory, it is the highest performing cache configuration. By examining
 simulation results we find that for workloads on the left side of Figure~\ref{fig:dynamiccaching} 
-which fully saturate the NVLink bandwidth, NUMA-aware dynamic policy configures the L1 and 
+which fully saturate the inter-GPU bandwidth, NUMA-aware dynamic policy configures the L1 and 
 L2 caches to be primarily used as remote caches.  However, workloads on the right 
 side of the figure tend to have good GPU-socket memory locality, and thus 
 prefer L1 and L2 caches store primarily local data.  NUMA-aware cache
