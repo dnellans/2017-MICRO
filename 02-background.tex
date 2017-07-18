@@ -5,12 +5,12 @@
 Over the last decade single GPU performance has scaled thanks to a 
 significant growth in per-GPU transistor count and DRAM bandwidth. For 
 example, in 2010 NVIDIA's Fermi GPU integrated 1.95B transistors on a 
-529mm\textsuperscript{2} die, with 180GB/s of DRAM 
+\SI{529}{mm\textsuperscript{2}} die, with \SI{180}{GB/s} of DRAM 
 bandwidth~\cite{hennessypatterson11}. In 2016 NVIDIA's Pascal GPU 
-contained 12B transistors within a 610 mm\textsuperscript{2} die, while 
-relying on 720GB/s of memory bandwidth~\cite{inside-pascal}. Unfortunately, 
+contained 12B transistors within a \SI{610}{mm\textsuperscript{2}} die, while 
+relying on \SI{720}{GB/s} of memory bandwidth~\cite{inside-pascal}. Unfortunately, 
 transistor density is slowing significantly and many integrated circuit 
-manufacturers are not providing roadmaps beyond 7nm. Moreover, GPU die sizes,
+manufacturers are not providing roadmaps beyond \SI{7}{nm}. Moreover, GPU die sizes,
 which have been also slowly but steadily growing generationally, are 
 expected to slow down due to limitations in lithography and manufacturing cost.
 
@@ -77,20 +77,20 @@ to reduce the observed NUMA penalty.
 First, in Section~\ref{sec:interconnect} we examine the 
 ability of switch connected GPUs to dynamically repartition their ingress and 
 egress links to provide asymmetric bandwidth provisioning when required.  By 
-using existing interconnects more efficiently the effective NUMA bandwidth ratio 
+using existing interconnects more efficiently, the effective NUMA bandwidth ratio 
 of remote memory to local memory decreases, improving performance. Second, 
 to minimize traffic on oversubscribed interconnect links we propose GPU caches need 
 to become NUMA-aware in Section~\ref{sec:caches}. Traditional on-chip caches are 
 optimized to maximize 
-overall hitrate, thus minimizing off-chip bandwidth, However, in NUMA 
+overall hit rate, thus minimizing off-chip bandwidth. However, in NUMA 
 systems, not all cache misses have the same relative cost and thus should not 
 be treated equally. Due to the NUMA penalty of accessing remote memory, we show 
 that performance can be maximized by preferencing cache capacity (and thus 
-improving hitrate) towards data that resides in slower remote NUMA zones, at the 
+improving hit rate) towards data that resides in slower remote NUMA zones, at the 
 expense of data that resides in faster local NUMA zones. To this end, we propose 
 a new NUMA-aware cache architecture that dynamically balances cache capacity based on 
 memory system utilization. Before diving into microarchitectural details and results,
-we first describe the locality optimized GPU SW runtime that enables our proposed
+we first describe the locality-optimized GPU software runtime that enables our proposed
 NUMA-aware architecture.
 
 \begin{figure*}[tp] 

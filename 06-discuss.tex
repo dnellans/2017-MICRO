@@ -4,10 +4,10 @@
     \vspace{-0.05in}
     \caption{1--8 socket NUMA-aware GPU scalability compared to hypothetical larger single GPU with scaled resources.}
     \label{fig:scalability}
-    \vspace{-.2in}
+    \vspace{-.1in}
 \end{figure*}
 
-\vspace{-0.15in}
+\vspace{-0.1in}
 \section {Discussion}
 \label{sec:discussion}
 \textbf{Combined Improvement:} Sections~\ref{sec:interconnect} 
@@ -81,16 +81,16 @@ of flexibility to improve utilization.
 single GPUs are unfeasible, so multi-GPU systems connected by 
 high-speed links and switches may become attractive solutions for continuing 
 GPU performance scaling. However, onboard high-speed links and switches 
-require additional power. We estimated the link overhead by assuming $10 pJ/b$ of 
+require additional power. We estimated the link overhead by assuming \SI{10}{pJ/b} of 
 on board interconnect energy for combined links and switch (extrapolated from 
 publicly available information for cabinet level Mellanox switches and 
 links~\cite{mlswitch,mlnic}). Using this estimate we calculate an average 
-(Geo-Mean) $30 W$ of communication power for the baseline 
-architecture composed of 4 GPUs, and $14 W$ after 
+(Geo-Mean) \SI{30}{W} of communication power for the baseline 
+architecture composed of 4 GPUs, and \SI{14}{W} after 
 our NUMA-aware optimizations are applied. Some applications such as 
 \texttt{Rodinia-Euler3D, HPC-Lulesh, HPC-AMG, HPC-Lulesh-Unstruct-Mesh2} are 
-communication intensive, resulting in $\approx 130 W$ of power consumption after our 
-optimizations are considered. Assuming a typical TDP of $250 W$ per GPU module, 
+communication intensive, resulting in $\approx$\SI{130}{W} of power consumption after our 
+optimizations are considered. Assuming a typical TDP of \SI{250}{W} per GPU module, 
 in a 4 GPUs system, the extra power due to the communication represents a $5\%$ 
 overhead across the full range of 41 evaluated benchmarks.  While this power
 tax is not trivial, without alternative methods for building scalable large

@@ -34,7 +34,7 @@ slowing their adoption rate.
 
 High port-count PCIe switches are now readily available
 and the PCI-SIG roadmap is projecting PCIe 5.0 bandwidth 
-to reach 128GB/s in 2019~\cite{PCIeSwitches}. At the same time, GPUs are starting to expand 
+to reach \SI{128}{GB/s} in 2019~\cite{PCIeSwitches}. At the same time, GPUs are starting to expand 
 beyond the traditional PCIe peripheral interface to enable more efficient interconnection
 protocols between both GPUs and CPUs, such as AMD's Infinity Fabric or NVIDIA's Scalable Link Interface
 and NVLink~\cite{dgx,SierraHPC,AMDINFINITYFABRIC,NVLINK,NVIDIASLI}.
@@ -53,7 +53,7 @@ can scale beyond the bounds of Moore's law, while simultaneously retaining the
 programming interface to which GPU developers have become accustomed.
 
 Several groups have previously examined aggregating multiple GPUs together under 
-a single programming model~\cite{lee2013transparent,Cabezas2015}; however this 
+a single programming model \cite{lee2013transparent,Cabezas2015}; however this 
 work was done in an era where GPUs had limited memory addressability and relied 
 on high latency, low bandwidth CPU-based PCIe interconnects. As a result, prior work 
 focused primarily on improving the multi-GPU programming experience rather than 
