@@ -71,7 +71,7 @@ lanes with \SI{8}{GB/s} capacity per lane yield an aggregate bandwidth of \SI{64
 each direction. We propose replacing uni-directional lanes with bi-directional 
 lanes to which we apply an adaptive link bandwidth allocation mechanism that 
 works as following. For each link in the system, at kernel launch the links are 
-always reconfigured to contain symmetric link bandwidth with 4 lanes per 
+always reconfigured to contain symmetric link bandwidth with 8 lanes per 
 direction. During kernel execution the link load balancer periodically samples 
 the saturation status of each link. If the lanes in one direction are not 
 saturated, while the lanes in the opposite direction are 99\% saturated, the 
@@ -81,9 +81,9 @@ unsaturated lanes after quiescing all packets on that lane.
 This sample and 
 reconfigure process stops only when directional utilization is not 
 oversubscribed or all but one lane is configured in a single direction. 
-To avoid instability, we set a threshold between 
-sample intervals corresponding to 5\% of the link bandwidth, below which we do 
-not perform reconfiguration.
+%To avoid instability, we set a threshold between 
+%sample intervals corresponding to 5\% of the link bandwidth, below which we do 
+%not perform reconfiguration.
 If both ingress and egress links are saturated and in an asymmetric 
 configuration, links are then reconfigured back toward a symmetric configuration 
 to encourage global bandwidth equalization. While this process may sound 

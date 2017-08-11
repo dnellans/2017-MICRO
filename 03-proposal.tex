@@ -40,7 +40,7 @@ Current GPUs perform fine-grained memory interleaving at a sub-page granularity
 across memory channels.  In a NUMA GPU this policy would destroy locality and 
 result in 75\% of all accesses to be to remote memory in a 4 GPU system, an 
 undesirable effect in NUMA systems.  Similarly, a round-robin page level 
-interleaving could be utilized, similar to the Linux INTERLEAVE page allocation 
+interleaving could be utilized, similar to the Linux interleave page allocation 
 strategy, but despite the inherent memory load balancing, this still results in 
 75\% of memory accesses occurring over low bandwidth NUMA links. Instead we 
 leverage UVM page migration functionality to migrate pages on-demand from system 

@@ -156,7 +156,7 @@ least one way in all caches to be allocated to either remote of local memory.
 
 Figure~\ref{fig:dynamiccaching} compares the performance of 4 different cache
 configurations in our 4-socket NUMA GPU. Our baseline is a traditional
-GPU with memory-side local-only L2 caches. To compare against prior work~\cite{Arunkumar2017} we
+GPU with memory-side local-only write-back L2 caches. To compare against prior work~\cite{Arunkumar2017} we
 provide a 50--50 static partitioning where the L2 cache budget is split between the 
 GPU-side coherent remote cache which contains only 
 remote data, and the memory side L2 which contains only local data. In our 4-socket NUMA
@@ -175,7 +175,7 @@ simulation results we find that for workloads on the left side of Figure~\ref{fi
 which fully saturate the inter-GPU bandwidth, NUMA-aware dynamic policy configures the L1 and 
 L2 caches to be primarily used as remote caches.  However, workloads on the right 
 side of the figure tend to have good GPU-socket memory locality, and thus 
-prefer L1 and L2 caches store primarily local data.  NUMA-aware cache
+prefer L1 and L2 caches store primarily local data. NUMA-aware cache
 partitioning is able to flexibly adapt to varying memory access profiles and
 can improve average NUMA GPU performance 76\% compared to traditional memory side L2
 caches, and 22\% compared to previously proposed static cache partitioning despite
@@ -201,10 +201,7 @@ While significant for
 some applications, on average SW-based cache invalidations overheads are only 10\%, even
 when extended across all GPU-socket L2 caches.  So while fine grain HW coherence protocols
 may improve performance, the magnitude of their improvement must be weighted against their
-hardware implementation complexity.  As a sensitivity study, we also we evaluated
-the effect of using a simpler write-through cache policy in the L2 caches rather than write-back (to mirror
-the L1 cache policy), but found write-back outperforms write-through by 9\%
-on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.
+hardware implementation complexity. While in the studies above we assumed a write-back policy in L2 caches, as a sensitivity study we also evaluated the effect of using a write-through cache policy to mirror the write-through L1 cache policy. Our findings indicate that write-back L2 outperforms write-through L2 by 9\% on average in our NUMA-GPU design due to the decrease in total inter-GPU write bandwidth.
 
 
 
