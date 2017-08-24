@@ -1,15 +1,13 @@
-\begin{figure*}[t]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/plot_scalability_mgpu_WB.pdf}
-    \vspace{-0.05in}
-    \caption{1--8 socket NUMA-aware GPU scalability compared to hypothetical larger single GPU with scaled resources.}
-    \label{fig:scalability}
-    \vspace{-.1in}
-\end{figure*}
-
-\vspace{-0.1in}
 \section {Discussion}
 \label{sec:discussion}
+
+\begin{figure*}[t]
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/plot_scalability_mgpu_WB.pdf}
+	\caption{1--8 socket NUMA-aware GPU scalability compared to hypothetical larger single GPU with scaled resources.}
+	\label{fig:scalability}
+\end{figure*}
+
 \textbf{Combined Improvement:} Sections~\ref{sec:interconnect} 
 and~\ref{sec:caches} provide two techniques aimed at more efficiently utilizing 
 scarce NUMA bandwidth within future NUMA GPU systems. The proposed methods
