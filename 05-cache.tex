@@ -81,14 +81,12 @@ a single GPU-socket) to improve the locality of small GPU kernels.
 To effectively  capture locality in these situation, NUMA-aware GPUs need to be able to 
 dynamically re-purpose cache capacity at runtime, rather than be statically partitioned at design time. 
 
-\textbf{Coherence:} To-date, discrete
-single socket GPUs have not moved their memory-side caches to processor side 
+\textbf{Coherence:} To-date, discrete GPUs have not moved their mem-side caches to processor side 
 because the overhead of cache invalidation (due to coherence) is an 
-unnecessary performance penalty.  Within a single socket GPU with a uniform
+unnecessary performance penalty. For a single socket GPU with a uniform
 memory system, there is little performance advantage to implementing L2 caches
-as processor side caches.  However in a multi-socket NUMA design, the performance tax
-of extending coherence into L2 caches is offset by the fact that remote memory
-accesses can now be cached locally and may be justified;
+as processor side caches. Still, in a multi-socket NUMA design, the performance tax of extending coherence into L2 caches is offset by the fact that remote memory
+accesses can now be cached locally and may be justified.
 Figure~\ref{fig:cacheorg}(c) shows a configuration with 
 a coherent L2 cache where remote and local data contend for L2 capacity as
 extensions of the L1 caches, implementing identical coherence policy.
@@ -98,7 +96,7 @@ conceptually simple, allowing both remote and
 local memory accesses to contend for cache capacity (in both the L1 and L2 caches) 
 in a NUMA system is flawed. In UMA systems it is well know that performance 
 is maximized by optimizing for cache 
-hit rate, thus minimizing off-chip memory system bandwidth. However in NUMA systems, 
+hit rate, thus minimizing off-chip memory system bandwidth. However, in NUMA systems, 
 \textit{not all cache misses have the same relative cost
 performance impact}. A cache miss to a local memory address has a 
 smaller cost (in both terms of latency and bandwidth) than a cache miss to a 
@@ -175,10 +173,10 @@ coherence into the GPU L2
 caches, L1 coherence operations must be extended into the GPU 
 L2 caches. Using bulk software invalidation to maintain coherence is simple to
 implement but is a performance penalty when falsely evicting
-data that is not required. The overhead of this
-invalidation is dependant on both the frequency of the invalidations as well as aggregate cache
-capacity invalidated. Extending the L1 invalidation protocol into the large shared L2, and then across
-multiple GPUs, increases both the capacity affected and frequency of the invalidation events.
+not required data. The overhead of this
+invalidation is dependent on both the frequency of the invalidations as well as aggregate cache
+capacity invalidated. Extending the L1 invalidation protocol into the shared L2, and then across
+multiple GPUs, increases the capacity affected and frequency of the invalidation events.
 
 To understand the impact of these invalidations, we evaluate hypothetical L2 caches which can ignore the cache 
 invalidation events; thus representing

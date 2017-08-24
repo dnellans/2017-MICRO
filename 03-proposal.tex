@@ -98,8 +98,8 @@ not effective, resulting in large number of remote data accesses. Because our go
 optimized applications, the rest of the paper describes how to close this 
 performance gap through microarchitectural innovation. To simplify later 
 discussion, we choose to exclude benchmarks that achieve $\geq$99\% of the 
-theoretical performance with software-only locality optimizations. However, we include 
-all benchmarks in our final results to show the overall performance scalability 
+theoretical performance with software-only locality optimizations. Still, we include 
+all benchmarks in our final results to show the overall scalability 
 achievable with NUMA-aware multi-socket GPUs.
  
 \subsection{Simulation Methodology}
@@ -167,6 +167,7 @@ DRAM Latency & \SI{100}{ns} \\
 \end{tabular}
 \caption{Simulation parameters for evaluation of single and multi-socket GPU 
 systems.}
+\vspace{-0.2in}
 \label{tab:setup}
 \end{small}
 \end{table} 
@@ -257,5 +258,6 @@ Other-Bitcoin-Crypto  & 60 & 5898 \\
 \end{tabular}
 \caption{Time-weighted average number of thread blocks and application footprint.}
 \label{tab:numctas}
+\vspace{-0.2in}
 \end{small}
 \end{table}

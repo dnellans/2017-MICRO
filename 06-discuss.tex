@@ -89,8 +89,8 @@ our NUMA-aware optimizations are applied. Some applications such as
 \texttt{Rodinia-Euler3D, HPC-Lulesh, HPC-AMG, HPC-Lulesh-Unstruct-Mesh2} are 
 communication intensive, resulting in $\approx$\SI{130}{W} of power consumption after our 
 optimizations are considered. Assuming a typical TDP of \SI{250}{W} per GPU module, 
-in a 4 GPUs system, the extra power due to the communication represents a $5\%$ 
-overhead across the full range of 41 evaluated benchmarks.  While this power
-tax is not trivial, without alternative methods for building scalable large
-GPUs, interconnect power will likely become a large portion of the overall
+in a 4--GPU system, the extra power due to the communication represents a 5\% 
+overhead across the full range of 41 evaluated benchmarks. While this power
+tax is not trivial, without alternative methods for building large
+GPUs, interconnect power will likely become a large portion of the total
 GPU power budget.
