@@ -19,8 +19,8 @@ of two or more GPUs, but it is challenging to leverage mechanisms such as
 Peer-2-Peer access~\cite{NVIDIAP2P} or a combination of MPI and 
 CUDA~\cite{NVIDIAMPI} to manage multiple GPUs. These programming extensions 
 enable programmers to employ more than one GPU for high throughput computation, 
-but they require re-writing of traditional single GPU applications,
-slowing their adoption rate.
+but require re-writing of traditional single GPU applications,
+slowing their adoption.
 
 \begin{figure}[t]
 	\centering
@@ -51,17 +51,17 @@ can scale beyond the bounds of Moore's law, while simultaneously retaining the
 programming interface to which GPU developers have become accustomed.
 
 Several groups have previously examined aggregating multiple GPUs together under 
-a single programming model \cite{lee2013transparent,Cabezas2015}; however this 
+a single programming model~\cite{lee2013transparent,Cabezas2015}; however this 
 work was done in an era where GPUs had limited memory addressability and relied 
 on high latency, low bandwidth CPU-based PCIe interconnects. As a result, prior work 
 focused primarily on improving the multi-GPU programming experience rather than 
-achieving highly scalable performance. Building upon this work, we propose a 
+achieving scalable performance. Building upon this work, we propose a 
 multi-socket \textit{NUMA-aware} GPU architecture and runtime that aggregates 
 multiple GPUs into a single programmer transparent logical GPU. We show that in 
 the the era of unified virtual addressing~\cite{UVM}, cache line addressable 
 high bandwidth interconnects~\cite{NVLINK}, and dedicated GPU and CPU socket PCB 
 designs~\cite{SierraHPC}, scalable multi-GPU performance may be achievable using 
-existing single GPU programming models. This work, makes the following 
+existing single GPU programming models. This work makes the following 
 contributions:
 
 \begin{itemize}
