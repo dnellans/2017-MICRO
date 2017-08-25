@@ -2022,7 +2022,7 @@ Computing Machinery]
       inside \string\title{} or \string\author{} command! Use
       \string\titlenote{} or \string\authornote{} instead!}}%
   \par\medskip\small\noindent{\bfseries ACM Reference format:}\par\nobreak
-  \noindent\authors. \@acmYear. \@title.
+  \noindent Ugljesa Milic, Oreste Villa, Evgeny Bolotin, Akhil Arunkumar, Eiman Ebrahimi, Aamer Jaleel, Alex Ramirez, David Nellans. \@acmYear. \@title.
   \if@ACM@journal
      \textit{\@journalNameShort}
      \@acmVolume, \@acmNumber, Article~\@acmArticle\ (\@acmPubDate),

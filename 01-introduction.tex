@@ -22,14 +22,6 @@ enable programmers to employ more than one GPU for high throughput computation,
 but require re-writing of traditional single GPU applications,
 slowing their adoption.
 
-\begin{figure}[t]
-	\centering
-	\includegraphics[width=1.0\columnwidth]{figures/inter_gpu_connections.pdf}
-	\caption{The evolution of GPUs from traditional discrete PCIe devices to 
-		single logical, multi-socketed accelerators utilizing a switched interconnect.}
-	\label{fig:systemdiagram}
-\end{figure}
-
 High port-count PCIe switches are now readily available
 and the PCI-SIG roadmap is projecting PCIe 5.0 bandwidth 
 to reach \SI{128}{GB/s} in 2019~\cite{PCIeSwitches}. At the same time, GPUs are starting to expand 
@@ -39,6 +31,15 @@ and NVLink~\cite{dgx,SierraHPC,AMDINFINITYFABRIC,NVLINK,NVIDIASLI}.
 Future high bandwidth GPU to GPU interconnects, possibly using
 improved communication protocols, may lead to system designs with closely coupled
 groups of GPUs that can efficiently share memory at fine granularity.
+
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=1.0\columnwidth]{figures/inter_gpu_connections.pdf}
+	\caption{The evolution of GPUs from traditional discrete PCIe devices to 
+		single logical, multi-socketed accelerators utilizing a switched interconnect.}
+	\vspace{-0.5cm}
+	\label{fig:systemdiagram}
+\end{figure}
 
 The onset of such multi-socket GPUs would provide a pivot point for GPU and system 
 vendors. On one hand, vendors can continue to expose these GPUs as 
